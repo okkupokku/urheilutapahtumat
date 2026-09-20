@@ -121,6 +121,8 @@
   .group-block:last-child { margin-bottom: 0; }
   .group-block-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.4rem; }
   .group-block .gender-block { padding-left: 0.5rem; }
+  .group-block-national { border-left-color: #1E5AA8; }
+  .group-block-national .group-block-title { color: #1E5AA8; font-size: 0.72rem; }
   .gender-block { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.65rem; padding-left: 0.5rem; }
   .gender-block:last-child { margin-bottom: 0; }
   .gender-chip {
@@ -972,13 +974,13 @@ function renderHierarchy() {
       if (!byGroup.has(g)) byGroup.set(g, new Map());
       byGroup.get(g).set(id, info);
     });
-    const groupLabels = { seura: 'Seurasarjat', maajoukkue: 'Maajoukkueet' };
+    const groupLabels = { seura: 'Seurasarjat', maajoukkue: '🇫🇮 Suomen maajoukkueiden ottelut' };
 
     ['seura', 'maajoukkue'].filter(g => byGroup.has(g)).forEach(g => {
       let container = block;
       if (byGroup.size > 1) {
         const groupWrap = document.createElement('div');
-        groupWrap.className = 'group-block';
+        groupWrap.className = 'group-block' + (g === 'maajoukkue' ? ' group-block-national' : '');
         const groupTitle = document.createElement('div');
         groupTitle.className = 'group-block-title';
         groupTitle.textContent = groupLabels[g];
