@@ -12,7 +12,7 @@
 //
 // PK-seudun joukkueet ja niiden kotihallit on selvitetty käsin käymällä läpi
 // F-liigan kaikki miesten ja naisten joukkuesivut (fliiga.com ei tarjoa
-// kaupunki- tai koordinaattitietoa suoraan) — jos uusi joukkue nousee
+// kaupunki- tai koordinaattitietoa suoraan) - jos uusi joukkue nousee
 // F-liigaan PK-seudulta, tämä lista pitää päivittää käsin. Koordinaatit ovat
 // samasta syystä manuaalisesti haettuja likiarvoja, eivät rajapinnasta
 // suoraan saatuja (toisin kuin muiden lajien venue_lat/venue_lon-kentät).
@@ -126,7 +126,7 @@ function extractMatches(html) {
       }
       console.log(`${url}: ${matches.length} ottelua sivulla, ${matched} täsmäsi PK-alueelle & aikaväliin`);
     } catch (e) {
-      console.error(`${url}: virhe — ${e.message}`);
+      console.error(`${url}: virhe - ${e.message}`);
     }
     await page.waitForTimeout(REQUEST_DELAY_MS);
   }

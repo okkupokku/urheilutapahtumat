@@ -4,7 +4,7 @@
 // Toimintaperiaate: Playwright avaa oikean Chromium-selaimen ja navigoi
 // ensin tulospalvelu.palloliitto.fi:hin, jotta seuraava fetch()-kutsu
 // tehdään sivun omasta JavaScript-kontekstista (sama origin kuin mitä
-// rajapinta odottaa) — sama tekniikka jolla data saatiin toimimaan
+// rajapinta odottaa) - sama tekniikka jolla data saatiin toimimaan
 // manuaalisessa testauksessa selaimen konsolista.
 
 const { chromium } = require('playwright');
@@ -17,7 +17,7 @@ const ORIGIN_PAGE = 'https://tulospalvelu.palloliitto.fi/';
 const ALLOWED_CATEGORIES = new Set([
   'VL', 'M1L', 'NL',   // Veikkausliiga, Ykkösliiga, naisten Kansallinen Liiga
   'FML', 'FNL',        // Miesten ja naisten Futsal-Liiga
-  // A-maajoukkueet (Huuhkajat/Helmarit) — id:t vahvistettu suoraan
+  // A-maajoukkueet (Huuhkajat/Helmarit) - id:t vahvistettu suoraan
   // spl.torneopal.net:n getCategories-rajapinnasta (all_current=1).
   'UNL', 'WUNL',       // UEFA Nations League, miehet/naiset
   'WCQ', 'WWCQ',       // MM-karsinnat, miehet/naiset
@@ -91,7 +91,7 @@ async function fetchDay(page, dateStr) {
       allMatches.push(...filtered);
       console.log(`${dateStr}: ${raw.length} ottelua haettu, ${filtered.length} täsmäsi suodattimiin`);
     } catch (e) {
-      console.error(`${dateStr}: virhe — ${e.message}`);
+      console.error(`${dateStr}: virhe - ${e.message}`);
     }
     await page.waitForTimeout(REQUEST_DELAY_MS);
   }

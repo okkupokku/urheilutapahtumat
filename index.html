@@ -83,7 +83,12 @@
   .refresh-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--text); padding: 0.45rem 0.85rem; border-radius: 999px; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-left: 0.75rem; transition: border-color .15s, background .15s; }
   .refresh-btn:hover { border-color: var(--amber-dim); background: rgba(232,149,43,0.08); }
 
-  .controls-sticky { position: sticky; top: 0; z-index: 20; background: rgba(243,245,248,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding-top: 0.75rem; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+  /* Ei enää position: sticky - suodatinpaneeli (LAJI...AJANKOHTA,
+     Tarkennettu haku, tulosrivi) kasvoi liian korkeaksi kun SUKUPUOLI- ja
+     KILPAILUTASO-rivit lisättiin, ja pysyvästi kiinnitettynä se vei liikaa
+     tilaa otteluiden listalta/kartalta ja teki scrollauksesta töksähtelevää.
+     Nyt paneeli vierii normaalisti sivun mukana. */
+  .controls-sticky { background: rgba(243,245,248,0.92); padding-top: 0.75rem; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
 
   .view-tabs { display: flex; gap: 0.45rem; margin-bottom: 0.9rem; }
   .view-tab { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.5rem 1.1rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .15s; opacity: 0.75; }
@@ -163,7 +168,7 @@
   /* Data latautuu useasta lähteestä eri tahtiin (ks. loadAll()), joten
      #board piirtyy uudelleen useita kertoja peräkkäin ensimmäisten
      sekuntien aikana. Ilman pehmennystä tämä näkyy rumana vilkkumisena kun
-     koko lista tyhjenee ja täyttyy uudelleen jokaisella lähteellä — siksi
+     koko lista tyhjenee ja täyttyy uudelleen jokaisella lähteellä - siksi
      opacity-siirtymä board-updating-luokan kautta (ks. renderResults()). */
   #board { transition: opacity 0.18s ease; }
   #board.board-updating { opacity: 0.45; }
@@ -199,14 +204,17 @@
   .map-el { height: 500px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--divider); background: var(--panel-alt); }
   .map-note { color: var(--muted); font-size: 0.78rem; margin: 0.7rem 0.1rem 0; }
 
+  /* Ajanjakso näytetään selkeänä kuvatekstinä kartan YLÄPUOLELLA (ei enää
+     kartan päällä kelluvana pienenä laatikkona) - helpompi huomata kuin
+     karttatasojen sekaan hukkuva overlay. */
+  .map-daterange-caption { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--amber-dim); font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; margin: 0 0.1rem 0.6rem; }
   .map-overlay { position: absolute; z-index: 5; background: rgba(255,255,255,0.94); border: 1px solid var(--divider); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.75rem; box-shadow: var(--shadow); }
-  .map-daterange { top: 10px; left: 10px; font-weight: 700; color: var(--text); font-family: 'IBM Plex Mono', monospace; max-width: 60%; }
   .map-legend { bottom: 10px; left: 10px; display: flex; flex-direction: column; gap: 0.3rem; }
   .map-legend .legend-item { display: flex; align-items: center; gap: 0.45rem; color: var(--text); }
   .legend-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
   .map-pick-hint { top: 10px; right: 10px; background: var(--amber); color: var(--amber-ink); font-weight: 700; }
 
-  /* HUOM: ei "position" -sääntöä tässä — MapLibre asettaa omasta CSS:stään
+  /* HUOM: ei "position" -sääntöä tässä - MapLibre asettaa omasta CSS:stään
      .maplibregl-marker { position: absolute }, ja jos me ylikirjoitamme sen
      (esim. position: relative), merkit jäävät dokumenttivirtaukseen ja
      pinoutuvat päällekkäin sen sijaan että pysyisivät oikeissa koordinaateissa. */
@@ -252,7 +260,7 @@
 
 <header class="board-header">
   <div class="brand"><span class="mark"></span><h1>PK-seudun liveurheilu</h1></div>
-  <p class="subhead">Pääkaupunkiseudun urheiluottelut yhdellä sivulla — suodata lajin, alueen ja ajankohdan mukaan, tai katso ottelupaikat kartalta.</p>
+  <p class="subhead">Pääkaupunkiseudun urheiluottelut yhdellä sivulla - suodata lajin, alueen ja ajankohdan mukaan, tai katso ottelupaikat kartalta.</p>
   <div class="location-controls">
     <button class="loc-btn" id="btn-use-gps" type="button">📍 Käytä sijaintiani</button>
     <button class="loc-btn" id="btn-pick-map" type="button">🖱️ Valitse sijainti kartalta</button>
@@ -307,9 +315,9 @@
   <div id="board"></div>
 
   <div id="map-view" class="map-view" style="display:none;">
+    <p class="map-daterange-caption" id="map-daterange"></p>
     <div class="map-wrap">
       <div id="map" class="map-el"></div>
-      <div class="map-overlay map-daterange" id="map-daterange"></div>
       <div class="map-overlay map-legend" id="map-legend"></div>
       <div class="map-overlay map-pick-hint" id="map-pick-hint" style="display:none;">🖱️ Klikkaa karttaa asettaaksesi sijainti</div>
     </div>
@@ -324,27 +332,27 @@
   </details>
 
   <details class="status-panel" id="doc-panel">
-    <summary>ℹ️ Tietoa tästä sivustosta — mitä ja miten <span class="chev">▸</span></summary>
+    <summary>ℹ️ Tietoa tästä sivustosta - mitä ja miten <span class="chev">▸</span></summary>
     <div class="doc-panel-body">
       <h4>Mitä tämä on</h4>
-      <p>Kokoaa pääkaupunkiseudun (Helsinki, Espoo, Vantaa, Kauniainen) ammattilais-/ylimmän sarjatason urheiluottelut yhdelle sivulle: jalkapallo, futsal, jääkiekko, koripallo, käsipallo, lentopallo, salibandy ja jääpallo. Data haetaan aina tuoreena kunkin lajiliiton omasta rajapinnasta — sivu ei tallenna mitään pysyvästi palvelimelle, kaikki suodatus tapahtuu selaimessasi.</p>
+      <p>Kokoaa pääkaupunkiseudun (Helsinki, Espoo, Vantaa, Kauniainen) ammattilais-/ylimmän sarjatason urheiluottelut yhdelle sivulle: jalkapallo, futsal, jääkiekko, koripallo, käsipallo, lentopallo, salibandy ja jääpallo. Data haetaan aina tuoreena kunkin lajiliiton omasta rajapinnasta - sivu ei tallenna mitään pysyvästi palvelimelle, kaikki suodatus tapahtuu selaimessasi.</p>
 
       <h4>Mistä data tulee</h4>
       <ul>
         <li><strong>Jääkiekko (Liiga), koripallo, käsipallo, lentopallo:</strong> haetaan suoraan selaimestasi kunkin lajiliiton omasta julkisesta rajapinnasta joka kerta kun sivu ladataan.</li>
         <li><strong>Jalkapallo, futsal ja maajoukkueet (Huuhkajat/Helmarit):</strong> Palloliiton rajapinta estää suorat selainkutsut (CORS), joten data haetaan taustaprosessilla (Playwright-selainautomaatio) GitHub Actionsissa 4 tunnin välein ja tallennetaan tähän samaan repoon.</li>
-        <li><strong>Salibandy (F-liiga):</strong> fliiga.com ei tarjoa julkista rajapintaa lainkaan. Mukana ovat vain käsin tunnistetut pääkaupunkiseudun joukkueet (Oilers, Westend Indians, Hawks, EräViikingit, PSS) — niiden koko kauden ottelut on upotettu joukkuesivujen omaan HTML:ään, ja taustaprosessi purkaa ne sieltä samalla 4 tunnin syklillä.</li>
+        <li><strong>Salibandy (F-liiga):</strong> fliiga.com ei tarjoa julkista rajapintaa lainkaan. Mukana ovat vain käsin tunnistetut pääkaupunkiseudun joukkueet (Oilers, Westend Indians, Hawks, EräViikingit, PSS) - niiden koko kauden ottelut on upotettu joukkuesivujen omaan HTML:ään, ja taustaprosessi purkaa ne sieltä samalla 4 tunnin syklillä.</li>
         <li><strong>Jääpallo (Bandyliiga):</strong> myöskään finbandy.torneopal.fi ei tarjoa rajapintaa, mutta pääkaupunkiseudun seurojen (HIFK, Botnia, Vesta) omat ottelusivut ovat palvelinrenderöityä HTML:ää, joka puretaan samalla taustaprosessitekniikalla kuin salibandy.</li>
       </ul>
 
       <h4>Kartta ja sijainti</h4>
-      <p>Kartta käyttää avainetonta MapLibre GL + OpenFreeMap -yhdistelmää. Ottelupaikkojen koordinaatit tulevat suoraan rajapinnoista lukuun ottamatta salibandyä ja jääpalloa, joiden kotihallien koordinaatit on haettu käsin (likiarvoja). Jos sallit sijaintisi käytön, etäisyys lasketaan suoraan linjaa pitkin — ei oikeaa reititystä.</p>
+      <p>Kartta käyttää avainetonta MapLibre GL + OpenFreeMap -yhdistelmää. Ottelupaikkojen koordinaatit tulevat suoraan rajapinnoista lukuun ottamatta salibandyä ja jääpalloa, joiden kotihallien koordinaatit on haettu käsin (likiarvoja). Jos sallit sijaintisi käytön, etäisyys lasketaan suoraan linjaa pitkin - ei oikeaa reititystä.</p>
 
       <h4>Tunnetut rajoitukset</h4>
       <ul>
-        <li>Mestis/Auroraliiga, amerikkalainen jalkapallo sekä jääkiekon ja salibandyn maajoukkueet eivät vielä ole mukana — syyt löytyvät "Ei vielä mukana" -osiosta.</li>
-        <li>Osa lajiliittojen rajapinnoista saattaa satunnaisesti estää suoran selainkutsun (CORS) — näkyy yllä "Datalähteiden tila" -paneelissa, sivu ei kaadu.</li>
-        <li>Kaikki näytetyt sarjat on käsin valittu (ylimmät sarjatasot) — nuorisosarjat ja alemmat divisioonat on jätetty pois selkeyden vuoksi.</li>
+        <li>Mestis/Auroraliiga, amerikkalainen jalkapallo sekä jääkiekon ja salibandyn maajoukkueet eivät vielä ole mukana - syyt löytyvät "Ei vielä mukana" -osiosta.</li>
+        <li>Osa lajiliittojen rajapinnoista saattaa satunnaisesti estää suoran selainkutsun (CORS) - näkyy yllä "Datalähteiden tila" -paneelissa, sivu ei kaadu.</li>
+        <li>Kaikki näytetyt sarjat on käsin valittu (ylimmät sarjatasot) - nuorisosarjat ja alemmat divisioonat on jätetty pois selkeyden vuoksi.</li>
       </ul>
 
       <h4>Lähdekoodi</h4>
@@ -354,7 +362,7 @@
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Katso yllä olevasta "Tietoa tästä sivustosta" -osiosta tarkemmin mistä data tulee ja mitä rajoituksia sillä on. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain paikallisesti etäisyyksien laskemiseen, eikä sitä lähetetä minnekään.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Katso yllä olevasta "Tietoa tästä sivustosta" -osiosta tarkemmin mistä data tulee ja mitä rajoituksia sillä on. Selain saattaa kysyä lupaa käyttää sijaintiasi - sitä käytetään vain paikallisesti etäisyyksien laskemiseen, eikä sitä lähetetä minnekään.</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -364,11 +372,11 @@
    ============================================================ */
 
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
-const DAYS_AHEAD = 13; // tänään + N seuraavaa päivää — kuinka pitkälle dataa haetaan, rajaa myös "valitse päivämäärät" -valitsimen ylärajan
+const DAYS_AHEAD = 13; // tänään + N seuraavaa päivää - kuinka pitkälle dataa haetaan, rajaa myös "valitse päivämäärät" -valitsimen ylärajan
 const WEEK_PRESET_DAYS = 6; // "Seuraavat 7 päivää" -pikavalinnan pituus (tänään + 6)
 const REQUEST_DELAY_MS = 150; // pieni tauko peräkkäisten kutsujen välissä per lähde
 
-// Pääkaupunkiseudun kiinteä oletusnäkymä kartalle — ei muutu hakutulosten mukaan.
+// Pääkaupunkiseudun kiinteä oletusnäkymä kartalle - ei muutu hakutulosten mukaan.
 const PK_BOUNDS = [[24.45, 60.03], [25.32, 60.37]]; // [[lounas], [koillinen]]
 
 const SPORT_META = {
@@ -386,7 +394,7 @@ function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 
 // Kaikki sarjat joita sovellus on konfiguroitu hakemaan (ks. SOURCES-määrittelyt
 // alempana ja scripts/fetch-jalkapallo.js). Käytetään tarkennetun haun
-// hierarkiassa näyttämään myös sarjat joilla ei juuri nyt ole otteluita —
+// hierarkiassa näyttämään myös sarjat joilla ei juuri nyt ole otteluita -
 // nimi päivittyy automaattisesti rajapinnan ajantasaiseen nimeen (esim.
 // sponsorinimi) heti kun sarjalla on ottelu haetulla aikavälillä.
 // "group" erottelee seurasarjat maajoukkuesarjoista tarkennetun haun
@@ -394,7 +402,7 @@ function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 // Puuttuessaan oletus on 'seura' (ks. renderHierarchy). Jalkapallon,
 // koripallon, lentopallon ja käsipallon maajoukkue-id:t on vahvistettu
 // suoraan kunkin liiton omasta getCategories-rajapinnasta
-// (?all_current=1) — ks. SOURCES ja scripts/fetch-jalkapallo.js. Vain
+// (?all_current=1) - ks. SOURCES ja scripts/fetch-jalkapallo.js. Vain
 // jääkiekon ja salibandyn maajoukkue-id:t (PH-alkuiset) ovat yhä
 // paikanvaraajia, koska niille ei ole löydetty toimivaa rajapintaa (ks.
 // CLAUDE.md "Ideoita jatkoa varten").
@@ -416,7 +424,7 @@ const KNOWN_SERIES = {
     { id: 'WECQ', gender: 'Naiset', name: 'EM-karsinnat Helmarit', group: 'maajoukkue' },
     { id: 'Naiset-A', gender: 'Naiset', name: 'A-maaottelut Helmarit', group: 'maajoukkue' },
     // UEFA:n seuracupit (Mestarien liiga, Eurooppa-liiga, Konferenssiliiga,
-    // niiden karsinnat) eivät ole Palloliiton getCategories-rekisterissä —
+    // niiden karsinnat) eivät ole Palloliiton getCategories-rekisterissä -
     // UEFA järjestää ne itse eikä niitä ole TorneoPal-alustalla. Ei tiedossa
     // olevaa avointa rajapintaa, siksi vain paikanvaraaja.
     { id: 'PH-EUR-M', gender: 'Miehet', name: 'UEFA-seuracupit (Mestarien liiga, Eurooppa-liiga, Konferenssiliiga)', group: 'eurooppa' },
@@ -444,7 +452,7 @@ const KNOWN_SERIES = {
     { id: '44116', gender: 'Miehet', name: 'Maajoukkue-ottelut', group: 'maajoukkue' },
     { id: '45052', gender: 'Naiset', name: 'Maajoukkue-ottelut', group: 'maajoukkue' },
     // Ei löytynyt Koripalloliiton getCategories-rekisteristä (esim. FIBA
-    // Europe Cup / Basketball Champions League) — paikanvaraaja.
+    // Europe Cup / Basketball Champions League) - paikanvaraaja.
     { id: 'PH-EUR-M', gender: 'Miehet', name: 'FIBA-seuracupit', group: 'eurooppa' },
   ],
   'Käsipallo': [
@@ -453,7 +461,7 @@ const KNOWN_SERIES = {
     { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup', level: 'paasarja' },
     { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup', level: 'paasarja' },
     // Käsipalloliitolla on vain yksi yhteinen maajoukkuekategoria (id "Maa")
-    // molemmille sukupuolille — oikea sukupuoli tulee kunkin ottelun omasta
+    // molemmille sukupuolille - oikea sukupuoli tulee kunkin ottelun omasta
     // datasta heti kun sellainen ilmestyy, ks. SOURCES-kommentti.
     { id: 'Maa', gender: 'Muu', name: 'Maajoukkueet', group: 'maajoukkue' },
     { id: 'EC_M', gender: 'Miehet', name: 'EHF European Cup', group: 'eurooppa' },
@@ -485,7 +493,7 @@ const KNOWN_SERIES = {
   ],
   'Jääpallo': [
     { id: 'MBL', gender: 'Miehet', name: 'Bandyliiga', level: 'paasarja' },
-    // Vestan (Divari) otteluita ei ole vielä nähty livenä — oikea
+    // Vestan (Divari) otteluita ei ole vielä nähty livenä - oikea
     // categoryId varmistuu vasta kun ensimmäinen ottelu ilmestyy datassa
     // (ks. scripts/fetch-jaapallo.js, joka ei rajaa sarjoja etukäteen).
   ],
@@ -494,7 +502,7 @@ const KNOWN_SERIES = {
 // Yhdistää KNOWN_SERIES:n level- ja group-kentät yhdeksi KILPAILUTASO-
 // suodattimen arvoksi: 'paasarja'/'alempi' (kotimaiset sarjat, level-kenttä)
 // tai 'eurooppa'/'maajoukkue' (group-kenttä). Palauttaa null jos sarjaa ei
-// tunneta — silloin ottelu näkyy aina riippumatta KILPAILUTASO-valinnasta.
+// tunneta - silloin ottelu näkyy aina riippumatta KILPAILUTASO-valinnasta.
 function competitionTypeOf(m) {
   const entry = (KNOWN_SERIES[m.sport] || []).find(s => s.id === m.categoryId);
   if (!entry) return null;
@@ -621,7 +629,7 @@ const SOURCES = [
   {
     id: 'jalkapallo',
     label: 'Palloliitto (jalkapallo, futsal, maajoukkue)',
-    detail: 'data/jalkapallo.json — VL, M1L, NL, FML, FNL, UNL (taustaprosessi)',
+    detail: 'data/jalkapallo.json - VL, M1L, NL, FML, FNL, UNL (taustaprosessi)',
     run: async () => {
       // Cache-bust: taustaprosessi ylikirjoittaa tämän tiedoston 4h välein, ja
       // selain/CDN saattaa muuten palauttaa vanhentuneen välimuistikopion.
@@ -634,11 +642,11 @@ const SOURCES = [
   {
     id: 'koripallo',
     label: 'Koripallo (Korisliitto)',
-    detail: 'koripallo-api.torneopal.net — Korisliiga, Naisten Korisliiga, Suomen cup, maajoukkueet',
+    detail: 'koripallo-api.torneopal.net - Korisliiga, Naisten Korisliiga, Suomen cup, maajoukkueet',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://koripallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h');
       // 4/1/15 = Korisliiga, Naisten Korisliiga, Miesten Suomen cup.
-      // 44116/45052 = miesten/naisten maajoukkue ("Kansainväliset") —
+      // 44116/45052 = miesten/naisten maajoukkue ("Kansainväliset") -
       // id:t vahvistettu getCategories?all_current=1-hausta.
       const allow = new Set(['4', '1', '15', '44116', '45052']);
       return raw
@@ -649,13 +657,13 @@ const SOURCES = [
   {
     id: 'lentopallo',
     label: 'Lentopallo (Lentopalloliitto)',
-    detail: 'lentopallo-api.torneopal.net — ML, NL, maajoukkueet, eurooppalaiset seuracupit',
+    detail: 'lentopallo-api.torneopal.net - ML, NL, maajoukkueet, eurooppalaiset seuracupit',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://lentopallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h');
       // ML/NL = Mestaruusliiga (M/N). EM/EM-Karsinta/GLM/ELM/Maaottelu/EL/Harj
       // = maajoukkueen kansainväliset ottelut. CLM/CHL/CEVC/CEVcup/CHLW =
       // eurooppalaiset SEURAcupit (Mestareiden liiga/Challenge liiga/CEV Cup)
-      // — klubijoukkueiden, ei maajoukkueen, otteluita. Kaikki id:t
+      // - klubijoukkueiden, ei maajoukkueen, otteluita. Kaikki id:t
       // vahvistettu getCategories-hausta.
       const allow = new Set(['ML', 'NL', 'EM', 'EM-Karsinta', 'GLM', 'ELM', 'Maaottelu', 'EL', 'Harj', 'CLM', 'CHL', 'CEVC', 'CEVcup', 'CHLW']);
       return raw
@@ -666,13 +674,13 @@ const SOURCES = [
   {
     id: 'kasipallo',
     label: 'Käsipallo (Käsipalloliitto)',
-    detail: 'hb-api.torneopal.net — Aktialiiga (M/N), Suomen cup, maajoukkueet, EHF European Cup',
+    detail: 'hb-api.torneopal.net - Aktialiiga (M/N), Suomen cup, maajoukkueet, EHF European Cup',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://hb-api.torneopal.net', 'json/pfqmz9z6ea43uqy2hzfxpcpxr4svqunn');
       // 'Maa' = kaikki maajoukkueottelut (Käsipalloliitolla ei ole erillistä
-      // id:tä miehille/naisille tässä kategoriassa — sukupuoli tulee
+      // id:tä miehille/naisille tässä kategoriassa - sukupuoli tulee
       // kunkin ottelun omasta category_group_name-kentästä). 'EC_M' =
-      // EHF European Cup (miesten seuracup, ei maajoukkue) — naisten
+      // EHF European Cup (miesten seuracup, ei maajoukkue) - naisten
       // vastaavaa ei löytynyt getCategories-hausta.
       const allow = new Set(['SM-liiga', 'NSM', 'MSC', 'NSC', 'Maa', 'EC_M']);
       return raw
@@ -682,7 +690,7 @@ const SOURCES = [
   },
   {
     id: 'liiga',
-    label: 'Jääkiekko — Liiga',
+    label: 'Jääkiekko - Liiga',
     detail: 'liiga.fi (avoin CORS)',
     run: async () => {
       const raw = await fetchLiigaRange();
@@ -694,7 +702,7 @@ const SOURCES = [
   {
     id: 'salibandy',
     label: 'Salibandy (F-liiga)',
-    detail: 'data/salibandy.json — tunnetut PK-joukkueet (taustaprosessi)',
+    detail: 'data/salibandy.json - tunnetut PK-joukkueet (taustaprosessi)',
     run: async () => {
       const res = await fetchWithTimeout(`data/salibandy.json?t=${Date.now()}`);
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -705,7 +713,7 @@ const SOURCES = [
   {
     id: 'jaapallo',
     label: 'Jääpallo (Bandyliiga)',
-    detail: 'data/jaapallo.json — HIFK, Botnia, Vesta (taustaprosessi)',
+    detail: 'data/jaapallo.json - HIFK, Botnia, Vesta (taustaprosessi)',
     run: async () => {
       const res = await fetchWithTimeout(`data/jaapallo.json?t=${Date.now()}`);
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -716,9 +724,9 @@ const SOURCES = [
 ];
 
 const PLACEHOLDER_SPORTS = [
-  { label: 'Jääkiekko ja salibandy — maajoukkueet', note: 'Jalkapallon, koripallon, lentopallon ja käsipallon maajoukkueiden ottelut ovat jo mukana (ks. Tarkennettu haku → Maajoukkueet). Jääkiekon (Leijonat) ja salibandyn maajoukkueille ei ole löydetty toimivaa rajapintaa.' },
-  { label: 'Jääkiekko — Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) — vaatisi ajon toisesta verkosta.' },
-  { label: 'Amerikkalainen jalkapallo — Vaahteraliiga', note: 'Ei tiedossa olevaa rajapintaa vielä.' },
+  { label: 'Jääkiekko ja salibandy - maajoukkueet', note: 'Jalkapallon, koripallon, lentopallon ja käsipallon maajoukkueiden ottelut ovat jo mukana (ks. Tarkennettu haku → Maajoukkueet). Jääkiekon (Leijonat) ja salibandyn maajoukkueille ei ole löydetty toimivaa rajapintaa.' },
+  { label: 'Jääkiekko - Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) - vaatisi ajon toisesta verkosta.' },
+  { label: 'Amerikkalainen jalkapallo - Vaahteraliiga', note: 'Ei tiedossa olevaa rajapintaa vielä.' },
 ];
 
 /* ============================================================
@@ -735,12 +743,12 @@ function renderStatusPanel() {
     const row = document.createElement('div');
     row.className = 'status-row';
     let dotClass = 'loading', label = 'LADATAAN';
-    if (st.status === 'live') { dotClass = 'live'; label = `LIVE — ${st.count} ottelua`; }
+    if (st.status === 'live') { dotClass = 'live'; label = `LIVE - ${st.count} ottelua`; }
     else if (st.status === 'blocked') { dotClass = 'blocked'; label = 'EI SAATAVILLA (CORS)'; }
     else if (st.status === 'error') { dotClass = 'blocked'; label = 'VIRHE'; }
     row.innerHTML = `
       <div class="src-name"><span class="dot ${dotClass}"></span>${src.label}</div>
-      <div class="src-detail">${src.detail}${st.message ? ' — ' + st.message : ''}</div>
+      <div class="src-detail">${src.detail}${st.message ? ' - ' + st.message : ''}</div>
       <div class="status-label mono">${label}</div>
     `;
     el.appendChild(row);
@@ -782,8 +790,8 @@ function updateLocationUI() {
   if (REFERENCE_LOCATION) {
     note.style.display = '';
     note.textContent = REFERENCE_LOCATION.source === 'gps'
-      ? '📍 Käytetään sijaintiasi — etäisyydet ja kulkuajat näytetään otteluille.'
-      : '📍 Käytetään kartalta valittua sijaintia — etäisyydet ja kulkuajat näytetään otteluille.';
+      ? '📍 Käytetään sijaintiasi - etäisyydet ja kulkuajat näytetään otteluille.'
+      : '📍 Käytetään kartalta valittua sijaintia - etäisyydet ja kulkuajat näytetään otteluille.';
   } else {
     note.style.display = 'none';
   }
@@ -805,7 +813,7 @@ function requestLocation() {
       updateLocationUI();
       renderResults();
     },
-    () => { /* evätty tai ei saatavilla — jatketaan ilman sijaintia */ },
+    () => { /* evätty tai ei saatavilla - jatketaan ilman sijaintia */ },
     { maximumAge: 300000, timeout: 8000 }
   );
 }
@@ -853,7 +861,7 @@ document.getElementById('max-distance-input').addEventListener('input', e => {
 let ALL_MATCHES = [];
 const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Muu'];
 const DISPLAY_GENDERS = ['Miehet', 'Naiset', 'Muu'];
-// KILPAILUTASO (ent. "Sarjataso") — laajennettu kattamaan level- ja
+// KILPAILUTASO (ent. "Sarjataso") - laajennettu kattamaan level- ja
 // group-kenttien koko arvojoukko, ks. competitionTypeOf().
 const DISPLAY_COMPETITION_TYPES = [
   { id: 'paasarja', label: 'Pääsarja' },
@@ -1059,7 +1067,7 @@ function renderFilters() {
 // Rakentaa tarkennetun haun hierarkian: Laji -> Sukupuoli/ikäryhmä -> Sarja.
 // Sukupuolivalinta (state.genders) on globaali kaikkien lajien kesken, joten
 // samaa arvoa (esim. "Miehet") vastaavia chippejä voi esiintyä useamman lajin
-// alla — ne pidetään synkassa keskenään data-gender-attribuutin avulla.
+// alla - ne pidetään synkassa keskenään data-gender-attribuutin avulla.
 function renderHierarchy() {
   const root = document.getElementById('hierarchy-filters');
   root.innerHTML = '';
@@ -1072,12 +1080,12 @@ function renderHierarchy() {
   });
 
   // Näytetään tarkennetussa haussa vain LAJI-suodattimessa parhaillaan
-  // valitut lajit — jos laji poistetaan käytöstä ylhäällä, sen sarjat
+  // valitut lajit - jos laji poistetaan käytöstä ylhäällä, sen sarjat
   // eivät ole enää valittavissa täällä.
   const knownSports = Object.keys(SPORT_META).filter(s => s !== '_default' && state.sports.has(s)).sort();
 
   if (knownSports.length === 0) {
-    root.innerHTML = '<div class="sport-block-empty">Ei valittuja lajeja — valitse laji yltä LAJI-suodattimesta.</div>';
+    root.innerHTML = '<div class="sport-block-empty">Ei valittuja lajeja - valitse laji yltä LAJI-suodattimesta.</div>';
     return;
   }
 
@@ -1203,7 +1211,7 @@ function renderBoard(filtered) {
   if (ALL_MATCHES.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = 'Ei vielä yhtään ottelua ladattu — katso alta "Datalähteiden tila" mitkä lähteet toimivat juuri nyt.';
+    empty.textContent = 'Ei vielä yhtään ottelua ladattu - katso alta "Datalähteiden tila" mitkä lähteet toimivat juuri nyt.';
     board.appendChild(empty);
     return;
   }
@@ -1391,7 +1399,7 @@ document.querySelectorAll('.view-tab').forEach(btn => {
 function renderResults() {
   updateLocationUI();
   const filtered = getFilteredMatches();
-  const distancePrefix = (REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin — ' : '';
+  const distancePrefix = (REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin - ' : '';
   document.getElementById('result-count').textContent = `${distancePrefix}${filtered.length} ottelua näkyvissä`;
   const stillLoading = Object.values(sourceState).some(s => s.status === 'loading');
   document.getElementById('loading-spinner').hidden = !stillLoading;

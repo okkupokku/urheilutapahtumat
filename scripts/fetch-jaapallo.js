@@ -2,21 +2,21 @@
 // seurojen seurat.php-sivuilta finbandy.torneopal.fi:stä.
 //
 // Toimintaperiaate: finbandy.torneopal.fi ei paljasta JSON-rajapinnan
-// (getMatches) Accept-tokenia selaimelle — sivu on täysin palvelin-
+// (getMatches) Accept-tokenia selaimelle - sivu on täysin palvelin-
 // renderöity eikä tee yhtään XHR/fetch-kutsua (vahvistettu DevTools-
 // verkkoliikenteestä). Jokaisen seuran oma sivu (/taso/seurat.php?seura=ID)
 // sisältää kuitenkin koko kauden ottelut valmiiksi siistinä HTML:nä, jossa
 // jokainen ottelu on <li class='match'>-elementti selkeillä luokkanimillä
 // (ml_ottelunro, ml_sarja, ml_sarjanimi, ml_pvm, ml_kenttanimi,
 // ml_kotisiisti, ml_kotilogo, ml_tulosklo, ml_vieraslogo, ml_vierassiisti)
-// — sama HTML-upotustekniikka kuin salibandyllä (ks. fetch-salibandy.js),
+// - sama HTML-upotustekniikka kuin salibandyllä (ks. fetch-salibandy.js),
 // mutta tässä ei tarvitse edes purkaa JSON:ia, suorat regex-poiminnat
 // riittävät.
 //
 // PK-seudun seurat (seura=id) on selvitetty käymällä läpi
 // /taso/seurat.php-listaus ja tarkistamalla kunkin seuran Kotikunta-kenttä.
 // Kentät (kotihallit) ja niiden koordinaatit ovat manuaalisesti haettuja
-// likiarvoja, eivät rajapinnasta — jos ne osoittautuvat vääriksi, korjaa
+// likiarvoja, eivät rajapinnasta - jos ne osoittautuvat vääriksi, korjaa
 // PK_VENUES-taulukko.
 //
 // HUOM: ottelujen kellonaika ("Klo") ei ole vielä tiedossa kuukausia
@@ -32,7 +32,7 @@ const BASE_URL = 'https://finbandy.torneopal.fi';
 const PK_CLUBS = [
   { id: 2, name: 'HIFK' },
   { id: 3, name: 'Botnia' },
-  { id: 12, name: 'Vesta' }, // Divari (alempi sarja) — ei otteluita vielä julkaistu tarkistushetkellä
+  { id: 12, name: 'Vesta' }, // Divari (alempi sarja) - ei otteluita vielä julkaistu tarkistushetkellä
 ];
 
 // Tunnettujen PK-seudun kotikenttien likikoordinaatit. Täsmäytys tehdään
@@ -55,7 +55,7 @@ function findPKVenue(kenttanimi) {
 }
 
 // "14.11." (kuluva vuosi) tai "6.1.2027" (vuosi näkyy heti kun ottelu on
-// seuraavana kalenterivuonna — sivu lisää vuoden itse aina kun se vaihtuu).
+// seuraavana kalenterivuonna - sivu lisää vuoden itse aina kun se vaihtuu).
 function parseFinDate(str) {
   const parts = str.trim().replace(/\.$/, '').split('.');
   const day = parseInt(parts[0], 10);
@@ -159,7 +159,7 @@ function extractMatches(html) {
       }
       console.log(`${club.name} (seura=${club.id}): ${matches.length} ottelua sivulla, ${matched} täsmäsi PK-alueelle & aikaväliin`);
     } catch (e) {
-      console.error(`${club.name} (seura=${club.id}): virhe — ${e.message}`);
+      console.error(`${club.name} (seura=${club.id}): virhe - ${e.message}`);
     }
     await page.waitForTimeout(500);
   }

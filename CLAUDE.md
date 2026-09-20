@@ -1,21 +1,30 @@
-# CLAUDE.md — urheilutapahtumat
+# CLAUDE.md - urheilutapahtumat
 
 Tekninen muistiinpano tuleville Claude-istunnoille (ja ihmisille). Tämä
 tiedosto sisältää tietoa joka on löydetty kantapään kautta (API-tokenien
-metsästys, kategoriatunnisteiden selvitys, bugikorjaukset) — lue ennen kuin
+metsästys, kategoriatunnisteiden selvitys, bugikorjaukset) - lue ennen kuin
 alat "keksimään pyörää uudelleen".
 
 ## Mikä tämä on
 
 Yksisivuinen staattinen sivusto ([index.html](index.html)), joka näyttää
 pääkaupunkiseudun (Helsinki/Espoo/Vantaa/Kauniainen) urheiluottelut listana
-ja kartalla. Ei backendiä ajon aikana — kaikki suodatus tapahtuu selaimessa.
+ja kartalla. Ei backendiä ajon aikana - kaikki suodatus tapahtuu selaimessa.
 Julkaistu GitHub Pagesilla osoitteessa
 https://okkupokku.github.io/urheilutapahtumat/
 
 Sivulla on oma "Tietoa tästä sivustosta" -paneeli (kiinni oletuksena, aivan
-sivun alaosassa) joka selittää käyttäjälle saman asian lyhyemmin — pidä
+sivun alaosassa) joka selittää käyttäjälle saman asian lyhyemmin - pidä
 se ajan tasalla jos teet isoja muutoksia.
+
+## Kirjoitustyyli
+
+**Ei koskaan em dashia (—, U+2014)** - ei käyttöliittymätekstissä, ei
+koodikommenteissa, ei tämän tiedoston proosassa, ei commit-viesteissä.
+Käytä sen sijaan tavallista väliviivaa lyöntien kanssa ("sana - sana") tai
+pilkkua/kaksoispistettä jos se sopii paremmin lauseeseen. Sääntö on
+käyttäjän eksplisiittinen toive (2026-09-20) - kaikki tämän päivämäärän
+jälkeen kirjoitettu teksti noudattaa tätä.
 
 ## Arkkitehtuuri: kaksi datanhakutapaa
 
@@ -52,7 +61,7 @@ joka palauttaa JOKAISEN kauden voimassa olevan sarjan/kilpailun tiedot
 (kentät mm. `category_id`, `category_name`, `category_group_name`,
 `sport_id`, `organiser_name`, `competition_name`) ilman että millään
 kategorialla tarvitsee olla ottelua juuri nyt. Tämä on paljon nopeampi tapa
-löytää oikeita category_id:itä kuin `getMatches`-päivien läpikäynti — käytä
+löytää oikeita category_id:itä kuin `getMatches`-päivien läpikäynti - käytä
 tätä ensin kun etsit uutta sarjaa. Esim. Palloliiton maajoukkuesarjat
 löytyivät suodattamalla `organiser_name === 'Maaottelut'`.
 
@@ -61,10 +70,10 @@ Muita olemassa olevia mutta **avainta ei löydetty** -alidomeeneja (palauttavat
 token puuttuu): `bandy-api.torneopal.net`, `floorball-api.torneopal.net`,
 `jaapallo-api.torneopal.net`, `finbandy-api.torneopal.net`,
 `sfl-api.torneopal.net`, `fliiga-api.torneopal.net`. Jääpallolle (ks. alla)
-löytyi kuitenkin ratkaisu ilman tokenia — samaan tapaan kuin salibandylle.
+löytyi kuitenkin ratkaisu ilman tokenia - samaan tapaan kuin salibandylle.
 
 **category_id → sarja -mappaus** (ylin sarjataso, käsin selvitetty
-tarkistamalla oikea live-data eri päiviltä — katso `KNOWN_SERIES` vakio
+tarkistamalla oikea live-data eri päiviltä - katso `KNOWN_SERIES` vakio
 [index.html](index.html):ssä, joka on tämän taulukon "source of truth"):
 - Jalkapallo: `VL`=Veikkausliiga, `M1L`=Ykkösliiga, `NL`=Naisten Kansallinen
   Liiga (esiintyy usein sponsorinimellä esim. "Briotech Kansallinen Liiga").
@@ -72,10 +81,10 @@ tarkistamalla oikea live-data eri päiviltä — katso `KNOWN_SERIES` vakio
   UEFA Nations League (Huuhkajat/Helmarit), `WCQ`/`WWCQ`=MM-karsinnat,
   `ECQ`/`WECQ`=EM-karsinnat, `Miehet-A`/`Naiset-A`=A-maaottelut
   (ystävyysottelut). Näiden lisäksi rajapinnassa on kymmeniä nuorten
-  maajoukkuesarjoja (`U21M`, `U21ECQ`, `U19M`, `U17M`, jne. — ks.
+  maajoukkuesarjoja (`U21M`, `U21ECQ`, `U19M`, `U17M`, jne. - ks.
   "Ideoita jatkoa varten") joita ei ole vielä lisätty.
-- Futsal: `FML`=Miesten Futsal-Liiga, `FNL`=Naisten Futsal-Liiga — **HUOM:**
-  näiden `sport_id` on `"futsal"`, EI `"football"` — jos suodatat
+- Futsal: `FML`=Miesten Futsal-Liiga, `FNL`=Naisten Futsal-Liiga - **HUOM:**
+  näiden `sport_id` on `"futsal"`, EI `"football"` - jos suodatat
   `sport_id`:n mukaan, muista sallia molemmat.
 - Koripallo: `4`=Korisliiga (M), `1`=Naisten Korisliiga (N), `15`=Miesten
   Suomen cup. Maajoukkueet: `44116`=Miehet, `45052`=Naiset ("Kansainväliset",
@@ -84,20 +93,20 @@ tarkistamalla oikea live-data eri päiviltä — katso `KNOWN_SERIES` vakio
   ei lisätty (ei koettu tarpeeksi relevantiksi).
 - Käsipallo: `SM-liiga`=Miesten Aktialiiga, `NSM`=Naisten Aktialiiga,
   `MSC`=Miesten Suomen Cup, `NSC`=Naisten Suomen Cup. Maajoukkue: `Maa`
-  ("Maajoukkueet") — **HUOM:** Käsipalloliitolla on vain YKSI yhteinen
+  ("Maajoukkueet") - **HUOM:** Käsipalloliitolla on vain YKSI yhteinen
   category_id molemmille sukupuolille (rekisterissä `category_group_name`
   on kirjaimellisesti "Maajoukkueet"), joten `KNOWN_SERIES`:ssä se on
   merkitty gender: 'Muu' ja oikea sukupuoli tulee vasta live-datasta kun
   ensimmäinen ottelu ilmestyy.
 - Lentopallo: `NL`=Naisten Mestaruusliiga (vahvistettu livenä). `ML`=Miesten
-  Mestaruusliiga — **ei koskaan nähty livenä tässä projektissa** (kausi ei
+  Mestaruusliiga - **ei koskaan nähty livenä tässä projektissa** (kausi ei
   ollut käynnissä haun aikaan, vain "PREM"-preseason-otteluita näkyi), joten
   tarkista jos sarja ei koskaan tuota tuloksia. Maajoukkueet (miehet): `EM`,
   `EM-Karsinta`, `GLM`=Kultainen liiga, `ELM`=Euroopan liiga, `Maaottelu`=
   harjoitusottelut. Maajoukkueet (naiset): `EL`=Euroopan liiga, `Harj`=
   harjoitusottelut. Eurooppalaiset seuracupit: `CLM`/`CHL`/`CEVC`=
   Mestareiden liiga/Challenge liiga/CEV Cup (miehet), `CEVcup`/`CHLW`
-  (naiset) — nämä ovat klubijoukkueiden, ei maajoukkueen, otteluita.
+  (naiset) - nämä ovat klubijoukkueiden, ei maajoukkueen, otteluita.
   Käsipallolla vastaava on `EC_M`=EHF European Cup (vain miehet, naisten
   vastaavaa ei löytynyt getCategories-hausta).
 
@@ -108,27 +117,27 @@ League, jalkapallon UEFA-cupit). `renderHierarchy()` näyttää kaikki kolme
 ryhmää omina otsikoinaan kun lajilla on useampi kuin yksi. Jalkapallolle,
 koripallolle, jääkiekolle ja salibandylle ei löytynyt avointa dataa
 eurooppalaisille seuracupeille (UEFA/FIBA/IIHF järjestävät ne itse, eivät
-näy TorneoPal- tai Liiga.fi-rajapinnoissa) — nämä ovat siis `PH-EUR-`-
+näy TorneoPal- tai Liiga.fi-rajapinnoissa) - nämä ovat siis `PH-EUR-`-
 paikanvaraajia, ei todellista dataa.
 
 `isPKAreaTorneoPal()` suodattaa alueen `venue_area_name`/`venue_city_name`
 -kentistä. **Käsipalloliiton data sisältää ylimääräisiä välilyöntejä**
-näissä kentissä (esim. `"Kauniainen          "`) — kaikki kaupunki-/
+näissä kentissä (esim. `"Kauniainen          "`) - kaikki kaupunki-/
 paikkakentät trimmataan siksi aina (`.trim()`).
 
 ### Liiga.fi (jääkiekko, Liiga)
 `GET https://liiga.fi/api/v2/games?tournament=runkosarja&date=YYYY-MM-DD`,
 ei avainta, avoin CORS. `tournament`-parametrin väärä arvo palauttaa 403
-(kokeiltu: vain `runkosarja`/`playoffs`/`playout` toimivat — muut liigat
+(kokeiltu: vain `runkosarja`/`playoffs`/`playout` toimivat - muut liigat
 kuten Mestis eivät ole tällä samalla API:lla ollenkaan).
 
-### Salibandy (F-liiga) — fliiga.com
+### Salibandy (F-liiga) - fliiga.com
 Ei julkista JSON-rajapintaa. **Löytö:** jokaisen joukkueen oma sivu
 (`fliiga.com/<slug>/miehet|naiset/`) sisältää koko kauden ottelut valmiiksi
 upotettuna palvelinrenderöityyn HTML:ään yhtenä JSON-tekstilohkona (WP-
 artikkelidataa), **ilman kenoviivapakoja** (siis suoraan `"gameday":123`,
 ei `\"gameday\":123`). Jokaisella ottelulla on `venue`-kenttä joka kertoo
-oikean pelipaikan **sekä koti- että vierasotteluille** — tätä käytetään
+oikean pelipaikan **sekä koti- että vierasotteluille** - tätä käytetään
 PK-alueen suodatukseen sen sijaan että pitäisi tietää jokaisen joukkueen
 kotikaupunki.
 
@@ -146,32 +155,32 @@ kotihalli (`OTTELUT`-välilehden yläreunassa):
 | PSS | Naiset | Aurora | Helsinki |
 
 Näiden hallien **koordinaatit ovat manuaalisesti haettuja likiarvoja**, eivät
-rajapinnasta — jos ne osoittautuvat väärin, korjaa `PK_VENUES`-taulukko
+rajapinnasta - jos ne osoittautuvat väärin, korjaa `PK_VENUES`-taulukko
 [scripts/fetch-salibandy.js](scripts/fetch-salibandy.js):ssä.
 
 Jos F-liigaan nousee/laskee joukkueita, tämä lista pitää päivittää käsin
-(`TEAM_PAGES`-taulukko samassa tiedostossa) — ei automaattista tapaa
+(`TEAM_PAGES`-taulukko samassa tiedostossa) - ei automaattista tapaa
 havaita tätä.
 
 Muita tutkittuja reittejä jotka **eivät** toimineet: `wp-admin/admin-ajax.php`
--kutsut (`team-standing`, `team-live-match`, `team-birthdays` — ei sisällä
+-kutsut (`team-standing`, `team-live-match`, `team-birthdays` - ei sisällä
 otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
 "Groweo" on asiakaspalvelu-chatbot-alusta, ei liity otteluihin mitenkään).
 
-### Jääpallo (Bandyliiga) — finbandy.torneopal.fi
+### Jääpallo (Bandyliiga) - finbandy.torneopal.fi
 Käyttäjä löysi 2026-09-20 osoitteen `finbandy.torneopal.fi/taso/
-seurat.php?seura=<ID>` — jokaisen seuran oma sivu, joka listaa koko kauden
+seurat.php?seura=<ID>` - jokaisen seuran oma sivu, joka listaa koko kauden
 ottelut. Sivu on **täysin palvelinrenderöity** (ei yhtään XHR/fetch-kutsua,
 vahvistettu verkkoliikenteestä) eli aiemmin dokumentoitu "token ei paljastu"
 -este pätee yhä `getMatches`-rajapinnalle, mutta sitä ei tarvita: HTML on
 niin siistiä (`<li class='match'>` jonka lapsilla selkeät luokkanimet
 `ml_ottelunro`/`ml_sarja`/`ml_sarjanimi`/`ml_pvm`/`ml_kenttanimi`/
 `ml_kotisiisti`/`ml_kotilogo`/`ml_tulosklo`/`ml_vieraslogo`/
-`ml_vierassiisti`) että se puretaan suoraan regexillä ilman JSON:ia —
+`ml_vierassiisti`) että se puretaan suoraan regexillä ilman JSON:ia -
 yksinkertaisempi tekniikka kuin salibandyn upotetun-JSON-purku.
 
 Koska data haetaan seurakohtaisilta sivuilta (ei päivähaulla kuten muut
-TorneoPal-lajit), **ei tarvita category_id-sallittulistaa** — kaikki
+TorneoPal-lajit), **ei tarvita category_id-sallittulistaa** - kaikki
 kyseisen seuran sivulla näkyvät ottelut ovat relevantteja, PK-alue
 suodatetaan `ml_kenttanimi`-kentän perusteella (vrt. salibandyn
 `PK_VENUES`-tekniikka).
@@ -179,15 +188,15 @@ suodatetaan `ml_kenttanimi`-kentän perusteella (vrt. salibandyn
 PK-seudun seurat (`/taso/seurat.php`-listauksesta, `Kotikunta`-kenttä
 tarkistettu): `seura=2`=HIFK (Miesten Bandyliiga, kotikenttä "Kallio tj,
 Hki"), `seura=3`=Botnia (Miesten Bandyliiga, "Oulunkylä tj, Hki"),
-`seura=12`=Vesta (Divari eli alempi sarja — ei otteluita julkaistu
+`seura=12`=Vesta (Divari eli alempi sarja - ei otteluita julkaistu
 2026-09-20 mennessä, joten Vestan sarjan oikeaa `category_id`:tä ei ole
 vielä nähty livenä; `level`-päättely koodissa on `sarjanimi.includes
 ('Bandyliiga') ? 'paasarja' : 'alempi'` joten se toimii silti oikein heti
 kun Vestan otteluita ilmestyy). **HUOM:** Akilles (huolimatta Helsinki-
-tuntuisesta nimestä) on Porvoosta, ei PK-seutua — tarkistettu erikseen.
+tuntuisesta nimestä) on Porvoosta, ei PK-seutua - tarkistettu erikseen.
 
 **Ottelun kellonaika ei ole tiedossa kuukausia etukäteen** julkaistulle
-otteluohjelmalle (näkyy `--:--`) — `scripts/fetch-jaapallo.js` tallentaa
+otteluohjelmalle (näkyy `--:--`) - `scripts/fetch-jaapallo.js` tallentaa
 tällöin tyhjän `time`-kentän, joka näytetään sovelluksessa viivana ("–").
 Aika todennäköisesti tarkentuu lähempänä ottelupäivää, mutta tätä ei ole
 vielä nähty käytännössä (kausi ei ole käynnissä).
@@ -200,11 +209,11 @@ täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä
 ## Tunnetut infrarajoitukset (ei koodilla korjattavissa)
 
 - **Mestis/Auroraliiga** (tulospalvelu.leijonat.fi): CloudFront/WAF estää
-  GitHub Actionsin IP-alueen HTTP 403:lla — vahvistettu jopa täysin
+  GitHub Actionsin IP-alueen HTTP 403:lla - vahvistettu jopa täysin
   selaimettomalla suoralla Node-fetchillä, eli kyse ei ole selaimen
   bot-tunnistuksesta vaan verkkotason IP-mustalistauksesta. Toimisi jos
   taustaprosessi ajettaisiin jostain muusta verkosta (esim. käyttäjän omalta
-  koneelta cronilla, tai maksullisen proxyn kautta — ei toteutettu, koska
+  koneelta cronilla, tai maksullisen proxyn kautta - ei toteutettu, koska
   proxy maksaa ja on eettisesti harmaampi).
 - **Amerikkalainen jalkapallo**: ei tiedossa olevaa rajapintaa lainkaan.
 
@@ -222,11 +231,11 @@ täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä
 2. **Cache-bustaus `data/*.json`-tiedostoille on pakollinen.** GitHub Pagesin
    CDN (Fastly) palauttaa muuten vanhentuneen version taustaprosessin juuri
    päivittämästä tiedostosta useiden minuuttien ajan. Kaikki `data/*.json`
-   -haut käyttävät `?t=${Date.now()}`-parametria — älä poista tätä.
+   -haut käyttävät `?t=${Date.now()}`-parametria - älä poista tätä.
 3. **CartoDB:n ilmaiset "dark"/"positron"-rasterikartat vaativat nykyään
    API-avaimen** (näyttävät "API key required" -vesileiman). Käytössä on nyt
    sen sijaan **OpenFreeMap** (`https://tiles.openfreemap.org/styles/positron`,
-   MapLibre GL -yhteensopiva vektorityyli, ei avainta, ei rajoja) — jos tämä
+   MapLibre GL -yhteensopiva vektorityyli, ei avainta, ei rajoja) - jos tämä
    joskus lakkaa toimimasta, OpenFreeMap on ainoa tunnettu täysin ilmainen
    ja avaimeton vaihtoehto tälle laadulle.
 4. **`categoryId` on suodattimien avain, ei kategorian nimi** (`category`).
@@ -234,7 +243,7 @@ täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä
    joten `KNOWN_SERIES`-rekisteri ja live-data yhdistetään aina
    `categoryId`:n perusteella, ei tekstivertailulla.
 5. **`torneopal.net`-rajapinnat rajoittavat pyyntötahtia** (Cloudflare 403
-   jos hakkaa liikaa peräkkäin lyhyessä ajassa) — jos teet manuaalista
+   jos hakkaa liikaa peräkkäin lyhyessä ajassa) - jos teet manuaalista
    tutkimusta curlilla, odota sekunteja pyyntöjen välissä tai käytä
    selainta `fetch()`:n kautta sen sijaan (ei näyttänyt kärsivän samasta
    rajoituksesta tässä projektissa).
@@ -251,7 +260,7 @@ täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä
   Actions-välilehdeltä ("Run workflow" -painike
   [update-data.yml](.github/workflows/update-data.yml):lle).
 - Testaus paikallisesti: `python3 -m http.server <portti>` projektin
-  juuressa + selain — ei vaadi Node/npm:ää paikallisella koneella (niitä ei
+  juuressa + selain - ei vaadi Node/npm:ää paikallisella koneella (niitä ei
   ollut asennettuna kehityksen aikana, joten Playwright-skriptit on aina
   testattu vasta oikeasti GitHub Actionsissa, ei paikallisesti).
 
@@ -259,28 +268,28 @@ täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä
 
 - Salibandy: laajenna kattamaan myös muut mahdolliset uudet PK-joukkueet
   jos niitä nousee sarjaan.
-- ~~Jääpallo~~ — löydetty ja lisätty 2026-09-20 (käyttäjän löytämä
+- ~~Jääpallo~~ - löydetty ja lisätty 2026-09-20 (käyttäjän löytämä
   seurat.php-sivu, ks. "Jääpallo (Bandyliiga)" yllä). Vestan (Divari)
   todellinen `category_id` pitää vielä vahvistaa kun sen ensimmäinen
   ottelu ilmestyy datassa. Naisten Bandyliigalle ei ole vielä tarkistettu
   löytyykö PK-seudulta joukkueita.
 - Mestis/Auroraliiga: harkitse paikallista cron-ajoa käyttäjän omalta
   koneelta jos IP-esto muuten estää.
-- ~~Naisten maajoukkueet (Helmarit ym.)~~ — löydetty ja lisätty (`WUNL`,
+- ~~Naisten maajoukkueet (Helmarit ym.)~~ - löydetty ja lisätty (`WUNL`,
   `WWCQ`, `WECQ`, `Naiset-A`), ks. yllä.
 - Nuorten maajoukkueet (jalkapallo): Palloliiton `getCategories`-haku
   paljasti kymmeniä valmiita category_id:itä, esim. `U21M`/`U21ECQ`
   (EM-karsinnat U21-miehet), `U19M`, `U17M`, `WU19M`, `WU17M` jne. Näillä on
   oikeasti otteluita (esim. U21-EM-karsinnat 25.9.2026 Tampereella) mutta ei
-  vielä nähty PK-seudulla — voisi lisätä KNOWN_SERIES:iin ja
+  vielä nähty PK-seudulla - voisi lisätä KNOWN_SERIES:iin ja
   ALLOWED_CATEGORIES:iin samaan tapaan kuin A-maajoukkueet, jolloin ne
   ilmestyvät automaattisesti kun ottelu osuu PK-alueelle.
-- ~~Muille TorneoPal-lajeille (koripallo, käsipallo, lentopallo)~~ — tehty:
+- ~~Muille TorneoPal-lajeille (koripallo, käsipallo, lentopallo)~~ - tehty:
   `getCategories?all_current=1` löysi maajoukkue-id:t kaikille kolmelle
   (ks. yllä), lisätty sekä `KNOWN_SERIES`:iin että kunkin lajin `SOURCES`-
   entryn `allow`-settiin index.html:ssä.
 - Salibandy ja jääkiekko (Leijonat) ovat ainoat lajit joiden maajoukkueet
-  ovat yhä `PH-`-paikanvaraajia — kummallakaan ei ole tiedossa avointa
+  ovat yhä `PH-`-paikanvaraajia - kummallakaan ei ole tiedossa avointa
   rajapintaa (jääkiekon Liiga.fi ei kata maajoukkuetta lainkaan, salibandyn
   fliiga.com:sta ei löytynyt maajoukkuesivua `/maajoukkueet/`-osoitteesta).
   Jos näille löytyy joskus data, sama korvausmenettely kuin jalkapallolle.
@@ -289,5 +298,5 @@ täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä
   UEFA-cupit, koripallon FIBA-cupit, jääkiekon Champions Hockey League ja
   salibandyn Champions Cup ovat `PH-EUR-`-paikanvaraajia, koska niitä
   järjestävät kansainväliset kattojärjestöt (UEFA/FIBA/IIHF/IFF) eivätkä ne
-  näy Suomen liittojen omissa rajapinnoissa — vaatisi kunkin kattojärjestön
+  näy Suomen liittojen omissa rajapinnoissa - vaatisi kunkin kattojärjestön
   oman (todennäköisesti maksullisen tai suljetun) rajapinnan.
