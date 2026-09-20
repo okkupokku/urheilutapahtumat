@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-20T13:02:49.111Z",
+  "updated": "2026-09-20T13:29:50.709Z",
   "source": "spl.torneopal.net (Playwright)",
   "matches": [
     {
@@ -10,7 +10,11 @@
       "teamA": "KäPa",
       "teamB": "FC Haka",
       "venue": "Oulunkylän urheilupuisto",
-      "city": "Helsinki"
+      "city": "Helsinki",
+      "lat": 60.234015680055,
+      "lon": 24.966134123568,
+      "crestA": "https://cdn.torneopal.net/logo/palloliitto/13x.png",
+      "crestB": "https://cdn.torneopal.net/logo/palloliitto/525x.png"
     },
     {
       "date": "2026-09-26",
@@ -20,7 +24,11 @@
       "teamA": "IF Gnistan",
       "teamB": "Ilves",
       "venue": "Oulunkylän urheilupuisto",
-      "city": "Helsinki"
+      "city": "Helsinki",
+      "lat": 60.234015680055,
+      "lon": 24.966134123568,
+      "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
+      "crestB": "https://cdn.torneopal.net/logo/palloliitto/21x.png"
     },
     {
       "date": "2026-09-26",
@@ -30,7 +38,11 @@
       "teamA": "HPS",
       "teamB": "Åland United",
       "venue": "Paloheinä",
-      "city": "Helsinki"
+      "city": "Helsinki",
+      "lat": 60.247834262237,
+      "lon": 24.922114682298,
+      "crestA": "https://cdn.torneopal.net/logo/palloliitto/5x.png",
+      "crestB": "https://cdn.torneopal.net/logo/palloliitto/231x.png"
     },
     {
       "date": "2026-09-26",
@@ -40,7 +52,11 @@
       "teamA": "HJK Klubi 04",
       "teamB": "JäPS",
       "venue": "Töölön pallokenttä",
-      "city": "Helsinki"
+      "city": "Helsinki",
+      "lat": 60.185854953551,
+      "lon": 24.923453144872,
+      "crestA": "https://cdn.torneopal.net/logo/palloliitto/1x.png",
+      "crestB": "https://cdn.torneopal.net/logo/palloliitto/72x.png"
     }
   ]
 }
