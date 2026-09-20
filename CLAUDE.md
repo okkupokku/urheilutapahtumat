@@ -46,6 +46,16 @@ Tunnetut toimivat yhdistelmät (näkyvät myös koodissa):
 | Lentopallo | `lentopallo-api.torneopal.net` | `df8e84j9xtdz269euy3h` (sama kuin koris) |
 | Käsipallo | `hb-api.torneopal.net` | `pfqmz9z6ea43uqy2hzfxpcpxr4svqunn` |
 
+**Kaikkien category_id:iden listaus ilman live-dataa:** TorneoPal-alustalla on
+myös `GET .../taso/rest/getCategories?all_current=1` (sama Accept-header),
+joka palauttaa JOKAISEN kauden voimassa olevan sarjan/kilpailun tiedot
+(kentät mm. `category_id`, `category_name`, `category_group_name`,
+`sport_id`, `organiser_name`, `competition_name`) ilman että millään
+kategorialla tarvitsee olla ottelua juuri nyt. Tämä on paljon nopeampi tapa
+löytää oikeita category_id:itä kuin `getMatches`-päivien läpikäynti — käytä
+tätä ensin kun etsit uutta sarjaa. Esim. Palloliiton maajoukkuesarjat
+löytyivät suodattamalla `organiser_name === 'Maaottelut'`.
+
 Muita olemassa olevia mutta **avainta ei löydetty** -alidomeeneja (palauttavat
 `Invalid db` ilman oikeaa Accept-headeria, eli alusta on olemassa mutta
 token puuttuu): `bandy-api.torneopal.net`, `floorball-api.torneopal.net`,
@@ -60,8 +70,13 @@ kuin muut TorneoPal-lajit.
 tarkistamalla oikea live-data eri päiviltä — katso `KNOWN_SERIES` vakio
 [index.html](index.html):ssä, joka on tämän taulukon "source of truth"):
 - Jalkapallo: `VL`=Veikkausliiga, `M1L`=Ykkösliiga, `NL`=Naisten Kansallinen
-  Liiga (esiintyy usein sponsorinimellä esim. "Briotech Kansallinen Liiga"),
-  `UNL`=UEFA Nations League (Huuhkajat, miesten maajoukkue!)
+  Liiga (esiintyy usein sponsorinimellä esim. "Briotech Kansallinen Liiga").
+  A-maajoukkueet (vahvistettu `getCategories`-rajapinnasta): `UNL`/`WUNL`=
+  UEFA Nations League (Huuhkajat/Helmarit), `WCQ`/`WWCQ`=MM-karsinnat,
+  `ECQ`/`WECQ`=EM-karsinnat, `Miehet-A`/`Naiset-A`=A-maaottelut
+  (ystävyysottelut). Näiden lisäksi rajapinnassa on kymmeniä nuorten
+  maajoukkuesarjoja (`U21M`, `U21ECQ`, `U19M`, `U17M`, jne. — ks.
+  "Ideoita jatkoa varten") joita ei ole vielä lisätty.
 - Futsal: `FML`=Miesten Futsal-Liiga, `FNL`=Naisten Futsal-Liiga — **HUOM:**
   näiden `sport_id` on `"futsal"`, EI `"football"` — jos suodatat
   `sport_id`:n mukaan, muista sallia molemmat.
@@ -189,5 +204,16 @@ otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
   osoittautuu sisältävän vastaavan datan.
 - Mestis/Auroraliiga: harkitse paikallista cron-ajoa käyttäjän omalta
   koneelta jos IP-esto muuten estää.
-- Naisten maajoukkueet (Helmarit ym.) — ei vielä tutkittu löytyykö niille
-  vastaava `category_id` samasta Palloliitto-rajapinnasta kuin Huuhkajille.
+- ~~Naisten maajoukkueet (Helmarit ym.)~~ — löydetty ja lisätty (`WUNL`,
+  `WWCQ`, `WECQ`, `Naiset-A`), ks. yllä.
+- Nuorten maajoukkueet (jalkapallo): Palloliiton `getCategories`-haku
+  paljasti kymmeniä valmiita category_id:itä, esim. `U21M`/`U21ECQ`
+  (EM-karsinnat U21-miehet), `U19M`, `U17M`, `WU19M`, `WU17M` jne. Näillä on
+  oikeasti otteluita (esim. U21-EM-karsinnat 25.9.2026 Tampereella) mutta ei
+  vielä nähty PK-seudulla — voisi lisätä KNOWN_SERIES:iin ja
+  ALLOWED_CATEGORIES:iin samaan tapaan kuin A-maajoukkueet, jolloin ne
+  ilmestyvät automaattisesti kun ottelu osuu PK-alueelle.
+- Muille TorneoPal-lajeille (koripallo, käsipallo, lentopallo, salibandy)
+  kannattaa kokeilla samaa `getCategories?all_current=1`-tekniikkaa kuin
+  jalkapallolle ennen kuin `index.html`:n `PH-`-alkuisia paikanvaraaja-id:itä
+  yritetään arvata `getMatches`-päivien läpikäynnillä.

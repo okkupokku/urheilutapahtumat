@@ -1,5 +1,5 @@
 // Hakee Palloliiton pääkaupunkiseudun ottelut (jalkapallo, futsal, miesten
-// maajoukkue) seuraavalle DAYS_AHEAD-päivälle.
+// ja naisten A-maajoukkueet) seuraavalle DAYS_AHEAD-päivälle.
 //
 // Toimintaperiaate: Playwright avaa oikean Chromium-selaimen ja navigoi
 // ensin tulospalvelu.palloliitto.fi:hin, jotta seuraava fetch()-kutsu
@@ -17,7 +17,12 @@ const ORIGIN_PAGE = 'https://tulospalvelu.palloliitto.fi/';
 const ALLOWED_CATEGORIES = new Set([
   'VL', 'M1L', 'NL',   // Veikkausliiga, Ykkösliiga, naisten Kansallinen Liiga
   'FML', 'FNL',        // Miesten ja naisten Futsal-Liiga
-  'UNL',               // Miesten maajoukkue (Huuhkajat), UEFA Nations League
+  // A-maajoukkueet (Huuhkajat/Helmarit) — id:t vahvistettu suoraan
+  // spl.torneopal.net:n getCategories-rajapinnasta (all_current=1).
+  'UNL', 'WUNL',       // UEFA Nations League, miehet/naiset
+  'WCQ', 'WWCQ',       // MM-karsinnat, miehet/naiset
+  'ECQ', 'WECQ',       // EM-karsinnat, miehet/naiset
+  'Miehet-A', 'Naiset-A', // A-maaottelut (ystävyysottelut), miehet/naiset
 ]);
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
 const DAYS_AHEAD = 13; // tänään + 13 seuraavaa päivää (sama ikkuna kuin index.html:n "valitse päivämäärät")

@@ -373,10 +373,14 @@ function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 // sponsorinimi) heti kun sarjalla on ottelu haetulla aikavälillä.
 // "group" erottelee seurasarjat maajoukkuesarjoista tarkennetun haun
 // hierarkiassa (Laji → Seurasarjat/Maajoukkueet → Sukupuoli → Sarja).
-// Puuttuessaan oletus on 'seura' (ks. renderHierarchy). Maajoukkuesarjojen
-// id:t ovat toistaiseksi paikanvaraajia (PH-alkuiset) — kun oikea rajapinta
-// ja category_id löytyvät (ks. CLAUDE.md "Ideoita jatkoa varten"), korvaa
-// id oikealla arvolla samaan tapaan kuin UNL löydettiin.
+// Puuttuessaan oletus on 'seura' (ks. renderHierarchy). Jalkapallon
+// maajoukkue-id:t (WCQ, ECQ, Miehet-A, WUNL, WWCQ, WECQ, Naiset-A) on
+// vahvistettu suoraan spl.torneopal.net:n getCategories-rajapinnasta
+// (?all_current=1, kentät organiser_name==='Maaottelut') ja lisätty myös
+// scripts/fetch-jalkapallo.js:n ALLOWED_CATEGORIES-settiin. Muiden lajien
+// maajoukkue-id:t (PH-alkuiset) ovat yhä paikanvaraajia — kun oikea
+// rajapinta ja category_id löytyvät (ks. CLAUDE.md "Ideoita jatkoa
+// varten"), korvaa id oikealla arvolla samaan tapaan.
 // "level" ('paasarja'/'alempi') on vain seurasarjoilla — käytetään normihaun
 // SARJATASO-suodattimessa (ks. levelOf()). Maajoukkuesarjoilla ei ole
 // level-kenttää, joten ne näkyvät aina riippumatta Sarjataso-valinnasta.
@@ -386,13 +390,13 @@ const KNOWN_SERIES = {
     { id: 'M1L', gender: 'Miehet', name: 'Ykkösliiga', level: 'alempi' },
     { id: 'NL', gender: 'Naiset', name: 'Kansallinen Liiga', level: 'paasarja' },
     { id: 'UNL', gender: 'Miehet', name: 'UEFA Nations League Huuhkajat', group: 'maajoukkue' },
-    { id: 'PH-MMK-M', gender: 'Miehet', name: 'MM-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-EMK-M', gender: 'Miehet', name: 'EM-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-YO-M', gender: 'Miehet', name: 'Ystävyysottelut', group: 'maajoukkue' },
-    { id: 'PH-UNL-N', gender: 'Naiset', name: 'UEFA Nations League Helmarit', group: 'maajoukkue' },
-    { id: 'PH-MMK-N', gender: 'Naiset', name: 'MM-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-EMK-N', gender: 'Naiset', name: 'EM-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-YO-N', gender: 'Naiset', name: 'Ystävyysottelut', group: 'maajoukkue' },
+    { id: 'WCQ', gender: 'Miehet', name: 'MM-karsinnat Huuhkajat', group: 'maajoukkue' },
+    { id: 'ECQ', gender: 'Miehet', name: 'EM-karsinnat Huuhkajat', group: 'maajoukkue' },
+    { id: 'Miehet-A', gender: 'Miehet', name: 'A-maaottelut Huuhkajat', group: 'maajoukkue' },
+    { id: 'WUNL', gender: 'Naiset', name: 'UEFA Nations League Helmarit', group: 'maajoukkue' },
+    { id: 'WWCQ', gender: 'Naiset', name: 'MM-karsinnat Helmarit', group: 'maajoukkue' },
+    { id: 'WECQ', gender: 'Naiset', name: 'EM-karsinnat Helmarit', group: 'maajoukkue' },
+    { id: 'Naiset-A', gender: 'Naiset', name: 'A-maaottelut Helmarit', group: 'maajoukkue' },
   ],
   'Futsal': [
     { id: 'FML', gender: 'Miehet', name: 'Miesten Futsal-Liiga', level: 'paasarja' },
