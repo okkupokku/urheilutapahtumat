@@ -286,7 +286,8 @@
    ============================================================ */
 
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
-const DAYS_AHEAD = 13; // tänään + N seuraavaa päivää (rajaa myös "valitse päivämäärät" -valitsimen ylärajan)
+const DAYS_AHEAD = 13; // tänään + N seuraavaa päivää — kuinka pitkälle dataa haetaan, rajaa myös "valitse päivämäärät" -valitsimen ylärajan
+const WEEK_PRESET_DAYS = 6; // "Seuraavat 7 päivää" -pikavalinnan pituus (tänään + 6)
 const REQUEST_DELAY_MS = 150; // pieni tauko peräkkäisten kutsujen välissä per lähde
 
 // Pääkaupunkiseudun kiinteä oletusnäkymä kartalle — ei muutu hakutulosten mukaan.
@@ -636,7 +637,7 @@ function addDays(dateStr, n) {
 function passesDayFilter(dateStr) {
   const today = todayISO(0);
   if (state.day === 'today') return dateStr === today;
-  if (state.day === 'week') return dateStr >= today && dateStr <= addDays(today, DAYS_AHEAD);
+  if (state.day === 'week') return dateStr >= today && dateStr <= addDays(today, WEEK_PRESET_DAYS);
   if (state.day === 'custom') {
     const from = state.customFrom || today;
     const to = state.customTo || addDays(today, DAYS_AHEAD);
@@ -647,7 +648,7 @@ function passesDayFilter(dateStr) {
 
 function currentDayRangeLabel() {
   if (state.day === 'today') return `📅 Tänään · ${formatShortDate(todayISO(0))}`;
-  if (state.day === 'week') return `📅 Seuraavat ${DAYS_AHEAD + 1} pv · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(DAYS_AHEAD))}`;
+  if (state.day === 'week') return `📅 Seuraavat ${WEEK_PRESET_DAYS + 1} pv · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(WEEK_PRESET_DAYS))}`;
   if (state.day === 'custom') return `📅 ${formatShortDate(state.customFrom || todayISO(0))}–${formatShortDate(state.customTo || todayISO(DAYS_AHEAD))}`;
   return '';
 }
@@ -734,7 +735,7 @@ function renderFilters() {
   if (!dayEl.dataset.built) {
     const days = [
       { key: 'today', label: 'Tänään' },
-      { key: 'week', label: `Seuraavat ${DAYS_AHEAD + 1} päivää` },
+      { key: 'week', label: `Seuraavat ${WEEK_PRESET_DAYS + 1} päivää` },
       { key: 'custom', label: 'Valitse päivämäärät' },
     ];
     days.forEach(({ key, label }) => {
