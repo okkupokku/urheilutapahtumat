@@ -373,8 +373,14 @@
    ============================================================ */
 
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
-const DAYS_AHEAD = 13; // tänään + N seuraavaa päivää - kuinka pitkälle dataa haetaan, rajaa myös "valitse päivämäärät" -valitsimen ylärajan
+// DAYS_AHEAD on nyt "Kaikki saatavilla olevat ottelut" -valinnan ja
+// "Valitse päivämäärät" -valitsimen yläraja (n. vuosi eteenpäin), EI enää
+// datanhaun rajoitin - kaikki lähteet hakevat nykyään koko kauden
+// (ks. fetchTorneoPalCategories/fetchLiigaRange), ja asiakas suodattaa
+// näytettävän aikavälin AJANKOHTA-valinnan mukaan.
+const DAYS_AHEAD = 370;
 const WEEK_PRESET_DAYS = 6; // "Seuraavat 7 päivää" -pikavalinnan pituus (tänään + 6)
+const MONTH_PRESET_DAYS = 29; // "Seuraavat 30 päivää" -pikavalinnan pituus (tänään + 29)
 const REQUEST_DELAY_MS = 150; // pieni tauko peräkkäisten kutsujen välissä per lähde
 
 // Pääkaupunkiseudun kiinteä oletusnäkymä kartalle - ei muutu hakutulosten mukaan.
@@ -540,24 +546,37 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 9000) {
 }
 
 /* --- TorneoPal-pohjaiset lähteet (jalkapallo, koripallo, lentopallo, käsipallo) --- */
-/* Haetaan päivä kerrallaan getMatches?date=YYYY-MM-DD kunkin liiton omasta domainista,
-   suodatetaan jälkikäteen category_id:n ja alueen mukaan. */
+/* getMatches?date=YYYY-MM-DD palauttaa vain yhden päivän - päiväkohtainen
+   silmukka olisi hidas ja tarpeeton kun halutaan koko kausi ("kaikki
+   saatavilla olevat ottelut"). Sen sijaan getMatches?category_id=X&
+   competition_id=Y (ilman date-parametria) palauttaa KOKO KAUDEN kyseiselle
+   sarjalle yhdellä kutsulla - competition_id vaihtelee kaudittain, joten se
+   selvitetään aina ajon alussa getCategories?all_current=1-hausta (ks.
+   CLAUDE.md "getCategories"). Näin per sarja tarvitaan vain yksi kutsu koko
+   kaudelle sen sijaan että per päivä tehtäisiin kutsu koko maan datalle. */
 
-async function fetchTorneoPalDay(baseUrl, acceptToken, dateStr) {
-  const url = `${baseUrl}/taso/rest/getMatches?date=${dateStr}`;
+async function fetchTorneoPalCategories(baseUrl, acceptToken, allowedCategoryIds) {
   const headers = acceptToken ? { 'Accept': acceptToken } : {};
-  const res = await fetchWithTimeout(url, { headers });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const data = await res.json();
-  return data.matches || [];
-}
+  const catRes = await fetchWithTimeout(`${baseUrl}/taso/rest/getCategories?all_current=1`, { headers });
+  if (!catRes.ok) throw new Error('HTTP ' + catRes.status);
+  const catData = await catRes.json();
+  const pairs = new Map(); // "category_id|competition_id" -> {category_id, competition_id}
+  (catData.categories || []).forEach(c => {
+    if (allowedCategoryIds.has(c.category_id) && c.competition_id) {
+      pairs.set(`${c.category_id}|${c.competition_id}`, { category_id: c.category_id, competition_id: c.competition_id });
+    }
+  });
 
-async function fetchTorneoPalRange(baseUrl, acceptToken) {
   const all = [];
-  for (let i = 0; i <= DAYS_AHEAD; i++) {
-    const dateStr = todayISO(i);
-    const dayMatches = await fetchTorneoPalDay(baseUrl, acceptToken, dateStr);
-    all.push(...dayMatches);
+  for (const { category_id, competition_id } of pairs.values()) {
+    const url = `${baseUrl}/taso/rest/getMatches?category_id=${encodeURIComponent(category_id)}&competition_id=${encodeURIComponent(competition_id)}`;
+    try {
+      const res = await fetchWithTimeout(url, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        all.push(...(data.matches || []));
+      }
+    } catch (e) { /* yksi epäonnistunut sarja ei saa kaataa koko hakua */ }
     await sleep(REQUEST_DELAY_MS);
   }
   return all;
@@ -583,24 +602,14 @@ function normalizeTorneoPal(m, sportLabel) {
 }
 
 /* --- Liiga.fi (jääkiekko, Liiga) --- */
-
-async function fetchLiigaDay(dateStr) {
-  const url = `https://liiga.fi/api/v2/games?tournament=runkosarja&date=${dateStr}`;
-  const res = await fetchWithTimeout(url);
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const data = await res.json();
-  return data.games || [];
-}
+/* date-parametrin jättäminen pois palauttaa KOKO KAUDEN (syyskuu-maaliskuu)
+   yhdellä kutsulla - ei tarvita päiväkohtaista silmukkaa. */
 
 async function fetchLiigaRange() {
-  const all = [];
-  for (let i = 0; i <= DAYS_AHEAD; i++) {
-    const dateStr = todayISO(i);
-    const dayGames = await fetchLiigaDay(dateStr);
-    all.push(...dayGames);
-    await sleep(REQUEST_DELAY_MS);
-  }
-  return all;
+  const url = 'https://liiga.fi/api/v2/games?tournament=runkosarja';
+  const res = await fetchWithTimeout(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
 }
 
 function normalizeLiiga(g) {
@@ -646,13 +655,13 @@ const SOURCES = [
     label: 'Koripallo (Korisliitto)',
     detail: 'koripallo-api.torneopal.net - Korisliiga, Naisten Korisliiga, Suomen cup, maajoukkueet',
     run: async () => {
-      const raw = await fetchTorneoPalRange('https://koripallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h');
       // 4/1/15 = Korisliiga, Naisten Korisliiga, Miesten Suomen cup.
       // 44116/45052 = miesten/naisten maajoukkue ("Kansainväliset") -
       // id:t vahvistettu getCategories?all_current=1-hausta.
       const allow = new Set(['4', '1', '15', '44116', '45052']);
+      const raw = await fetchTorneoPalCategories('https://koripallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h', allow);
       return raw
-        .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
+        .filter(m => isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Koripallo'));
     }
   },
@@ -661,15 +670,15 @@ const SOURCES = [
     label: 'Lentopallo (Lentopalloliitto)',
     detail: 'lentopallo-api.torneopal.net - ML, NL, maajoukkueet, eurooppalaiset seuracupit',
     run: async () => {
-      const raw = await fetchTorneoPalRange('https://lentopallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h');
       // ML/NL = Mestaruusliiga (M/N). EM/EM-Karsinta/GLM/ELM/Maaottelu/EL/Harj
       // = maajoukkueen kansainväliset ottelut. CLM/CHL/CEVC/CEVcup/CHLW =
       // eurooppalaiset SEURAcupit (Mestareiden liiga/Challenge liiga/CEV Cup)
       // - klubijoukkueiden, ei maajoukkueen, otteluita. Kaikki id:t
       // vahvistettu getCategories-hausta.
       const allow = new Set(['ML', 'NL', 'EM', 'EM-Karsinta', 'GLM', 'ELM', 'Maaottelu', 'EL', 'Harj', 'CLM', 'CHL', 'CEVC', 'CEVcup', 'CHLW']);
+      const raw = await fetchTorneoPalCategories('https://lentopallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h', allow);
       return raw
-        .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
+        .filter(m => isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Lentopallo'));
     }
   },
@@ -678,15 +687,15 @@ const SOURCES = [
     label: 'Käsipallo (Käsipalloliitto)',
     detail: 'hb-api.torneopal.net - Aktialiiga (M/N), Suomen cup, maajoukkueet, EHF European Cup',
     run: async () => {
-      const raw = await fetchTorneoPalRange('https://hb-api.torneopal.net', 'json/pfqmz9z6ea43uqy2hzfxpcpxr4svqunn');
       // 'Maa' = kaikki maajoukkueottelut (Käsipalloliitolla ei ole erillistä
       // id:tä miehille/naisille tässä kategoriassa - sukupuoli tulee
       // kunkin ottelun omasta category_group_name-kentästä). 'EC_M' =
       // EHF European Cup (miesten seuracup, ei maajoukkue) - naisten
       // vastaavaa ei löytynyt getCategories-hausta.
       const allow = new Set(['SM-liiga', 'NSM', 'MSC', 'NSC', 'Maa', 'EC_M']);
+      const raw = await fetchTorneoPalCategories('https://hb-api.torneopal.net', 'json/pfqmz9z6ea43uqy2hzfxpcpxr4svqunn', allow);
       return raw
-        .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
+        .filter(m => isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Käsipallo'));
     }
   },
@@ -914,6 +923,8 @@ function passesDayFilter(dateStr) {
   const today = todayISO(0);
   if (state.day === 'today') return dateStr === today;
   if (state.day === 'week') return dateStr >= today && dateStr <= addDays(today, WEEK_PRESET_DAYS);
+  if (state.day === 'month') return dateStr >= today && dateStr <= addDays(today, MONTH_PRESET_DAYS);
+  if (state.day === 'all') return dateStr >= today && dateStr <= addDays(today, DAYS_AHEAD);
   if (state.day === 'custom') {
     const from = state.customFrom || today;
     const to = state.customTo || addDays(today, DAYS_AHEAD);
@@ -925,6 +936,8 @@ function passesDayFilter(dateStr) {
 function currentDayRangeLabel() {
   if (state.day === 'today') return `📅 Tänään · ${formatShortDate(todayISO(0))}`;
   if (state.day === 'week') return `📅 Seuraavat ${WEEK_PRESET_DAYS + 1} pv · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(WEEK_PRESET_DAYS))}`;
+  if (state.day === 'month') return `📅 Seuraavat ${MONTH_PRESET_DAYS + 1} pv · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(MONTH_PRESET_DAYS))}`;
+  if (state.day === 'all') return `📅 Kaikki saatavilla olevat · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(DAYS_AHEAD))}`;
   if (state.day === 'custom') return `📅 ${formatShortDate(state.customFrom || todayISO(0))}–${formatShortDate(state.customTo || todayISO(DAYS_AHEAD))}`;
   return '';
 }
@@ -1045,6 +1058,8 @@ function renderFilters() {
     const days = [
       { key: 'today', label: 'Tänään' },
       { key: 'week', label: `Seuraavat ${WEEK_PRESET_DAYS + 1} päivää` },
+      { key: 'month', label: `Seuraavat ${MONTH_PRESET_DAYS + 1} päivää` },
+      { key: 'all', label: 'Kaikki saatavilla olevat' },
       { key: 'custom', label: 'Valitse päivämäärät' },
     ];
     days.forEach(({ key, label }) => {

@@ -1,11 +1,19 @@
 // Hakee Palloliiton pääkaupunkiseudun ottelut (jalkapallo, futsal, miesten
-// ja naisten A-maajoukkueet) seuraavalle DAYS_AHEAD-päivälle.
+// ja naisten A-maajoukkueet) koko kaudelta ("kaikki saatavilla olevat
+// ottelut" - asiakas suodattaa näytettävän aikavälin itse).
 //
 // Toimintaperiaate: Playwright avaa oikean Chromium-selaimen ja navigoi
 // ensin tulospalvelu.palloliitto.fi:hin, jotta seuraava fetch()-kutsu
 // tehdään sivun omasta JavaScript-kontekstista (sama origin kuin mitä
 // rajapinta odottaa) - sama tekniikka jolla data saatiin toimimaan
 // manuaalisessa testauksessa selaimen konsolista.
+//
+// getMatches?date=YYYY-MM-DD palauttaa vain yhden päivän koko maasta.
+// getMatches?category_id=X&competition_id=Y (ilman date-parametria)
+// palauttaa sen sijaan KOKO KAUDEN kyseiselle sarjalle yhdellä kutsulla -
+// paljon tehokkaampi kun halutaan enemmän kuin muutama päivä eteenpäin.
+// competition_id vaihtelee kaudittain, joten se selvitetään aina ajon
+// alussa getCategories?all_current=1-hausta (ks. CLAUDE.md "getCategories").
 
 const { chromium } = require('playwright');
 const fs = require('fs');
@@ -25,7 +33,6 @@ const ALLOWED_CATEGORIES = new Set([
   'Miehet-A', 'Naiset-A', // A-maaottelut (ystävyysottelut), miehet/naiset
 ]);
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
-const DAYS_AHEAD = 13; // tänään + 13 seuraavaa päivää (sama ikkuna kuin index.html:n "valitse päivämäärät")
 const REQUEST_DELAY_MS = 200;
 
 function todayISO(offsetDays = 0) {
@@ -61,15 +68,23 @@ function normalize(m) {
   };
 }
 
-async function fetchDay(page, dateStr) {
-  return await page.evaluate(async ({ baseUrl, token, dateStr }) => {
-    const res = await fetch(`${baseUrl}/taso/rest/getMatches?date=${dateStr}`, {
-      headers: { Accept: token },
-    });
+async function fetchCategories(page) {
+  return await page.evaluate(async ({ baseUrl, token }) => {
+    const res = await fetch(`${baseUrl}/taso/rest/getCategories?all_current=1`, { headers: { Accept: token } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    return data.categories || [];
+  }, { baseUrl: BASE_URL, token: ACCEPT_TOKEN });
+}
+
+async function fetchCategoryMatches(page, categoryId, competitionId) {
+  return await page.evaluate(async ({ baseUrl, token, categoryId, competitionId }) => {
+    const url = `${baseUrl}/taso/rest/getMatches?category_id=${encodeURIComponent(categoryId)}&competition_id=${encodeURIComponent(competitionId)}`;
+    const res = await fetch(url, { headers: { Accept: token } });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     return data.matches || [];
-  }, { baseUrl: BASE_URL, token: ACCEPT_TOKEN, dateStr });
+  }, { baseUrl: BASE_URL, token: ACCEPT_TOKEN, categoryId, competitionId });
 }
 
 (async () => {
@@ -79,19 +94,28 @@ async function fetchDay(page, dateStr) {
   console.log('Navigoidaan origin-sivulle:', ORIGIN_PAGE);
   await page.goto(ORIGIN_PAGE, { waitUntil: 'domcontentloaded' });
 
+  const today = todayISO(0);
   const allMatches = [];
 
-  for (let i = 0; i <= DAYS_AHEAD; i++) {
-    const dateStr = todayISO(i);
+  const categories = await fetchCategories(page);
+  const pairs = new Map(); // "category_id|competition_id" -> {category_id, competition_id}
+  categories.forEach(c => {
+    if (ALLOWED_CATEGORIES.has(c.category_id) && c.competition_id) {
+      pairs.set(`${c.category_id}|${c.competition_id}`, { category_id: c.category_id, competition_id: c.competition_id });
+    }
+  });
+  console.log(`Löytyi ${pairs.size} (category_id, competition_id) -paria ${ALLOWED_CATEGORIES.size} sallitusta kategoriasta.`);
+
+  for (const { category_id, competition_id } of pairs.values()) {
     try {
-      const raw = await fetchDay(page, dateStr);
+      const raw = await fetchCategoryMatches(page, category_id, competition_id);
       const filtered = raw
-        .filter(m => (m.sport_id === 'football' || m.sport_id === 'futsal') && ALLOWED_CATEGORIES.has(m.category_id) && isPKArea(m))
+        .filter(m => m.date >= today && (m.sport_id === 'football' || m.sport_id === 'futsal') && isPKArea(m))
         .map(normalize);
       allMatches.push(...filtered);
-      console.log(`${dateStr}: ${raw.length} ottelua haettu, ${filtered.length} täsmäsi suodattimiin`);
+      console.log(`${category_id} (${competition_id}): ${raw.length} ottelua kaudella, ${filtered.length} täsmäsi PK-alueelle`);
     } catch (e) {
-      console.error(`${dateStr}: virhe - ${e.message}`);
+      console.error(`${category_id} (${competition_id}): virhe - ${e.message}`);
     }
     await page.waitForTimeout(REQUEST_DELAY_MS);
   }

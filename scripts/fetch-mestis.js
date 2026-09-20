@@ -27,8 +27,6 @@ const SCHEDULE_URL = 'https://mestis.fi/fi/ottelut/2026-2027/runkosarja/';
 const PK_TEAM = 'K-Vantaa';
 const PK_VENUE = { city: 'Vantaa', lat: 60.2710, lon: 24.8360 };
 
-const DAYS_AHEAD = 13; // sama ikkuna kuin muissa lähteissä
-
 function todayISO(offsetDays = 0) {
   const d = new Date();
   d.setDate(d.getDate() + offsetDays);
@@ -64,7 +62,6 @@ function extractMatches(html) {
   const page = await browser.newPage();
 
   const today = todayISO(0);
-  const maxDate = todayISO(DAYS_AHEAD);
   const allMatches = [];
 
   try {
@@ -74,7 +71,7 @@ function extractMatches(html) {
     let matched = 0;
     for (const m of matches) {
       if (!m.id || !m.home || !m.away) continue;
-      if (m.date < today || m.date > maxDate) continue;
+      if (m.date < today) continue; // koko loppukausi mukaan, ei enää yläikkunaa
       // Vain K-Vantaan KOTIOTTELUT ovat PK-seudulla - vierasottelut
       // pelataan muiden joukkueiden kotikaupungeissa (Kokkola, Iisalmi,
       // Joensuu, Imatra, Jyväskylä, Kemi/Tornio, Rovaniemi, Turku).

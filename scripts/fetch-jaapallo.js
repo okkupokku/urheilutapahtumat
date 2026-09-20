@@ -42,8 +42,6 @@ const PK_VENUES = [
   { match: 'Oulunkylä tj', city: 'Helsinki', lat: 60.2185, lon: 24.9503 },
 ];
 
-const DAYS_AHEAD = 13; // sama ikkuna kuin muissa lähteissä
-
 function todayISO(offsetDays = 0) {
   const d = new Date();
   d.setDate(d.getDate() + offsetDays);
@@ -117,7 +115,6 @@ function extractMatches(html) {
   const page = await browser.newPage();
 
   const today = todayISO(0);
-  const maxDate = todayISO(DAYS_AHEAD);
   const seen = new Set(); // dedup-avain: ottelunumero
   const allMatches = [];
 
@@ -131,7 +128,7 @@ function extractMatches(html) {
       for (const m of matches) {
         if (!m.pvm || !m.nro) continue;
         const dateStr = parseFinDate(m.pvm);
-        if (dateStr < today || dateStr > maxDate) continue;
+        if (dateStr < today) continue; // koko loppukausi mukaan, ei enää yläikkunaa
         const pkVenue = findPKVenue(m.kentta || '');
         if (!pkVenue) continue;
         if (seen.has(m.nro)) continue;

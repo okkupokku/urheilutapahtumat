@@ -1,5 +1,6 @@
-// Hakee F-liigan (salibandy) pääkaupunkiseudun ottelut seuraavalle
-// DAYS_AHEAD-päivälle tunnettujen PK-seudun joukkueiden fliiga.com-sivuilta.
+// Hakee F-liigan (salibandy) pääkaupunkiseudun ottelut koko loppukaudelta
+// tunnettujen PK-seudun joukkueiden fliiga.com-sivuilta (asiakas suodattaa
+// näytettävän aikavälin itse, ks. index.html:n AJANKOHTA-valinnat).
 //
 // Toimintaperiaate: fliiga.com ei tarjoa julkista JSON-rajapintaa (toisin
 // kuin Palloliitto/Korisliitto/Lentopalloliitto/Käsipalloliitto, joilla on
@@ -41,7 +42,6 @@ const PK_VENUES = [
   { prefix: 'Aurora', city: 'Helsinki', lat: 60.2030, lon: 24.9250 },
 ];
 
-const DAYS_AHEAD = 13; // sama ikkuna kuin muissa lähteissä
 const REQUEST_DELAY_MS = 500;
 
 function todayISO(offsetDays = 0) {
@@ -86,7 +86,6 @@ function extractMatches(html) {
   const page = await browser.newPage();
 
   const today = todayISO(0);
-  const maxDate = todayISO(DAYS_AHEAD);
   const seen = new Set(); // dedup-avain: gameday+kotijoukkue+vierasjoukkue
   const allMatches = [];
 
@@ -100,7 +99,7 @@ function extractMatches(html) {
       for (const m of matches) {
         if (!m.venue || !m.gameday) continue;
         const dateStr = new Date(m.gameday * 1000).toISOString().slice(0, 10);
-        if (dateStr < today || dateStr > maxDate) continue;
+        if (dateStr < today) continue; // koko loppukausi mukaan, ei enää yläikkunaa
         const pkVenue = findPKVenue(m.venue);
         if (!pkVenue) continue;
         const key = `${m.gameday}|${m.homeClub}|${m.awayClub}`;

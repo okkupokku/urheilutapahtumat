@@ -65,6 +65,26 @@ löytää oikeita category_id:itä kuin `getMatches`-päivien läpikäynti - kä
 tätä ensin kun etsit uutta sarjaa. Esim. Palloliiton maajoukkuesarjat
 löytyivät suodattamalla `organiser_name === 'Maaottelut'`.
 
+**Koko kauden haku yhdellä kutsulla (2026-09-20, tärkeä löytö):**
+`getMatches?date=YYYY-MM-DD` palauttaa vain yhden päivän dataa koko maasta,
+mutta `getMatches?category_id=X&competition_id=Y` (ilman date-parametria
+lainkaan) palauttaa KOKO KAUDEN kyseiselle sarjalle yhdellä kutsulla.
+`competition_id` löytyy kutakin `category_id`:tä vastaavasta
+`getCategories?all_current=1`-tietueesta (kenttä `competition_id`, esim.
+Veikkausliigalla `spljp26` kaudella 2026, Palloliiton maajoukkueilla
+`maajp2026`). Ilman category_id/competition_id-paria date_start/date_end-
+parametrit palauttavat virheen `"Not enough limits"` - rajapinta vaatii
+jomman kumman rajauksen. Tämä tekniikka korvasi kaikkialla aiemman
+päiväkohtaisen silmukan (`fetchTorneoPalCategories()` index.html:ssä,
+sama periaate `scripts/fetch-jalkapallo.js`:ssä) - paljon vähemmän
+pyyntöjä (yksi per sarja koko kaudelle) eikä siis myöskään yhtä altis
+Cloudflaren pyyntötahdin rajoitukselle (ks. sudenkuoppa alla).
+
+Sama pätee **Liiga.fi:hin**: `date`-parametrin jättäminen kokonaan pois
+(`https://liiga.fi/api/v2/games?tournament=runkosarja`) palauttaa koko
+kauden (syyskuu-maaliskuu) yhtenä JSON-taulukkona, ei `{games:[...]}`-
+kääreessä kuten päiväkohtainen haku.
+
 Muita olemassa olevia mutta **avainta ei löydetty** -alidomeeneja (palauttavat
 `Invalid db` ilman oikeaa Accept-headeria, eli alusta on olemassa mutta
 token puuttuu): `bandy-api.torneopal.net`, `floorball-api.torneopal.net`,
@@ -202,9 +222,9 @@ Aika todennäköisesti tarkentuu lähempänä ottelupäivää, mutta tätä ei o
 vielä nähty käytännössä (kausi ei ole käynnissä).
 
 Katso [scripts/fetch-jaapallo.js](scripts/fetch-jaapallo.js) täydelle
-purkulogiikalle. Sama `DAYS_AHEAD = 13` -ikkuna kuin muillakin lähteillä,
-joten data/jaapallo.json on tyhjä syyskuussa (kausi alkaa marraskuussa) ja
-täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä.
+purkulogiikalle. Skripti tallentaa koko loppukauden PK-seudun ottelut (ei
+enää päiväikkunaa, ks. "AJANKOHTA-suodattimen laajennus 2026-09-20" alla) -
+asiakas suodattaa näytettävän aikavälin AJANKOHTA-valinnan mukaan.
 
 ### Jääkiekko - Mestis - mestis.fi
 Leijonien virallinen tulospalvelu (tulospalvelu.leijonat.fi) on
@@ -300,6 +320,15 @@ infrarajoitukset".
   juuressa + selain - ei vaadi Node/npm:ää paikallisella koneella (niitä ei
   ollut asennettuna kehityksen aikana, joten Playwright-skriptit on aina
   testattu vasta oikeasti GitHub Actionsissa, ei paikallisesti).
+- **AJANKOHTA-suodattimen laajennus (2026-09-20):** normihaun AJANKOHTA on
+  nyt Tänään / Seuraavat 7 päivää / Seuraavat 30 päivää / Kaikki saatavilla
+  olevat / Valitse päivämäärät. Tämän mahdollisti yllä kuvattu koko kauden
+  yhden kutsun haku - kaikki lähteet (myös scripts/fetch-*.js-skriptit)
+  hakevat nyt koko kauden dataa eivätkä enää rajaa mitään DAYS_AHEAD-tyyppisellä
+  ikkunalla haku- tai tallennusvaiheessa. `DAYS_AHEAD`-vakio
+  [index.html](index.html):ssä tarkoittaa nykyään VAIN "Kaikki saatavilla
+  olevat" -valinnan ja "Valitse päivämäärät" -valitsimen ylärajaa (370 pv),
+  ei enää datanhaun rajoitinta - älä sekoita näitä jos muokkaat sitä.
 
 ## Ideoita jatkoa varten
 
