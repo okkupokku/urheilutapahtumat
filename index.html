@@ -107,6 +107,7 @@
   .sport-block { padding: 0.6rem 0 0.7rem; border-top: 1px solid var(--divider); }
   .sport-block:first-child { border-top: none; padding-top: 0.1rem; }
   .sport-block-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+  .sport-block-empty { color: var(--muted); font-size: 0.8rem; padding-left: 0.5rem; font-style: italic; }
   .gender-block { display: flex; align-items: flex-start; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.4rem; padding-left: 0.5rem; }
   .gender-block:last-child { margin-bottom: 0; }
   .gender-block .chip.gender-chip { flex-shrink: 0; }
@@ -702,7 +703,7 @@ function getFilteredMatches() {
 function renderFilters() {
   const sportEl = document.getElementById('sport-filters');
   sportEl.querySelectorAll('.chip').forEach(c => c.remove());
-  const sports = [...new Set(ALL_MATCHES.map(m => m.sport))].sort();
+  const sports = Object.keys(SPORT_META).filter(s => s !== '_default').sort();
   sports.forEach(sport => {
     if (!state.sports.has(sport)) state.sports.add(sport);
     const btn = document.createElement('button');
@@ -785,13 +786,23 @@ function renderHierarchy() {
     genders.get(m.genderGroup).add(m.category);
   });
 
-  [...bySport.keys()].sort().forEach(sport => {
+  const knownSports = Object.keys(SPORT_META).filter(s => s !== '_default').sort();
+  knownSports.forEach(sport => {
     const block = document.createElement('div');
     block.className = 'sport-block';
     const title = document.createElement('div');
     title.className = 'sport-block-title';
     title.textContent = `${sportMeta(sport).icon} ${sport}`;
     block.appendChild(title);
+
+    if (!bySport.has(sport)) {
+      const empty = document.createElement('div');
+      empty.className = 'sport-block-empty';
+      empty.textContent = 'Ei otteluita juuri nyt haetulla aikavälillä.';
+      block.appendChild(empty);
+      root.appendChild(block);
+      return;
+    }
 
     [...bySport.get(sport).keys()].sort().forEach(gender => {
       if (!state.genders.has(gender)) state.genders.add(gender);
