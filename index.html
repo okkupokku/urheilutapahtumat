@@ -343,16 +343,17 @@
         <li><strong>Jalkapallo, futsal ja maajoukkueet (Huuhkajat/Helmarit):</strong> Palloliiton rajapinta estää suorat selainkutsut (CORS), joten data haetaan taustaprosessilla (Playwright-selainautomaatio) GitHub Actionsissa 4 tunnin välein ja tallennetaan tähän samaan repoon.</li>
         <li><strong>Salibandy (F-liiga):</strong> fliiga.com ei tarjoa julkista rajapintaa lainkaan. Mukana ovat vain käsin tunnistetut pääkaupunkiseudun joukkueet (Oilers, Westend Indians, Hawks, EräViikingit, PSS) - niiden koko kauden ottelut on upotettu joukkuesivujen omaan HTML:ään, ja taustaprosessi purkaa ne sieltä samalla 4 tunnin syklillä.</li>
         <li><strong>Jääpallo (Bandyliiga):</strong> myöskään finbandy.torneopal.fi ei tarjoa rajapintaa, mutta pääkaupunkiseudun seurojen (HIFK, Botnia, Vesta) omat ottelusivut ovat palvelinrenderöityä HTML:ää, joka puretaan samalla taustaprosessitekniikalla kuin salibandy.</li>
+        <li><strong>Jääkiekko (Mestis):</strong> Leijonien virallinen tulospalvelu estää GitHub Actionsin, mutta mestis.fi on avoin peilipalvelu samalle sarjalle. Mukana on vain K-Vantaa (Kiekko-Vantaa), ainoa PK-seudun Mestis-joukkue.</li>
       </ul>
 
       <h4>Kartta ja sijainti</h4>
-      <p>Kartta käyttää avainetonta MapLibre GL + OpenFreeMap -yhdistelmää. Ottelupaikkojen koordinaatit tulevat suoraan rajapinnoista lukuun ottamatta salibandyä ja jääpalloa, joiden kotihallien koordinaatit on haettu käsin (likiarvoja). Jos sallit sijaintisi käytön, etäisyys lasketaan suoraan linjaa pitkin - ei oikeaa reititystä.</p>
+      <p>Kartta käyttää avainetonta MapLibre GL + OpenFreeMap -yhdistelmää. Ottelupaikkojen koordinaatit tulevat suoraan rajapinnoista lukuun ottamatta salibandyä, jääpalloa ja Mestistä, joiden kotihallien koordinaatit on haettu käsin (likiarvoja). Jos sallit sijaintisi käytön, etäisyys lasketaan suoraan linjaa pitkin - ei oikeaa reititystä.</p>
 
       <h4>Tunnetut rajoitukset</h4>
       <ul>
         <li>Mestis/Auroraliiga, amerikkalainen jalkapallo sekä jääkiekon ja salibandyn maajoukkueet eivät vielä ole mukana - syyt löytyvät "Ei vielä mukana" -osiosta.</li>
         <li>Osa lajiliittojen rajapinnoista saattaa satunnaisesti estää suoran selainkutsun (CORS) - näkyy yllä "Datalähteiden tila" -paneelissa, sivu ei kaadu.</li>
-        <li>Kaikki näytetyt sarjat on käsin valittu (ylimmät sarjatasot) - nuorisosarjat ja alemmat divisioonat on jätetty pois selkeyden vuoksi.</li>
+        <li>Kaikki näytetyt sarjat on käsin valittu - pääasiassa ylimmät sarjatasot, muutamalla lajilla mukana myös yksi alempi taso (esim. jalkapallon Ykkösliiga, jääkiekon Mestis). Nuorisosarjat on kuitenkin jätetty pois selkeyden vuoksi.</li>
       </ul>
 
       <h4>Lähdekoodi</h4>
@@ -437,6 +438,7 @@ const KNOWN_SERIES = {
   ],
   'Jääkiekko': [
     { id: 'Liiga', gender: 'Miehet', name: 'Liiga', level: 'paasarja' },
+    { id: 'Mestis', gender: 'Miehet', name: 'Mestis', level: 'alempi' },
     { id: 'PH-MM-M', gender: 'Miehet', name: 'MM-kisat', group: 'maajoukkue' },
     { id: 'PH-EHT-M', gender: 'Miehet', name: 'Euro Hockey Tour', group: 'maajoukkue' },
     { id: 'PH-MM-N', gender: 'Naiset', name: 'MM-kisat', group: 'maajoukkue' },
@@ -721,11 +723,22 @@ const SOURCES = [
       return data.matches || [];
     }
   },
+  {
+    id: 'mestis',
+    label: 'Jääkiekko - Mestis',
+    detail: 'data/mestis.json - K-Vantaa (taustaprosessi)',
+    run: async () => {
+      const res = await fetchWithTimeout(`data/mestis.json?t=${Date.now()}`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      return data.matches || [];
+    }
+  },
 ];
 
 const PLACEHOLDER_SPORTS = [
   { label: 'Jääkiekko ja salibandy - maajoukkueet', note: 'Jalkapallon, koripallon, lentopallon ja käsipallon maajoukkueiden ottelut ovat jo mukana (ks. Tarkennettu haku → Maajoukkueet). Jääkiekon (Leijonat) ja salibandyn maajoukkueille ei ole löydetty toimivaa rajapintaa.' },
-  { label: 'Jääkiekko - Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) - vaatisi ajon toisesta verkosta.' },
+  { label: 'Jääkiekko - Auroraliiga (naiset)', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) - vaatisi ajon toisesta verkosta. Miesten Mestis on jo mukana (ks. yllä), koska sille löytyi avoin peilipalvelu (mestis.fi).' },
   { label: 'Amerikkalainen jalkapallo - Vaahteraliiga', note: 'Ei tiedossa olevaa rajapintaa vielä.' },
 ];
 

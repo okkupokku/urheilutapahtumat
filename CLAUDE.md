@@ -206,15 +206,52 @@ purkulogiikalle. Sama `DAYS_AHEAD = 13` -ikkuna kuin muillakin lähteillä,
 joten data/jaapallo.json on tyhjä syyskuussa (kausi alkaa marraskuussa) ja
 täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä.
 
+### Jääkiekko - Mestis - mestis.fi
+Leijonien virallinen tulospalvelu (tulospalvelu.leijonat.fi) on
+CloudFront-suojattu ja torjuu GitHub Actionsin (ks. "Tunnetut
+infrarajoitukset" alla) - tätä ei ole ratkaistu. Käyttäjä löysi kuitenkin
+2026-09-20 osoitteen `mestis.fi/fi/ottelut/<kausi>/runkosarja/`, joka on
+Suomen Jääkiekkoliiton eri, avoin palvelu samalle sarjalle eikä ole
+IP-estetty (samat staattiset resurssit `static/liiga/...` viittaavat
+siihen että Liiga.fi ja Mestis.fi jakavat saman julkaisualustan, mutta
+Mestis.fi ei ole CloudFrontin takana).
+
+Sivu on palvelinrenderöity HTML (ei JSON-rajapintaa, ei CORS-headeria).
+Koko kauden otteluohjelma on yhdellä sivulla `<tr data-time="YYYYMMDD">`
+-riveinä, joten päiväkohtaista hakua ei tarvita - sama periaate kuin
+jääpallon seurat.php-sivuilla. **HUOM samasta Playwright-DOM-serialisointi-
+sudenkuopasta kuin jääpallolla:** regexit hyväksyvät sekä `"` että `'`
+lainausmerkkeinä.
+
+PK-seudulla on vain yksi Mestis-joukkue: **K-Vantaa** (Kiekko-Vantaa),
+kotihalli "Läntinen Valkoisenlähteentie 52-54, 01300 Vantaa" (osoite
+vahvistettu mestis.fi:n joukkuesivulta `/fi/joukkueet/k-vantaa/`,
+koordinaatit manuaalisesti haettuja likiarvoja). Vain K-Vantaan
+KOTIOTTELUT ovat PK-seudulla - muiden joukkueiden (Hermes/Kokkola,
+IPK/Iisalmi, JoKP/Joensuu, Ketterä/Imatra, KeuPa HT/Jyväskylä,
+Pyry/Kemi-Tornio, RoKi/Rovaniemi, TUTO Hockey/Turku) kotikaupungit ovat
+kaikki PK-seudun ulkopuolella.
+
+Mestis on `KNOWN_SERIES`:ssä lisätty **Jääkiekko**-lajin alle omana
+sarjana (`categoryId: 'Mestis'`, `level: 'alempi'`) - ei omana lajinaan,
+koska se on sama laji kuin Liiga, vain alempi sarjataso. Auroraliigalle
+(naisten ylin sarja) ei ole vielä löydetty vastaavaa avointa peilipalvelua
+- se on yhä `tulospalvelu.leijonat.fi`:n takana, ks. "Tunnetut
+infrarajoitukset".
+
 ## Tunnetut infrarajoitukset (ei koodilla korjattavissa)
 
-- **Mestis/Auroraliiga** (tulospalvelu.leijonat.fi): CloudFront/WAF estää
-  GitHub Actionsin IP-alueen HTTP 403:lla - vahvistettu jopa täysin
-  selaimettomalla suoralla Node-fetchillä, eli kyse ei ole selaimen
-  bot-tunnistuksesta vaan verkkotason IP-mustalistauksesta. Toimisi jos
-  taustaprosessi ajettaisiin jostain muusta verkosta (esim. käyttäjän omalta
-  koneelta cronilla, tai maksullisen proxyn kautta - ei toteutettu, koska
-  proxy maksaa ja on eettisesti harmaampi).
+- **Auroraliiga** (naisten ylin sarja, tulospalvelu.leijonat.fi):
+  CloudFront/WAF estää GitHub Actionsin IP-alueen HTTP 403:lla -
+  vahvistettu jopa täysin selaimettomalla suoralla Node-fetchillä, eli
+  kyse ei ole selaimen bot-tunnistuksesta vaan verkkotason
+  IP-mustalistauksesta. Toimisi jos taustaprosessi ajettaisiin jostain
+  muusta verkosta (esim. käyttäjän omalta koneelta cronilla, tai
+  maksullisen proxyn kautta - ei toteutettu, koska proxy maksaa ja on
+  eettisesti harmaampi). ~~Mestis~~ ratkaistu 2026-09-20 löytämällä
+  mestis.fi, avoin peilipalvelu joka ei ole CloudFrontin takana (ks.
+  "Jääkiekko - Mestis" yllä) - sama tekniikka ei toistaiseksi ole
+  löytänyt vastaavaa Auroraliigalle.
 - **Amerikkalainen jalkapallo**: ei tiedossa olevaa rajapintaa lainkaan.
 
 ## Sudenkuoppia (opittu kantapään kautta)
@@ -273,8 +310,11 @@ täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä
   todellinen `category_id` pitää vielä vahvistaa kun sen ensimmäinen
   ottelu ilmestyy datassa. Naisten Bandyliigalle ei ole vielä tarkistettu
   löytyykö PK-seudulta joukkueita.
-- Mestis/Auroraliiga: harkitse paikallista cron-ajoa käyttäjän omalta
-  koneelta jos IP-esto muuten estää.
+- ~~Mestis~~ - löydetty ja lisätty 2026-09-20 (mestis.fi, ks. "Jääkiekko -
+  Mestis" yllä). Auroraliigalle (naiset) ei löytynyt vastaavaa avointa
+  peilipalvelua tällä kierroksella - kannattaa kokeilla samaa hakutapaa
+  (etsi "auroraliiga" + "otteluohjelma"/"runkosarja" tms.) tai harkita
+  paikallista cron-ajoa käyttäjän omalta koneelta jos IP-esto muuten estää.
 - ~~Naisten maajoukkueet (Helmarit ym.)~~ - löydetty ja lisätty (`WUNL`,
   `WWCQ`, `WECQ`, `Naiset-A`), ks. yllä.
 - Nuorten maajoukkueet (jalkapallo): Palloliiton `getCategories`-haku

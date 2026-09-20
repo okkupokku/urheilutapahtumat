@@ -33,6 +33,9 @@ jobs:
       - name: Hae jääpallon otteludata
         run: node scripts/fetch-jaapallo.js
 
+      - name: Hae Mestiksen otteludata
+        run: node scripts/fetch-mestis.js
+
       - name: Commitoi muuttunut data
         run: |
           git config user.name "github-actions[bot]"

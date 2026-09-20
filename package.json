@@ -6,7 +6,8 @@
   "scripts": {
     "fetch:jalkapallo": "node scripts/fetch-jalkapallo.js",
     "fetch:salibandy": "node scripts/fetch-salibandy.js",
-    "fetch:jaapallo": "node scripts/fetch-jaapallo.js"
+    "fetch:jaapallo": "node scripts/fetch-jaapallo.js",
+    "fetch:mestis": "node scripts/fetch-mestis.js"
   },
   "dependencies": {
     "playwright": "^1.47.0"
