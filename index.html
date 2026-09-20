@@ -295,6 +295,7 @@ const PK_BOUNDS = [[24.45, 60.03], [25.32, 60.37]]; // [[lounas], [koillinen]]
 
 const SPORT_META = {
   'Jalkapallo': { color: '#128363', icon: '⚽' },
+  'Futsal': { color: '#0E8DA6', icon: '🥅' },
   'Jääkiekko': { color: '#1D6FBD', icon: '🏒' },
   'Koripallo': { color: '#C94A24', icon: '🏀' },
   'Käsipallo': { color: '#A8305F', icon: '🤾' },
@@ -419,8 +420,8 @@ function normalizeLiiga(g) {
 const SOURCES = [
   {
     id: 'jalkapallo',
-    label: 'Jalkapallo (Palloliitto)',
-    detail: 'data/jalkapallo.json — VL, M1L, NL, futsal, maajoukkue (taustaprosessi)',
+    label: 'Palloliitto (jalkapallo, futsal, maajoukkue)',
+    detail: 'data/jalkapallo.json — VL, M1L, NL, FML, FNL, UNL (taustaprosessi)',
     run: async () => {
       const res = await fetchWithTimeout('data/jalkapallo.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -431,10 +432,10 @@ const SOURCES = [
   {
     id: 'koripallo',
     label: 'Koripallo (Korisliitto)',
-    detail: 'koripallo-api.torneopal.net — kat. 4, 1',
+    detail: 'koripallo-api.torneopal.net — Korisliiga, Naisten Korisliiga, Suomen cup',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://koripallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h');
-      const allow = new Set(['4', '1']);
+      const allow = new Set(['4', '1', '15']); // Korisliiga, Naisten Korisliiga, Miesten Suomen cup
       return raw
         .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Koripallo'));
@@ -455,10 +456,10 @@ const SOURCES = [
   {
     id: 'kasipallo',
     label: 'Käsipallo (Käsipalloliitto)',
-    detail: 'hb-api.torneopal.net — SM-liiga, NSM',
+    detail: 'hb-api.torneopal.net — Aktialiiga (M/N), Suomen cup',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://hb-api.torneopal.net', 'json/pfqmz9z6ea43uqy2hzfxpcpxr4svqunn');
-      const allow = new Set(['SM-liiga', 'NSM']);
+      const allow = new Set(['SM-liiga', 'NSM', 'MSC', 'NSC']); // Miesten ja naisten Aktialiiga, Suomen cupit
       return raw
         .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Käsipallo'));

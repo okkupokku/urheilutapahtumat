@@ -1,5 +1,5 @@
-// Hakee Veikkausliigan, Ykkösliigan ja naisten Kansallisen Liigan
-// pääkaupunkiseudun ottelut seuraavalle DAYS_AHEAD-päivälle.
+// Hakee Palloliiton pääkaupunkiseudun ottelut (jalkapallo, futsal, miesten
+// maajoukkue) seuraavalle DAYS_AHEAD-päivälle.
 //
 // Toimintaperiaate: Playwright avaa oikean Chromium-selaimen ja navigoi
 // ensin tulospalvelu.palloliitto.fi:hin, jotta seuraava fetch()-kutsu
@@ -35,11 +35,13 @@ function isPKArea(m) {
   return area === 'pääkaupunkiseutu' || PK_CITIES.includes(city);
 }
 
+const FUTSAL_CATEGORIES = new Set(['FML', 'FNL']);
+
 function normalize(m) {
   return {
     date: m.date,
     time: (m.time || '').slice(0, 5),
-    sport: 'Jalkapallo',
+    sport: FUTSAL_CATEGORIES.has(m.category_id) ? 'Futsal' : 'Jalkapallo',
     category: m.category_name || '',
     genderGroup: (m.category_group_name || '').trim() || 'Muu',
     teamA: m.team_A_name || m.club_A_name || '?',
@@ -78,7 +80,7 @@ async function fetchDay(page, dateStr) {
     try {
       const raw = await fetchDay(page, dateStr);
       const filtered = raw
-        .filter(m => m.sport_id === 'football' && ALLOWED_CATEGORIES.has(m.category_id) && isPKArea(m))
+        .filter(m => (m.sport_id === 'football' || m.sport_id === 'futsal') && ALLOWED_CATEGORIES.has(m.category_id) && isPKArea(m))
         .map(normalize);
       allMatches.push(...filtered);
       console.log(`${dateStr}: ${raw.length} ottelua haettu, ${filtered.length} täsmäsi suodattimiin`);
