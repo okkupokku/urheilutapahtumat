@@ -130,7 +130,7 @@
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy yllä olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Salibandyn F-liiga, jääpallo ja amerikkalainen jalkapallo eivät vielä tarjoa rajapintaa lainkaan (edellyttävät myöhemmin sivun sisällön hakua toisella tavalla) ja näkyvät alla placeholdereina. Maajoukkueottelut eivät vielä ole mukana.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon sekä Mestiksen ja Auroraliigan ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/</code>-kansioon, koska Palloliiton ja Leijonat.fi:n rajapinnat estävät suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy yllä olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Salibandyn F-liiga, jääpallo ja amerikkalainen jalkapallo eivät vielä tarjoa rajapintaa lainkaan (edellyttävät myöhemmin sivun sisällön hakua toisella tavalla) ja näkyvät alla placeholdereina. Maajoukkueottelut eivät vielä ole mukana.</p>
 </footer>
 
 <script>
@@ -154,12 +154,6 @@ function isPKAreaTorneoPal(m) {
   const area = (m.venue_area_name || '').trim().toLowerCase();
   const city = (m.venue_city_name || '').trim().toUpperCase();
   return area === 'pääkaupunkiseutu' || PK_CITIES.includes(city);
-}
-
-function isPKCoord(lat, lon) {
-  const la = parseFloat(lat), lo = parseFloat(lon);
-  if (isNaN(la) || isNaN(lo)) return false;
-  return la >= 60.05 && la <= 60.35 && lo >= 24.45 && lo <= 25.30;
 }
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = 9000) {
@@ -247,42 +241,6 @@ function normalizeLiiga(g) {
   };
 }
 
-/* --- tulospalvelu.leijonat.fi (Mestis, Auroraliiga) --- */
-
-async function fetchLeijonatDay(dateStr) {
-  const url = `https://tulospalvelu.leijonat.fi/helpers/getgames?season=2027&subSerieId=0&teamid=0&districtid=-1&gamedays=-1&dog=${dateStr}&levelid=-1`;
-  const res = await fetchWithTimeout(url, { headers: { 'Accept': 'application/json' } });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const data = await res.json();
-  return data || [];
-}
-
-async function fetchLeijonatRange() {
-  const all = [];
-  for (let i = 0; i <= DAYS_AHEAD; i++) {
-    const dateStr = todayISO(i);
-    const levels = await fetchLeijonatDay(dateStr);
-    all.push(...levels);
-    await sleep(REQUEST_DELAY_MS);
-  }
-  return all;
-}
-
-function normalizeLeijonat(g, levelName) {
-  return {
-    date: g.GameDateDB || '',
-    time: g.GameTime || '',
-    sport: 'Jääkiekko',
-    category: levelName,
-    teamA: g.HomeTeamAbbrv || g.HomeAssociation || '?',
-    teamB: g.AwayTeamAbbrv || g.AwayAssociation || '?',
-    venue: g.RinkName || '',
-    city: '', // ei suoraa kaupunkikenttää, suodatetaan koordinaateilla
-    _lat: g.Latitude,
-    _lon: g.Longitude,
-  };
-}
-
 /* ============================================================
    LÄHDEREKISTERI
    ============================================================ */
@@ -349,21 +307,12 @@ const SOURCES = [
   {
     id: 'mestis-aurora',
     label: 'Jääkiekko — Mestis / Auroraliiga',
-    detail: 'tulospalvelu.leijonat.fi',
+    detail: 'data/jaakiekko-mestis-aurora.json (taustaprosessi)',
     run: async () => {
-      const raw = await fetchLeijonatRange();
-      const wanted = { 65: 'Mestis', 73: 'Auroraliiga' };
-      const out = [];
-      for (const levelGroup of raw) {
-        const levelName = wanted[levelGroup.LevelID];
-        if (!levelName) continue;
-        for (const g of (levelGroup.Games || [])) {
-          if (isPKCoord(g.Latitude, g.Longitude)) {
-            out.push(normalizeLeijonat(g, levelName));
-          }
-        }
-      }
-      return out;
+      const res = await fetchWithTimeout('data/jaakiekko-mestis-aurora.json');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      return data.matches || [];
     }
   },
 ];
@@ -405,8 +354,8 @@ function renderStatusPanel() {
    ============================================================ */
 
 let ALL_MATCHES = [];
-const state = { sports: new Set(), cities: new Set(PK_CITIES.map(c => c[0] + c.slice(1).toLowerCase())), day: 'all' };
-const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen'];
+const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Pääkaupunkiseutu'];
+const state = { sports: new Set(), cities: new Set(DISPLAY_CITIES), day: 'all' };
 
 function addDays(dateStr, n) {
   const d = new Date(dateStr + 'T00:00:00');

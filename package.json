@@ -4,7 +4,8 @@
   "private": true,
   "description": "Playwright-taustaprosessi pääkaupunkiseudun urheilutapahtumien haulle",
   "scripts": {
-    "fetch:jalkapallo": "node scripts/fetch-jalkapallo.js"
+    "fetch:jalkapallo": "node scripts/fetch-jalkapallo.js",
+    "fetch:mestis-aurora": "node scripts/fetch-mestis-aurora.js"
   },
   "dependencies": {
     "playwright": "^1.47.0"
