@@ -81,13 +81,27 @@ tarkistamalla oikea live-data eri päiviltä — katso `KNOWN_SERIES` vakio
   näiden `sport_id` on `"futsal"`, EI `"football"` — jos suodatat
   `sport_id`:n mukaan, muista sallia molemmat.
 - Koripallo: `4`=Korisliiga (M), `1`=Naisten Korisliiga (N), `15`=Miesten
-  Suomen cup
+  Suomen cup. Maajoukkueet: `44116`=Miehet, `45052`=Naiset ("Kansainväliset",
+  Koripalloliitolla ei erottele MM-/EM-karsintoja omiksi kategorioiksi kuten
+  Palloliitto). Löytyi myös `45051`=Miesten haastajamaajoukkue (B-joukkue),
+  ei lisätty (ei koettu tarpeeksi relevantiksi).
 - Käsipallo: `SM-liiga`=Miesten Aktialiiga, `NSM`=Naisten Aktialiiga,
-  `MSC`=Miesten Suomen Cup, `NSC`=Naisten Suomen Cup
+  `MSC`=Miesten Suomen Cup, `NSC`=Naisten Suomen Cup. Maajoukkue: `Maa`
+  ("Maajoukkueet") — **HUOM:** Käsipalloliitolla on vain YKSI yhteinen
+  category_id molemmille sukupuolille (rekisterissä `category_group_name`
+  on kirjaimellisesti "Maajoukkueet"), joten `KNOWN_SERIES`:ssä se on
+  merkitty gender: 'Muu' ja oikea sukupuoli tulee vasta live-datasta kun
+  ensimmäinen ottelu ilmestyy.
 - Lentopallo: `NL`=Naisten Mestaruusliiga (vahvistettu livenä). `ML`=Miesten
   Mestaruusliiga — **ei koskaan nähty livenä tässä projektissa** (kausi ei
   ollut käynnissä haun aikaan, vain "PREM"-preseason-otteluita näkyi), joten
-  tarkista jos sarja ei koskaan tuota tuloksia.
+  tarkista jos sarja ei koskaan tuota tuloksia. Maajoukkueet (miehet): `EM`,
+  `EM-Karsinta`, `GLM`=Kultainen liiga, `ELM`=Euroopan liiga, `Maaottelu`=
+  harjoitusottelut. Maajoukkueet (naiset): `EL`=Euroopan liiga, `Harj`=
+  harjoitusottelut. **HUOM:** samalla rajapinnalla on myös eurooppalaisia
+  SEURAcupeja (`CLM`/`CHL`/`CEVC`=Mestareiden liiga/Challenge liiga/CEV Cup
+  miehillä, `CEVcup`/`CHLW` naisilla) — nämä ovat klubijoukkueiden, ei
+  maajoukkueen, otteluita, joten niitä ei ole lisätty maajoukkuesarjoihin.
 
 `isPKAreaTorneoPal()` suodattaa alueen `venue_area_name`/`venue_city_name`
 -kentistä. **Käsipalloliiton data sisältää ylimääräisiä välilyöntejä**
@@ -213,7 +227,12 @@ otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
   vielä nähty PK-seudulla — voisi lisätä KNOWN_SERIES:iin ja
   ALLOWED_CATEGORIES:iin samaan tapaan kuin A-maajoukkueet, jolloin ne
   ilmestyvät automaattisesti kun ottelu osuu PK-alueelle.
-- Muille TorneoPal-lajeille (koripallo, käsipallo, lentopallo, salibandy)
-  kannattaa kokeilla samaa `getCategories?all_current=1`-tekniikkaa kuin
-  jalkapallolle ennen kuin `index.html`:n `PH-`-alkuisia paikanvaraaja-id:itä
-  yritetään arvata `getMatches`-päivien läpikäynnillä.
+- ~~Muille TorneoPal-lajeille (koripallo, käsipallo, lentopallo)~~ — tehty:
+  `getCategories?all_current=1` löysi maajoukkue-id:t kaikille kolmelle
+  (ks. yllä), lisätty sekä `KNOWN_SERIES`:iin että kunkin lajin `SOURCES`-
+  entryn `allow`-settiin index.html:ssä.
+- Salibandy ja jääkiekko (Leijonat) ovat ainoat lajit joiden maajoukkueet
+  ovat yhä `PH-`-paikanvaraajia — kummallakaan ei ole tiedossa avointa
+  rajapintaa (jääkiekon Liiga.fi ei kata maajoukkuetta lainkaan, salibandyn
+  fliiga.com:sta ei löytynyt maajoukkuesivua `/maajoukkueet/`-osoitteesta).
+  Jos näille löytyy joskus data, sama korvausmenettely kuin jalkapallolle.

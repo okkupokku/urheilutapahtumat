@@ -373,14 +373,13 @@ function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 // sponsorinimi) heti kun sarjalla on ottelu haetulla aikavälillä.
 // "group" erottelee seurasarjat maajoukkuesarjoista tarkennetun haun
 // hierarkiassa (Laji → Seurasarjat/Maajoukkueet → Sukupuoli → Sarja).
-// Puuttuessaan oletus on 'seura' (ks. renderHierarchy). Jalkapallon
-// maajoukkue-id:t (WCQ, ECQ, Miehet-A, WUNL, WWCQ, WECQ, Naiset-A) on
-// vahvistettu suoraan spl.torneopal.net:n getCategories-rajapinnasta
-// (?all_current=1, kentät organiser_name==='Maaottelut') ja lisätty myös
-// scripts/fetch-jalkapallo.js:n ALLOWED_CATEGORIES-settiin. Muiden lajien
-// maajoukkue-id:t (PH-alkuiset) ovat yhä paikanvaraajia — kun oikea
-// rajapinta ja category_id löytyvät (ks. CLAUDE.md "Ideoita jatkoa
-// varten"), korvaa id oikealla arvolla samaan tapaan.
+// Puuttuessaan oletus on 'seura' (ks. renderHierarchy). Jalkapallon,
+// koripallon, lentopallon ja käsipallon maajoukkue-id:t on vahvistettu
+// suoraan kunkin liiton omasta getCategories-rajapinnasta
+// (?all_current=1) — ks. SOURCES ja scripts/fetch-jalkapallo.js. Vain
+// jääkiekon ja salibandyn maajoukkue-id:t (PH-alkuiset) ovat yhä
+// paikanvaraajia, koska niille ei ole löydetty toimivaa rajapintaa (ks.
+// CLAUDE.md "Ideoita jatkoa varten").
 // "level" ('paasarja'/'alempi') on vain seurasarjoilla — käytetään normihaun
 // SARJATASO-suodattimessa (ks. levelOf()). Maajoukkuesarjoilla ei ole
 // level-kenttää, joten ne näkyvät aina riippumatta Sarjataso-valinnasta.
@@ -412,24 +411,29 @@ const KNOWN_SERIES = {
     { id: '4', gender: 'Miehet', name: 'Korisliiga', level: 'paasarja' },
     { id: '1', gender: 'Naiset', name: 'Naisten Korisliiga', level: 'paasarja' },
     { id: '15', gender: 'Miehet', name: 'Suomen cup', level: 'paasarja' },
-    { id: 'PH-EBK-M', gender: 'Miehet', name: 'EuroBasket-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-MMK-M', gender: 'Miehet', name: 'MM-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-EBK-N', gender: 'Naiset', name: 'EuroBasket-karsinnat', group: 'maajoukkue' },
+    { id: '44116', gender: 'Miehet', name: 'Maajoukkue-ottelut', group: 'maajoukkue' },
+    { id: '45052', gender: 'Naiset', name: 'Maajoukkue-ottelut', group: 'maajoukkue' },
   ],
   'Käsipallo': [
     { id: 'SM-liiga', gender: 'Miehet', name: 'Aktialiiga', level: 'paasarja' },
     { id: 'NSM', gender: 'Naiset', name: 'Aktialiiga', level: 'paasarja' },
     { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup', level: 'paasarja' },
     { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup', level: 'paasarja' },
-    { id: 'PH-EMMK-M', gender: 'Miehet', name: 'EM-/MM-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-EMMK-N', gender: 'Naiset', name: 'EM-/MM-karsinnat', group: 'maajoukkue' },
+    // Käsipalloliitolla on vain yksi yhteinen maajoukkuekategoria (id "Maa")
+    // molemmille sukupuolille — oikea sukupuoli tulee kunkin ottelun omasta
+    // datasta heti kun sellainen ilmestyy, ks. SOURCES-kommentti.
+    { id: 'Maa', gender: 'Muu', name: 'Maajoukkueet', group: 'maajoukkue' },
   ],
   'Lentopallo': [
     { id: 'ML', gender: 'Miehet', name: 'Mestaruusliiga', level: 'paasarja' },
     { id: 'NL', gender: 'Naiset', name: 'Mestaruusliiga', level: 'paasarja' },
-    { id: 'PH-EMK-M', gender: 'Miehet', name: 'EM-karsinnat', group: 'maajoukkue' },
-    { id: 'PH-KL-M', gender: 'Miehet', name: 'Kultaliiga / Challenger', group: 'maajoukkue' },
-    { id: 'PH-EMK-N', gender: 'Naiset', name: 'EM-karsinnat', group: 'maajoukkue' },
+    { id: 'EM', gender: 'Miehet', name: 'EM-kisat', group: 'maajoukkue' },
+    { id: 'EM-Karsinta', gender: 'Miehet', name: 'EM-karsinta', group: 'maajoukkue' },
+    { id: 'GLM', gender: 'Miehet', name: 'Kultainen liiga', group: 'maajoukkue' },
+    { id: 'ELM', gender: 'Miehet', name: 'Euroopan liiga', group: 'maajoukkue' },
+    { id: 'Maaottelu', gender: 'Miehet', name: 'Harjoitusmaaottelut', group: 'maajoukkue' },
+    { id: 'EL', gender: 'Naiset', name: 'Euroopan liiga', group: 'maajoukkue' },
+    { id: 'Harj', gender: 'Naiset', name: 'Harjoitusmaaottelut', group: 'maajoukkue' },
   ],
   'Salibandy': [
     { id: 'FLM', gender: 'Miehet', name: 'F-liiga', level: 'paasarja' },
@@ -577,10 +581,13 @@ const SOURCES = [
   {
     id: 'koripallo',
     label: 'Koripallo (Korisliitto)',
-    detail: 'koripallo-api.torneopal.net — Korisliiga, Naisten Korisliiga, Suomen cup',
+    detail: 'koripallo-api.torneopal.net — Korisliiga, Naisten Korisliiga, Suomen cup, maajoukkueet',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://koripallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h');
-      const allow = new Set(['4', '1', '15']); // Korisliiga, Naisten Korisliiga, Miesten Suomen cup
+      // 4/1/15 = Korisliiga, Naisten Korisliiga, Miesten Suomen cup.
+      // 44116/45052 = miesten/naisten maajoukkue ("Kansainväliset") —
+      // id:t vahvistettu getCategories?all_current=1-hausta.
+      const allow = new Set(['4', '1', '15', '44116', '45052']);
       return raw
         .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Koripallo'));
@@ -589,10 +596,16 @@ const SOURCES = [
   {
     id: 'lentopallo',
     label: 'Lentopallo (Lentopalloliitto)',
-    detail: 'lentopallo-api.torneopal.net — ML, NL',
+    detail: 'lentopallo-api.torneopal.net — ML, NL, maajoukkueet',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://lentopallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h');
-      const allow = new Set(['ML', 'NL']);
+      // ML/NL = Mestaruusliiga (M/N). Loput ovat miesten/naisten maajoukkueen
+      // kansainvälisiä otteluita (EM, EM-karsinta, Kultainen liiga, Euroopan
+      // liiga, harjoitusmaaottelut) — id:t vahvistettu getCategories-hausta.
+      // HUOM: samalta rajapinnalta löytyy myös eurooppalaisia SEURAcupeja
+      // (CLM/CHL/CEVC/CEVcup/CHLW = Mestareiden liiga/Challenge liiga/CEV Cup)
+      // — nämä eivät ole maajoukkueotteluita, joten niitä ei ole lisätty tähän.
+      const allow = new Set(['ML', 'NL', 'EM', 'EM-Karsinta', 'GLM', 'ELM', 'Maaottelu', 'EL', 'Harj']);
       return raw
         .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Lentopallo'));
@@ -601,10 +614,13 @@ const SOURCES = [
   {
     id: 'kasipallo',
     label: 'Käsipallo (Käsipalloliitto)',
-    detail: 'hb-api.torneopal.net — Aktialiiga (M/N), Suomen cup',
+    detail: 'hb-api.torneopal.net — Aktialiiga (M/N), Suomen cup, maajoukkueet',
     run: async () => {
       const raw = await fetchTorneoPalRange('https://hb-api.torneopal.net', 'json/pfqmz9z6ea43uqy2hzfxpcpxr4svqunn');
-      const allow = new Set(['SM-liiga', 'NSM', 'MSC', 'NSC']); // Miesten ja naisten Aktialiiga, Suomen cupit
+      // 'Maa' = kaikki maajoukkueottelut (Käsipalloliitolla ei ole erillistä
+      // id:tä miehille/naisille tässä kategoriassa — sukupuoli tulee
+      // kunkin ottelun omasta category_group_name-kentästä).
+      const allow = new Set(['SM-liiga', 'NSM', 'MSC', 'NSC', 'Maa']);
       return raw
         .filter(m => allow.has(m.category_id) && isPKAreaTorneoPal(m))
         .map(m => normalizeTorneoPal(m, 'Käsipallo'));
@@ -635,7 +651,7 @@ const SOURCES = [
 ];
 
 const PLACEHOLDER_SPORTS = [
-  { label: 'Maaottelut (muut kuin jalkapallo)', note: 'Jalkapallon miesten maajoukkue (Huuhkajat, UEFA Nations League) on jo mukana. Muiden lajien maajoukkueiden ottelut haetaan eri kilpailutunnuksilla kuin kotimaiset sarjat, joten ne eivät vielä sisälly nykyisiin rajapintakutsuihin.' },
+  { label: 'Jääkiekko ja salibandy — maajoukkueet', note: 'Jalkapallon, koripallon, lentopallon ja käsipallon maajoukkueiden ottelut ovat jo mukana (ks. Tarkennettu haku → Maajoukkueet). Jääkiekon (Leijonat) ja salibandyn maajoukkueille ei ole löydetty toimivaa rajapintaa.' },
   { label: 'Jääkiekko — Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) — vaatisi ajon toisesta verkosta.' },
   { label: 'Jääpallo — Bandyliiga', note: 'finbandy.torneopal.fi:n rajapinta vaatii avaimen jota ei ole saatavilla selaimesta.' },
   { label: 'Amerikkalainen jalkapallo — Vaahteraliiga', note: 'Ei tiedossa olevaa rajapintaa vielä.' },
