@@ -224,9 +224,17 @@ otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
 
 - Salibandy: laajenna kattamaan myös muut mahdolliset uudet PK-joukkueet
   jos niitä nousee sarjaan.
-- Jääpallo: token-metsästys jatkuu, tai vaihtoehtoisesti sama
-  HTML-upotus-tekniikka kuin salibandyllä jos finbandy.torneopal.fi
-  osoittautuu sisältävän vastaavan datan.
+- Jääpallo: token-metsästys jatkuu edelleen tuloksetta (2026-09-20 uusi
+  yritys). www.finbandy.fi (WordPress) lataa `wp-content/plugins/torneopal/
+  torneopal.css` -tiedoston eli sivulla ON asennettuna virallinen TorneoPal-
+  WP-liitännäinen, mutta `/fi/bandyliiga/liigaohjelma/`-sivulla ei ollut
+  yhtään sen renderöimää sisältöä eikä tokenia HTML:ssä — todennäköisesti
+  koska jääpallokausi ei ole käynnissä syyskuussa (kausi ajoittuu marras–
+  maaliskuulle). Kannattaa kokeilla uudelleen kauden aikana, jolloin
+  liitännäinen mahdollisesti renderöi oikean ottelutaulukon ja paljastaa
+  tokenin samaan tapaan kuin Palloliiton tulospalvelu.palloliitto.fi. Muita
+  finbandy.fi:n alasivuja (esim. Naisten Bandyliiga, Suomi-Sarja) ei vielä
+  tarkistettu tällä kierroksella.
 - Mestis/Auroraliiga: harkitse paikallista cron-ajoa käyttäjän omalta
   koneelta jos IP-esto muuten estää.
 - ~~Naisten maajoukkueet (Helmarit ym.)~~ — löydetty ja lisätty (`WUNL`,
