@@ -327,21 +327,22 @@
     <summary>ℹ️ Tietoa tästä sivustosta — mitä ja miten <span class="chev">▸</span></summary>
     <div class="doc-panel-body">
       <h4>Mitä tämä on</h4>
-      <p>Kokoaa pääkaupunkiseudun (Helsinki, Espoo, Vantaa, Kauniainen) ammattilais-/ylimmän sarjatason urheiluottelut yhdelle sivulle: jalkapallo, futsal, jääkiekko, koripallo, käsipallo, lentopallo ja salibandy. Data haetaan aina tuoreena kunkin lajiliiton omasta rajapinnasta — sivu ei tallenna mitään pysyvästi palvelimelle, kaikki suodatus tapahtuu selaimessasi.</p>
+      <p>Kokoaa pääkaupunkiseudun (Helsinki, Espoo, Vantaa, Kauniainen) ammattilais-/ylimmän sarjatason urheiluottelut yhdelle sivulle: jalkapallo, futsal, jääkiekko, koripallo, käsipallo, lentopallo, salibandy ja jääpallo. Data haetaan aina tuoreena kunkin lajiliiton omasta rajapinnasta — sivu ei tallenna mitään pysyvästi palvelimelle, kaikki suodatus tapahtuu selaimessasi.</p>
 
       <h4>Mistä data tulee</h4>
       <ul>
         <li><strong>Jääkiekko (Liiga), koripallo, käsipallo, lentopallo:</strong> haetaan suoraan selaimestasi kunkin lajiliiton omasta julkisesta rajapinnasta joka kerta kun sivu ladataan.</li>
-        <li><strong>Jalkapallo, futsal ja miesten maajoukkue:</strong> Palloliiton rajapinta estää suorat selainkutsut (CORS), joten data haetaan taustaprosessilla (Playwright-selainautomaatio) GitHub Actionsissa 4 tunnin välein ja tallennetaan tähän samaan repoon.</li>
+        <li><strong>Jalkapallo, futsal ja maajoukkueet (Huuhkajat/Helmarit):</strong> Palloliiton rajapinta estää suorat selainkutsut (CORS), joten data haetaan taustaprosessilla (Playwright-selainautomaatio) GitHub Actionsissa 4 tunnin välein ja tallennetaan tähän samaan repoon.</li>
         <li><strong>Salibandy (F-liiga):</strong> fliiga.com ei tarjoa julkista rajapintaa lainkaan. Mukana ovat vain käsin tunnistetut pääkaupunkiseudun joukkueet (Oilers, Westend Indians, Hawks, EräViikingit, PSS) — niiden koko kauden ottelut on upotettu joukkuesivujen omaan HTML:ään, ja taustaprosessi purkaa ne sieltä samalla 4 tunnin syklillä.</li>
+        <li><strong>Jääpallo (Bandyliiga):</strong> myöskään finbandy.torneopal.fi ei tarjoa rajapintaa, mutta pääkaupunkiseudun seurojen (HIFK, Botnia, Vesta) omat ottelusivut ovat palvelinrenderöityä HTML:ää, joka puretaan samalla taustaprosessitekniikalla kuin salibandy.</li>
       </ul>
 
       <h4>Kartta ja sijainti</h4>
-      <p>Kartta käyttää avainetonta MapLibre GL + OpenFreeMap -yhdistelmää. Ottelupaikkojen koordinaatit tulevat suoraan rajapinnoista lukuun ottamatta salibandyä, jonka hallien koordinaatit on haettu käsin (likiarvoja). Jos sallit sijaintisi käytön, etäisyys lasketaan suoraan linjaa pitkin — ei oikeaa reititystä.</p>
+      <p>Kartta käyttää avainetonta MapLibre GL + OpenFreeMap -yhdistelmää. Ottelupaikkojen koordinaatit tulevat suoraan rajapinnoista lukuun ottamatta salibandyä ja jääpalloa, joiden kotihallien koordinaatit on haettu käsin (likiarvoja). Jos sallit sijaintisi käytön, etäisyys lasketaan suoraan linjaa pitkin — ei oikeaa reititystä.</p>
 
       <h4>Tunnetut rajoitukset</h4>
       <ul>
-        <li>Mestis/Auroraliiga, jääpallo, amerikkalainen jalkapallo ja muiden lajien maajoukkueet eivät vielä ole mukana — syyt löytyvät "Ei vielä mukana" -osiosta.</li>
+        <li>Mestis/Auroraliiga, amerikkalainen jalkapallo sekä jääkiekon ja salibandyn maajoukkueet eivät vielä ole mukana — syyt löytyvät "Ei vielä mukana" -osiosta.</li>
         <li>Osa lajiliittojen rajapinnoista saattaa satunnaisesti estää suoran selainkutsun (CORS) — näkyy yllä "Datalähteiden tila" -paneelissa, sivu ei kaadu.</li>
         <li>Kaikki näytetyt sarjat on käsin valittu (ylimmät sarjatasot) — nuorisosarjat ja alemmat divisioonat on jätetty pois selkeyden vuoksi.</li>
       </ul>
@@ -378,6 +379,7 @@ const SPORT_META = {
   'Käsipallo': { color: '#A8305F', icon: '🤾' },
   'Lentopallo': { color: '#6142C7', icon: '🏐' },
   'Salibandy': { color: '#8A6D1B', icon: '🏑' },
+  'Jääpallo': { color: '#2F9E44', icon: '⛸️' },
   '_default': { color: '#667085', icon: '🏆' },
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
@@ -480,6 +482,12 @@ const KNOWN_SERIES = {
     { id: 'PH-EFT-M', gender: 'Miehet', name: 'Euro Floorball Tour', group: 'maajoukkue' },
     { id: 'PH-MM-N', gender: 'Naiset', name: 'MM-kisat', group: 'maajoukkue' },
     { id: 'PH-EUR-M', gender: 'Miehet', name: 'Champions Cup', group: 'eurooppa' },
+  ],
+  'Jääpallo': [
+    { id: 'MBL', gender: 'Miehet', name: 'Bandyliiga', level: 'paasarja' },
+    // Vestan (Divari) otteluita ei ole vielä nähty livenä — oikea
+    // categoryId varmistuu vasta kun ensimmäinen ottelu ilmestyy datassa
+    // (ks. scripts/fetch-jaapallo.js, joka ei rajaa sarjoja etukäteen).
   ],
 };
 
@@ -694,12 +702,22 @@ const SOURCES = [
       return data.matches || [];
     }
   },
+  {
+    id: 'jaapallo',
+    label: 'Jääpallo (Bandyliiga)',
+    detail: 'data/jaapallo.json — HIFK, Botnia, Vesta (taustaprosessi)',
+    run: async () => {
+      const res = await fetchWithTimeout(`data/jaapallo.json?t=${Date.now()}`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      return data.matches || [];
+    }
+  },
 ];
 
 const PLACEHOLDER_SPORTS = [
   { label: 'Jääkiekko ja salibandy — maajoukkueet', note: 'Jalkapallon, koripallon, lentopallon ja käsipallon maajoukkueiden ottelut ovat jo mukana (ks. Tarkennettu haku → Maajoukkueet). Jääkiekon (Leijonat) ja salibandyn maajoukkueille ei ole löydetty toimivaa rajapintaa.' },
   { label: 'Jääkiekko — Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) — vaatisi ajon toisesta verkosta.' },
-  { label: 'Jääpallo — Bandyliiga', note: 'finbandy.torneopal.fi:n rajapinta vaatii avaimen jota ei ole saatavilla selaimesta.' },
   { label: 'Amerikkalainen jalkapallo — Vaahteraliiga', note: 'Ei tiedossa olevaa rajapintaa vielä.' },
 ];
 

@@ -60,11 +60,8 @@ Muita olemassa olevia mutta **avainta ei löydetty** -alidomeeneja (palauttavat
 `Invalid db` ilman oikeaa Accept-headeria, eli alusta on olemassa mutta
 token puuttuu): `bandy-api.torneopal.net`, `floorball-api.torneopal.net`,
 `jaapallo-api.torneopal.net`, `finbandy-api.torneopal.net`,
-`sfl-api.torneopal.net`, `fliiga-api.torneopal.net`. Jääpallon
-(finbandy.torneopal.fi) oma sivu on palvelinrenderöity eikä paljasta
-tokenia selaimelle lainkaan — jos joku löytää oikean tokenin jostain
-mobiilisovelluksesta tms., jääpallo olisi helppo lisätä samalla kaavalla
-kuin muut TorneoPal-lajit.
+`sfl-api.torneopal.net`, `fliiga-api.torneopal.net`. Jääpallolle (ks. alla)
+löytyi kuitenkin ratkaisu ilman tokenia — samaan tapaan kuin salibandylle.
 
 **category_id → sarja -mappaus** (ylin sarjataso, käsin selvitetty
 tarkistamalla oikea live-data eri päiviltä — katso `KNOWN_SERIES` vakio
@@ -161,6 +158,45 @@ Muita tutkittuja reittejä jotka **eivät** toimineet: `wp-admin/admin-ajax.php`
 otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
 "Groweo" on asiakaspalvelu-chatbot-alusta, ei liity otteluihin mitenkään).
 
+### Jääpallo (Bandyliiga) — finbandy.torneopal.fi
+Käyttäjä löysi 2026-09-20 osoitteen `finbandy.torneopal.fi/taso/
+seurat.php?seura=<ID>` — jokaisen seuran oma sivu, joka listaa koko kauden
+ottelut. Sivu on **täysin palvelinrenderöity** (ei yhtään XHR/fetch-kutsua,
+vahvistettu verkkoliikenteestä) eli aiemmin dokumentoitu "token ei paljastu"
+-este pätee yhä `getMatches`-rajapinnalle, mutta sitä ei tarvita: HTML on
+niin siistiä (`<li class='match'>` jonka lapsilla selkeät luokkanimet
+`ml_ottelunro`/`ml_sarja`/`ml_sarjanimi`/`ml_pvm`/`ml_kenttanimi`/
+`ml_kotisiisti`/`ml_kotilogo`/`ml_tulosklo`/`ml_vieraslogo`/
+`ml_vierassiisti`) että se puretaan suoraan regexillä ilman JSON:ia —
+yksinkertaisempi tekniikka kuin salibandyn upotetun-JSON-purku.
+
+Koska data haetaan seurakohtaisilta sivuilta (ei päivähaulla kuten muut
+TorneoPal-lajit), **ei tarvita category_id-sallittulistaa** — kaikki
+kyseisen seuran sivulla näkyvät ottelut ovat relevantteja, PK-alue
+suodatetaan `ml_kenttanimi`-kentän perusteella (vrt. salibandyn
+`PK_VENUES`-tekniikka).
+
+PK-seudun seurat (`/taso/seurat.php`-listauksesta, `Kotikunta`-kenttä
+tarkistettu): `seura=2`=HIFK (Miesten Bandyliiga, kotikenttä "Kallio tj,
+Hki"), `seura=3`=Botnia (Miesten Bandyliiga, "Oulunkylä tj, Hki"),
+`seura=12`=Vesta (Divari eli alempi sarja — ei otteluita julkaistu
+2026-09-20 mennessä, joten Vestan sarjan oikeaa `category_id`:tä ei ole
+vielä nähty livenä; `level`-päättely koodissa on `sarjanimi.includes
+('Bandyliiga') ? 'paasarja' : 'alempi'` joten se toimii silti oikein heti
+kun Vestan otteluita ilmestyy). **HUOM:** Akilles (huolimatta Helsinki-
+tuntuisesta nimestä) on Porvoosta, ei PK-seutua — tarkistettu erikseen.
+
+**Ottelun kellonaika ei ole tiedossa kuukausia etukäteen** julkaistulle
+otteluohjelmalle (näkyy `--:--`) — `scripts/fetch-jaapallo.js` tallentaa
+tällöin tyhjän `time`-kentän, joka näytetään sovelluksessa viivana ("–").
+Aika todennäköisesti tarkentuu lähempänä ottelupäivää, mutta tätä ei ole
+vielä nähty käytännössä (kausi ei ole käynnissä).
+
+Katso [scripts/fetch-jaapallo.js](scripts/fetch-jaapallo.js) täydelle
+purkulogiikalle. Sama `DAYS_AHEAD = 13` -ikkuna kuin muillakin lähteillä,
+joten data/jaapallo.json on tyhjä syyskuussa (kausi alkaa marraskuussa) ja
+täyttyy itsestään automaattisesti kun otteluita on alle 13 päivän päässä.
+
 ## Tunnetut infrarajoitukset (ei koodilla korjattavissa)
 
 - **Mestis/Auroraliiga** (tulospalvelu.leijonat.fi): CloudFront/WAF estää
@@ -170,7 +206,6 @@ otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
   taustaprosessi ajettaisiin jostain muusta verkosta (esim. käyttäjän omalta
   koneelta cronilla, tai maksullisen proxyn kautta — ei toteutettu, koska
   proxy maksaa ja on eettisesti harmaampi).
-- **Jääpallo** (finbandy.torneopal.fi): ks. yllä, token ei paljastu.
 - **Amerikkalainen jalkapallo**: ei tiedossa olevaa rajapintaa lainkaan.
 
 ## Sudenkuoppia (opittu kantapään kautta)
@@ -224,17 +259,11 @@ otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
 
 - Salibandy: laajenna kattamaan myös muut mahdolliset uudet PK-joukkueet
   jos niitä nousee sarjaan.
-- Jääpallo: token-metsästys jatkuu edelleen tuloksetta (2026-09-20 uusi
-  yritys). www.finbandy.fi (WordPress) lataa `wp-content/plugins/torneopal/
-  torneopal.css` -tiedoston eli sivulla ON asennettuna virallinen TorneoPal-
-  WP-liitännäinen, mutta `/fi/bandyliiga/liigaohjelma/`-sivulla ei ollut
-  yhtään sen renderöimää sisältöä eikä tokenia HTML:ssä — todennäköisesti
-  koska jääpallokausi ei ole käynnissä syyskuussa (kausi ajoittuu marras–
-  maaliskuulle). Kannattaa kokeilla uudelleen kauden aikana, jolloin
-  liitännäinen mahdollisesti renderöi oikean ottelutaulukon ja paljastaa
-  tokenin samaan tapaan kuin Palloliiton tulospalvelu.palloliitto.fi. Muita
-  finbandy.fi:n alasivuja (esim. Naisten Bandyliiga, Suomi-Sarja) ei vielä
-  tarkistettu tällä kierroksella.
+- ~~Jääpallo~~ — löydetty ja lisätty 2026-09-20 (käyttäjän löytämä
+  seurat.php-sivu, ks. "Jääpallo (Bandyliiga)" yllä). Vestan (Divari)
+  todellinen `category_id` pitää vielä vahvistaa kun sen ensimmäinen
+  ottelu ilmestyy datassa. Naisten Bandyliigalle ei ole vielä tarkistettu
+  löytyykö PK-seudulta joukkueita.
 - Mestis/Auroraliiga: harkitse paikallista cron-ajoa käyttäjän omalta
   koneelta jos IP-esto muuten estää.
 - ~~Naisten maajoukkueet (Helmarit ym.)~~ — löydetty ja lisätty (`WUNL`,

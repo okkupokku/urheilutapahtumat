@@ -5,7 +5,8 @@
   "description": "Playwright-taustaprosessi pääkaupunkiseudun urheilutapahtumien haulle",
   "scripts": {
     "fetch:jalkapallo": "node scripts/fetch-jalkapallo.js",
-    "fetch:salibandy": "node scripts/fetch-salibandy.js"
+    "fetch:salibandy": "node scripts/fetch-salibandy.js",
+    "fetch:jaapallo": "node scripts/fetch-jaapallo.js"
   },
   "dependencies": {
     "playwright": "^1.47.0"
