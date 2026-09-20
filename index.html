@@ -178,6 +178,8 @@
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-progress { margin-left: 0.5rem; color: var(--muted); font-size: 0.82rem; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
+  .loading-progress:hover { color: var(--text); }
 
   .row {
     display: grid; grid-template-columns: 3.6rem 6.6rem 1fr auto; gap: 0.9rem; align-items: center;
@@ -304,7 +306,7 @@
     </details>
 
     <div class="meta-line">
-      <span id="result-count">Ladataan datalähteitä…</span><span id="loading-spinner" class="loading-spinner" hidden></span>
+      <span id="result-count">Ladataan datalähteitä…</span><span id="loading-spinner" class="loading-spinner" hidden></span><span id="loading-progress" class="loading-progress" hidden></span>
       <span>
         <span id="updated-time"></span>
         <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
@@ -1429,8 +1431,14 @@ function renderResults() {
   const filtered = getFilteredMatches();
   const distancePrefix = (REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin - ' : '';
   document.getElementById('result-count').textContent = `${distancePrefix}${filtered.length} ottelua näkyvissä`;
-  const stillLoading = Object.values(sourceState).some(s => s.status === 'loading');
+  const loadedCount = SOURCES.filter(s => sourceState[s.id] && sourceState[s.id].status !== 'loading').length;
+  const stillLoading = loadedCount < SOURCES.length;
   document.getElementById('loading-spinner').hidden = !stillLoading;
+  const progressEl = document.getElementById('loading-progress');
+  progressEl.hidden = !stillLoading;
+  if (stillLoading) {
+    progressEl.textContent = `Haetaan lisää otteluita... (${loadedCount}/${SOURCES.length} lähdettä valmiina, klikkaa nähdäksesi mitä)`;
+  }
   const board = document.getElementById('board');
   board.classList.add('board-updating');
   renderBoard(filtered);
@@ -1478,6 +1486,11 @@ async function loadAll() {
 }
 
 document.getElementById('refresh-btn').addEventListener('click', loadAll);
+document.getElementById('loading-progress').addEventListener('click', () => {
+  const panel = document.getElementById('status-panel');
+  panel.open = true;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 requestLocation();
 loadAll();
 </script>
