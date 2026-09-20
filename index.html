@@ -59,6 +59,15 @@
   .status-panel summary .chev { transition: transform 0.15s; }
   .status-panel[open] summary .chev { transform: rotate(90deg); }
   .status-rows { border-top: 1px solid var(--divider); }
+
+  .doc-panel-body { border-top: 1px solid var(--divider); padding: 1rem 1.1rem 1.3rem; font-size: 0.85rem; line-height: 1.6; }
+  .doc-panel-body h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--amber-dim); margin: 1.1rem 0 0.4rem; font-family: 'IBM Plex Mono', monospace; font-weight: 700; }
+  .doc-panel-body h4:first-child { margin-top: 0; }
+  .doc-panel-body p { margin: 0 0 0.6rem; color: var(--muted); }
+  .doc-panel-body ul { margin: 0 0 0.6rem; padding-left: 1.2rem; color: var(--muted); }
+  .doc-panel-body li { margin-bottom: 0.35rem; }
+  .doc-panel-body a { color: var(--amber-dim); }
+  .doc-panel-body strong { color: var(--text); }
   .status-row { display: grid; grid-template-columns: 1.4fr 1.6fr auto; gap: 0.75rem; align-items: center; padding: 0.6rem 1.1rem; border-bottom: 1px solid var(--divider); font-size: 0.85rem; }
   .status-row:last-child { border-bottom: none; }
   .status-row .src-name { font-weight: 600; }
@@ -121,8 +130,13 @@
   .gender-chip.active { color: var(--amber-dim); border-bottom-color: var(--amber); }
   .series-list { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
   .chip.category-chip { font-size: 0.78rem; padding: 0.32rem 0.65rem; }
-  .chip.category-chip.chip-nodata { background: var(--panel); color: var(--muted); border-color: var(--divider); box-shadow: none; opacity: 0.55; font-weight: 500; }
-  .chip.category-chip.chip-nodata:hover { opacity: 0.85; }
+  /* "Ei otteluita" -tila erotettu selvästi "ei valittu" -tilasta: katkoviivareunus
+     ja kursiivi riippumatta valinnasta, kun taas tavallinen ei-valittu sarja
+     näyttää edelleen tavalliselta himmennetyltä pilliltä (.chip:not(.active)). */
+  .chip.category-chip.chip-nodata { background: none; border: 1px dashed var(--divider); color: var(--muted); box-shadow: none; font-weight: 500; font-style: italic; opacity: 0.8; }
+  .chip.category-chip.chip-nodata.active { border-color: var(--amber-dim); color: var(--amber-dim); }
+  .chip.category-chip.chip-nodata:not(.active) { opacity: 0.5; }
+  .chip.category-chip.chip-nodata:hover { opacity: 1; color: var(--text); }
   .distance-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; }
   .distance-row input[type=number] { width: 4.5rem; font-family: 'IBM Plex Mono', monospace; padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--divider); background: var(--panel); color: var(--text); }
   .distance-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--amber); }
@@ -284,10 +298,38 @@
     <summary>Datalähteiden tila <span class="chev">▸</span></summary>
     <div class="status-rows" id="status-rows"></div>
   </details>
+
+  <details class="status-panel" id="doc-panel">
+    <summary>ℹ️ Tietoa tästä sivustosta — mitä ja miten <span class="chev">▸</span></summary>
+    <div class="doc-panel-body">
+      <h4>Mitä tämä on</h4>
+      <p>Kokoaa pääkaupunkiseudun (Helsinki, Espoo, Vantaa, Kauniainen) ammattilais-/ylimmän sarjatason urheiluottelut yhdelle sivulle: jalkapallo, futsal, jääkiekko, koripallo, käsipallo, lentopallo ja salibandy. Data haetaan aina tuoreena kunkin lajiliiton omasta rajapinnasta — sivu ei tallenna mitään pysyvästi palvelimelle, kaikki suodatus tapahtuu selaimessasi.</p>
+
+      <h4>Mistä data tulee</h4>
+      <ul>
+        <li><strong>Jääkiekko (Liiga), koripallo, käsipallo, lentopallo:</strong> haetaan suoraan selaimestasi kunkin lajiliiton omasta julkisesta rajapinnasta joka kerta kun sivu ladataan.</li>
+        <li><strong>Jalkapallo, futsal ja miesten maajoukkue:</strong> Palloliiton rajapinta estää suorat selainkutsut (CORS), joten data haetaan taustaprosessilla (Playwright-selainautomaatio) GitHub Actionsissa 4 tunnin välein ja tallennetaan tähän samaan repoon.</li>
+        <li><strong>Salibandy (F-liiga):</strong> fliiga.com ei tarjoa julkista rajapintaa lainkaan. Mukana ovat vain käsin tunnistetut pääkaupunkiseudun joukkueet (Oilers, Westend Indians, Hawks, EräViikingit, PSS) — niiden koko kauden ottelut on upotettu joukkuesivujen omaan HTML:ään, ja taustaprosessi purkaa ne sieltä samalla 4 tunnin syklillä.</li>
+      </ul>
+
+      <h4>Kartta ja sijainti</h4>
+      <p>Kartta käyttää avainetonta MapLibre GL + OpenFreeMap -yhdistelmää. Ottelupaikkojen koordinaatit tulevat suoraan rajapinnoista lukuun ottamatta salibandyä, jonka hallien koordinaatit on haettu käsin (likiarvoja). Jos sallit sijaintisi käytön, etäisyys lasketaan suoraan linjaa pitkin — ei oikeaa reititystä.</p>
+
+      <h4>Tunnetut rajoitukset</h4>
+      <ul>
+        <li>Mestis/Auroraliiga, jääpallo, amerikkalainen jalkapallo ja muiden lajien maajoukkueet eivät vielä ole mukana — syyt löytyvät "Ei vielä mukana" -osiosta.</li>
+        <li>Osa lajiliittojen rajapinnoista saattaa satunnaisesti estää suoran selainkutsun (CORS) — näkyy yllä "Datalähteiden tila" -paneelissa, sivu ei kaadu.</li>
+        <li>Kaikki näytetyt sarjat on käsin valittu (ylimmät sarjatasot) — nuorisosarjat ja alemmat divisioonat on jätetty pois selkeyden vuoksi.</li>
+      </ul>
+
+      <h4>Lähdekoodi</h4>
+      <p>Koko sivu on avointa lähdekoodia: <a href="https://github.com/okkupokku/urheilutapahtumat" target="_blank" rel="noopener">github.com/okkupokku/urheilutapahtumat</a></p>
+    </div>
+  </details>
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ja salibandyn ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon, koska Palloliiton rajapinta estää suorat selainkutsut ja fliiga.com ei tarjoa julkista rajapintaa lainkaan. Salibandyssa on mukana vain käsin tunnistetut pääkaupunkiseudun F-liigajoukkueet (Oilers, Westend Indians, Hawks, EräViikingit, PSS), ja niiden kotihallien koordinaatit ovat manuaalisesti haettuja likiarvoja — ei suoraan rajapinnasta. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy alla olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Etäisyys sijaintisi ja ottelupaikan välillä lasketaan suoraan linjaa pitkin (ei teitä pitkin), joten se on suuntaa-antava. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain paikallisesti etäisyyksien laskemiseen, eikä sitä lähetetä minnekään.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Katso yllä olevasta "Tietoa tästä sivustosta" -osiosta tarkemmin mistä data tulee ja mitä rajoituksia sillä on. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain paikallisesti etäisyyksien laskemiseen, eikä sitä lähetetä minnekään.</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -777,6 +819,7 @@ function renderFilters() {
     btn.addEventListener('click', () => {
       if (state.sports.has(sport)) { state.sports.delete(sport); btn.classList.remove('active'); }
       else { state.sports.add(sport); btn.classList.add('active'); }
+      renderHierarchy();
       renderResults();
     });
     sportEl.appendChild(btn);
@@ -850,7 +893,16 @@ function renderHierarchy() {
     liveBySport.get(m.sport).set(m.categoryId, { name: m.category, gender: m.genderGroup });
   });
 
-  const knownSports = Object.keys(SPORT_META).filter(s => s !== '_default').sort();
+  // Näytetään tarkennetussa haussa vain LAJI-suodattimessa parhaillaan
+  // valitut lajit — jos laji poistetaan käytöstä ylhäällä, sen sarjat
+  // eivät ole enää valittavissa täällä.
+  const knownSports = Object.keys(SPORT_META).filter(s => s !== '_default' && state.sports.has(s)).sort();
+
+  if (knownSports.length === 0) {
+    root.innerHTML = '<div class="sport-block-empty">Ei valittuja lajeja — valitse laji yltä LAJI-suodattimesta.</div>';
+    return;
+  }
+
   knownSports.forEach(sport => {
     const block = document.createElement('div');
     block.className = 'sport-block';
