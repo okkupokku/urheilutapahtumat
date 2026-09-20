@@ -10,28 +10,25 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root {
-    --bg: #0E1A2B;
-    --panel: #16273D;
-    --panel-alt: #122036;
-    --amber: #F2A93B;
-    --amber-dim: #C98A2C;
-    --text: #EDF1F5;
-    --muted: #7E93AC;
-    --divider: #223650;
-    --green: #5CC49A;
-    --red: #E0654F;
-    --blue: #5AA9E6;
-    --violet: #C77DFF;
+    --bg: #F3F5F8;
+    --panel: #FFFFFF;
+    --panel-alt: #EDF1F6;
+    --amber: #E8952B;
+    --amber-dim: #C97A16;
+    --amber-ink: #241505;
+    --text: #1B2430;
+    --muted: #67728A;
+    --divider: #DDE3EC;
+    --shadow: 0 10px 26px -16px rgba(23,35,58,0.22);
     --radius: 10px;
-    --shadow: 0 10px 28px -14px rgba(0,0,0,0.55);
   }
   * { box-sizing: border-box; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   html, body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Archivo', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
   body {
     background:
-      radial-gradient(1100px 480px at 15% -8%, rgba(242,169,59,0.10), transparent 60%),
-      radial-gradient(900px 420px at 100% 0%, rgba(90,169,230,0.08), transparent 55%),
+      radial-gradient(1100px 480px at 15% -10%, rgba(232,149,43,0.07), transparent 60%),
+      radial-gradient(900px 420px at 100% 0%, rgba(47,134,214,0.06), transparent 55%),
       var(--bg);
   }
   .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
@@ -45,12 +42,13 @@
   }
   @keyframes ring { 0% { transform: scale(0.6); opacity: 0.7; } 100% { transform: scale(1.9); opacity: 0; } }
   h1 { font-size: clamp(1.6rem, 3.4vw, 2.25rem); font-weight: 800; letter-spacing: -0.015em; margin: 0; }
-  .subhead { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 60ch; line-height: 1.55; }
+  .subhead { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 62ch; line-height: 1.55; }
+  .location-note { color: var(--amber-dim); font-size: 0.83rem; margin: 0.5rem 0 0; font-weight: 600; }
 
   main { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem 4rem; }
 
   /* Datalähteiden tila -paneeli */
-  .status-panel { border: 1px solid var(--divider); border-radius: var(--radius); margin: 1.5rem 0; overflow: hidden; background: var(--panel-alt); }
+  .status-panel { border: 1px solid var(--divider); border-radius: var(--radius); margin: 2.5rem 0 0; overflow: hidden; background: var(--panel); }
   .status-panel summary { cursor: pointer; padding: 0.85rem 1.1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.76rem; letter-spacing: 0.03em; color: var(--muted); text-transform: uppercase; list-style: none; display: flex; justify-content: space-between; align-items: center; }
   .status-panel summary::-webkit-details-marker { display: none; }
   .status-panel summary .chev { transition: transform 0.15s; }
@@ -61,65 +59,70 @@
   .status-row .src-name { font-weight: 600; }
   .status-row .src-detail { color: var(--muted); font-size: 0.78rem; }
   .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.4rem; flex-shrink: 0; }
-  .dot.live { background: var(--green); box-shadow: 0 0 0 3px rgba(92,196,154,0.18); }
-  .dot.blocked { background: var(--red); }
+  .dot.live { background: #1FA97A; box-shadow: 0 0 0 3px rgba(31,169,122,0.16); }
+  .dot.blocked { background: #D6503A; }
   .dot.none { background: var(--muted); }
   .dot.loading { background: var(--amber); animation: pulse 1s infinite ease-in-out; }
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
   .status-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; white-space: nowrap; }
 
-  .refresh-btn { background: transparent; border: 1px solid var(--divider); color: var(--text); padding: 0.45rem 0.85rem; border-radius: 999px; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-left: 0.75rem; transition: border-color .15s, background .15s; }
-  .refresh-btn:hover { border-color: var(--amber-dim); background: rgba(242,169,59,0.08); }
+  .refresh-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--text); padding: 0.45rem 0.85rem; border-radius: 999px; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-left: 0.75rem; transition: border-color .15s, background .15s; }
+  .refresh-btn:hover { border-color: var(--amber-dim); background: rgba(232,149,43,0.08); }
 
-  .controls-sticky { position: sticky; top: 0; z-index: 20; background: rgba(14,26,43,0.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding-top: 0.75rem; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+  .controls-sticky { position: sticky; top: 0; z-index: 20; background: rgba(243,245,248,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding-top: 0.75rem; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
 
   .view-tabs { display: flex; gap: 0.45rem; margin-bottom: 0.9rem; }
-  .view-tab { background: transparent; border: 1px solid var(--divider); color: var(--muted); padding: 0.5rem 1.1rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .15s; }
-  .view-tab:hover:not(.active) { border-color: var(--amber-dim); color: var(--text); }
-  .view-tab.active { background: var(--amber); border-color: var(--amber); color: #1A1204; }
+  .view-tab { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.5rem 1.1rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .15s; opacity: 0.75; }
+  .view-tab:hover:not(.active) { border-color: var(--amber-dim); color: var(--text); opacity: 1; }
+  .view-tab.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); opacity: 1; box-shadow: 0 4px 12px -4px rgba(232,149,43,0.55); }
 
   .controls { border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); padding: 1rem 0; margin-bottom: 0.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
   .control-row { display: flex; flex-wrap: nowrap; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
   .control-row::-webkit-scrollbar { display: none; }
   .control-row .label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; width: 5.5rem; flex-shrink: 0; }
-  .chip { background: transparent; border: 1px solid var(--divider); color: var(--text); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s; white-space: nowrap; flex-shrink: 0; }
-  .chip:hover { border-color: var(--amber-dim); }
+  .chip { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s, opacity .15s; white-space: nowrap; flex-shrink: 0; opacity: 0.6; }
+  .chip:hover { border-color: var(--amber-dim); opacity: 1; color: var(--text); }
   .chip:active { transform: scale(0.96); }
-  .chip.active { background: var(--amber); border-color: var(--amber); color: #1A1204; font-weight: 600; }
-  .chip.active.city { background: var(--green); border-color: var(--green); }
+  .chip.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); font-weight: 700; opacity: 1; box-shadow: 0 3px 10px -4px rgba(232,149,43,0.6); }
+
+  .date-range { display: none; align-items: center; gap: 0.4rem; margin-left: 0.2rem; flex-shrink: 0; }
+  .date-range.active { display: inline-flex; }
+  .date-range span { color: var(--muted); font-size: 0.8rem; }
+  .date-range input[type=date] { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--divider); background: var(--panel); color: var(--text); }
 
   .meta-line { display: flex; justify-content: space-between; align-items: baseline; padding: 1rem 0 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 0.5rem; }
   .meta-line .count { color: var(--text); font-weight: 600; }
 
   .day-group { margin-top: 1.75rem; }
   .day-group:first-of-type { margin-top: 0.5rem; }
-  .day-label { display: flex; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.06em; color: var(--amber); text-transform: uppercase; padding-bottom: 0.5rem; border-bottom: 1px solid var(--divider); margin-bottom: 0.6rem; }
-  .day-badge { background: var(--amber); color: #1A1204; padding: 0.08rem 0.45rem; border-radius: 4px; font-size: 0.65rem; margin-left: 0.6rem; font-weight: 700; }
+  .day-label { display: flex; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.06em; color: var(--amber-dim); text-transform: uppercase; padding-bottom: 0.5rem; border-bottom: 1px solid var(--divider); margin-bottom: 0.6rem; }
+  .day-badge { background: var(--amber); color: var(--amber-ink); padding: 0.08rem 0.45rem; border-radius: 4px; font-size: 0.65rem; margin-left: 0.6rem; font-weight: 700; }
 
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
   .row {
     display: grid; grid-template-columns: 3.6rem 6.6rem 1fr auto; gap: 0.9rem; align-items: center;
     padding: 0.85rem 0.9rem; margin-bottom: 0.45rem; border-radius: var(--radius);
-    background: var(--panel-alt); border: 1px solid var(--divider); border-left: 3px solid var(--muted);
+    background: var(--panel); border: 1px solid var(--divider); border-left: 3px solid var(--muted);
     transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
     animation: fadeInUp .3s ease both;
   }
-  .row:hover { background: var(--panel); transform: translateY(-1px); box-shadow: var(--shadow); }
-  .row .time { font-family: 'IBM Plex Mono', monospace; font-size: 0.95rem; color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
-  .row .sport-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; letter-spacing: 0.03em; padding: 0.22rem 0.45rem; border-radius: 999px; text-align: center; text-transform: uppercase; width: fit-content; font-weight: 700; }
+  .row:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  .row .time { font-family: 'IBM Plex Mono', monospace; font-size: 0.95rem; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .row .sport-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; letter-spacing: 0.03em; padding: 0.22rem 0.45rem; border-radius: 999px; text-align: center; text-transform: uppercase; width: fit-content; font-weight: 700; color: #fff; }
   .row .matchup { font-weight: 600; font-size: 0.98rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; }
   .row .matchup .team { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
   .row .matchup .dash { color: var(--muted); font-weight: 400; }
-  .row .matchup .crest { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; border-radius: 3px; background: rgba(255,255,255,0.06); flex-shrink: 0; }
+  .row .matchup .crest { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; border-radius: 3px; background: rgba(0,0,0,0.04); flex-shrink: 0; }
   .row .details { color: var(--muted); font-size: 0.82rem; margin-top: 0.2rem; }
   .row .details .category { color: var(--amber-dim); }
   .row .venue-col { text-align: right; font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
   .row .venue-col .city { display: block; color: var(--text); font-weight: 500; font-size: 0.85rem; }
+  .row .venue-col .distance { display: block; color: var(--amber-dim); font-size: 0.72rem; font-weight: 600; margin-top: 0.1rem; }
 
   .map-view { margin-top: 0.5rem; }
   .map-el { height: 500px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--divider); background: var(--panel-alt); }
-  .map-el .map-tiles-dark { filter: invert(1) hue-rotate(180deg) brightness(0.93) contrast(0.88) saturate(0.85); }
+  .map-el .map-tiles-muted { filter: saturate(0.7) brightness(1.02); }
   .map-note { color: var(--muted); font-size: 0.78rem; margin: 0.7rem 0.1rem 0; }
   .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
   .leaflet-popup-content { margin: 0.8rem 1rem; font-family: 'Archivo', sans-serif; min-width: 190px; }
@@ -129,20 +132,20 @@
   .map-popup-city { color: var(--muted); font-size: 0.75rem; margin-bottom: 0.5rem; }
   .map-popup-match { display: flex; gap: 0.5rem; align-items: baseline; padding: 0.35rem 0; border-top: 1px solid var(--divider); font-size: 0.82rem; }
   .map-popup-match:first-of-type { border-top: none; }
-  .map-popup-time { font-family: 'IBM Plex Mono', monospace; color: var(--amber); flex-shrink: 0; font-size: 0.75rem; }
-  .leaflet-control-attribution { background: rgba(14,26,43,0.75) !important; color: var(--muted) !important; }
+  .map-popup-time { font-family: 'IBM Plex Mono', monospace; color: var(--amber-dim); flex-shrink: 0; font-size: 0.75rem; }
+  .leaflet-control-attribution { background: rgba(255,255,255,0.85) !important; color: var(--muted) !important; }
   .leaflet-control-attribution a { color: var(--muted) !important; }
   .leaflet-control-zoom a { background: var(--panel) !important; color: var(--text) !important; border-color: var(--divider) !important; }
 
-  .placeholder-card { display: flex; gap: 0.75rem; border: 1px dashed var(--divider); border-radius: var(--radius); padding: 1rem 1.1rem; margin-top: 0.75rem; color: var(--muted); font-size: 0.85rem; }
+  .placeholder-card { display: flex; gap: 0.75rem; border: 1px dashed var(--divider); border-radius: var(--radius); padding: 1rem 1.1rem; margin-top: 0.75rem; color: var(--muted); font-size: 0.85rem; background: var(--panel); }
   .placeholder-card .ph-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; opacity: 0.7; }
   .placeholder-card .ph-title { color: var(--text); font-weight: 600; margin-bottom: 0.3rem; }
   .placeholders-heading { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin: 2.25rem 0 0; }
 
   .empty-state { padding: 3rem 0.25rem; color: var(--muted); font-size: 0.95rem; border-bottom: 1px solid var(--divider); }
 
-  footer { max-width: 1040px; margin: 2.5rem auto 0; padding: 1.25rem 1.5rem 2.5rem; border-top: 1px solid var(--divider); color: var(--muted); font-size: 0.78rem; line-height: 1.6; }
-  footer .flag { color: var(--amber); font-weight: 600; }
+  footer { max-width: 1040px; margin: 1.5rem auto 0; padding: 1.25rem 1.5rem 2.5rem; border-top: 1px solid var(--divider); color: var(--muted); font-size: 0.78rem; line-height: 1.6; }
+  footer .flag { color: var(--amber-dim); font-weight: 600; }
 
   @media (max-width: 600px) {
     .controls-sticky { margin: 0 -1rem; padding-left: 1rem; padding-right: 1rem; }
@@ -152,6 +155,7 @@
     .row .matchup, .row .details { grid-column: 2; }
     .row .venue-col { grid-column: 1 / -1; text-align: left; margin-top: 0.4rem; }
     .row .venue-col .city { display: inline; }
+    .row .venue-col .distance { display: inline; margin-left: 0.4rem; }
     .status-row { grid-template-columns: 1fr; row-gap: 0.2rem; }
     .map-el { height: 380px; }
   }
@@ -162,14 +166,10 @@
 <header class="board-header">
   <div class="brand"><span class="mark"></span><h1>Lähtötaulu</h1></div>
   <p class="subhead">Pääkaupunkiseudun urheiluottelut yhdellä sivulla — suodata lajin, alueen ja ajankohdan mukaan, tai katso ottelupaikat kartalta.</p>
+  <p class="location-note" id="location-note" style="display:none;"></p>
 </header>
 
 <main>
-  <details class="status-panel" id="status-panel">
-    <summary>Datalähteiden tila <span class="chev">▸</span></summary>
-    <div class="status-rows" id="status-rows"></div>
-  </details>
-
   <div class="controls-sticky">
     <div class="view-tabs" id="view-tabs">
       <button class="view-tab active" data-view="list" type="button">📋 Lista</button>
@@ -199,10 +199,15 @@
   </div>
 
   <div id="placeholders"></div>
+
+  <details class="status-panel" id="status-panel">
+    <summary>Datalähteiden tila <span class="chev">▸</span></summary>
+    <div class="status-rows" id="status-rows"></div>
+  </details>
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy yllä olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Mestis/Auroraliiga, salibandyn F-liiga, jääpallo ja amerikkalainen jalkapallo näkyvät alla placeholdereina, koska niiden rajapinnat estävät sekä suoran selainkutsun että taustaprosessin. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Maajoukkueottelut eivät vielä ole mukana.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy alla olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain lähimpien tämän päivän otteluiden ehdottamiseen, eikä sitä lähetetä minnekään.</p>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -212,16 +217,16 @@
    ============================================================ */
 
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
-const DAYS_AHEAD = 6; // tänään + N seuraavaa päivää
+const DAYS_AHEAD = 13; // tänään + N seuraavaa päivää (rajaa myös "valitse päivämäärät" -valitsimen ylärajan)
 const REQUEST_DELAY_MS = 150; // pieni tauko peräkkäisten kutsujen välissä per lähde
 
 const SPORT_META = {
-  'Jalkapallo': { color: '#5CC49A', icon: '⚽' },
-  'Jääkiekko': { color: '#5AA9E6', icon: '🏒' },
-  'Koripallo': { color: '#F2A93B', icon: '🏀' },
-  'Käsipallo': { color: '#E0654F', icon: '🤾' },
-  'Lentopallo': { color: '#C77DFF', icon: '🏐' },
-  '_default': { color: '#7E93AC', icon: '🏆' },
+  'Jalkapallo': { color: '#128363', icon: '⚽' },
+  'Jääkiekko': { color: '#1D6FBD', icon: '🏒' },
+  'Koripallo': { color: '#C94A24', icon: '🏀' },
+  'Käsipallo': { color: '#A8305F', icon: '🤾' },
+  'Lentopallo': { color: '#6142C7', icon: '🏐' },
+  '_default': { color: '#667085', icon: '🏆' },
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 
@@ -236,7 +241,7 @@ function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
 function isPKAreaTorneoPal(m) {
   const area = (m.venue_area_name || '').trim().toLowerCase();
   const city = (m.venue_city_name || '').trim().toUpperCase();
-  return area === 'pääkaupunkiseutu' || PK_CITIES.includes(city);
+  return area === 'pääkaupunkiseutu' || area === 'pk-seutu' || PK_CITIES.includes(city);
 }
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = 9000) {
@@ -284,8 +289,8 @@ function normalizeTorneoPal(m, sportLabel) {
     category: m.category_name || '',
     teamA: m.team_A_name || m.club_A_name || '?',
     teamB: m.team_B_name || m.club_B_name || '?',
-    venue: m.venue_location_name || m.venue_name || '',
-    city: m.venue_city_name || '',
+    venue: (m.venue_location_name || m.venue_name || '').trim(),
+    city: (m.venue_city_name || '').trim(),
     lat: m.venue_lat ? parseFloat(m.venue_lat) : null,
     lon: m.venue_lon ? parseFloat(m.venue_lon) : null,
     crestA: m.club_A_crest || null,
@@ -323,8 +328,8 @@ function normalizeLiiga(g) {
     category: 'Liiga',
     teamA: g.homeTeam?.teamName || '?',
     teamB: g.awayTeam?.teamName || '?',
-    venue: g.iceRink?.name || '',
-    city: g.iceRink?.city || '',
+    venue: (g.iceRink?.name || '').trim(),
+    city: (g.iceRink?.city || '').trim(),
     lat: typeof g.iceRink?.latitude === 'number' ? g.iceRink.latitude : null,
     lon: typeof g.iceRink?.longitude === 'number' ? g.iceRink.longitude : null,
     crestA: g.homeTeam?.logos?.darkBg || null,
@@ -398,6 +403,7 @@ const SOURCES = [
 ];
 
 const PLACEHOLDER_SPORTS = [
+  { label: 'Maaottelut', note: 'Maajoukkueiden ottelut haetaan eri kilpailu-/turnaustunnuksilla kuin kotimaiset sarjat, joten ne eivät vielä sisälly nykyisiin rajapintakutsuihin.' },
   { label: 'Jääkiekko — Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) — vaatisi ajon toisesta verkosta.' },
   { label: 'Salibandy — F-liiga (miehet ja naiset)', note: 'fliiga.com ei tarjoa JSON-rajapintaa — vaatii sivun sisällön hakua toisella tavalla.' },
   { label: 'Jääpallo — Bandyliiga', note: 'finbandy.torneopal.fi:n rajapinta vaatii avaimen jota ei ole saatavilla selaimesta.' },
@@ -431,15 +437,52 @@ function renderStatusPanel() {
 }
 
 /* ============================================================
+   SIJAINTI
+   ============================================================ */
+
+let USER_LOCATION = null; // { lat, lon } tai null jos ei saatavilla/lupaa
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const toRad = deg => deg * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function distanceToUser(m) {
+  if (!USER_LOCATION || typeof m.lat !== 'number' || typeof m.lon !== 'number') return null;
+  return haversineKm(USER_LOCATION.lat, USER_LOCATION.lon, m.lat, m.lon);
+}
+
+function requestLocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      USER_LOCATION = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      const note = document.getElementById('location-note');
+      note.textContent = '📍 Näytämme oletuksena tämän päivän lähimmät ottelusi ensin.';
+      note.style.display = '';
+      renderResults();
+    },
+    () => { /* evätty tai ei saatavilla — jatketaan ilman sijaintia */ },
+    { maximumAge: 300000, timeout: 8000 }
+  );
+}
+
+/* ============================================================
    SUODATTIMET JA NÄYTTÖ
    ============================================================ */
 
 let ALL_MATCHES = [];
-const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen'];
+const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Muu'];
 const state = {
   sports: new Set(),
-  cities: new Set(PK_CITIES.map(c => c[0] + c.slice(1).toLowerCase())),
-  day: 'all',
+  cities: new Set(DISPLAY_CITIES),
+  day: 'today',
+  customFrom: null,
+  customTo: null,
   view: 'list',
 };
 
@@ -451,10 +494,13 @@ function addDays(dateStr, n) {
 
 function passesDayFilter(dateStr) {
   const today = todayISO(0);
-  if (state.day === 'all') return true;
   if (state.day === 'today') return dateStr === today;
-  if (state.day === 'tomorrow') return dateStr === addDays(today, 1);
-  if (state.day === 'week') return dateStr >= today && dateStr <= addDays(today, 7);
+  if (state.day === 'week') return dateStr >= today && dateStr <= addDays(today, DAYS_AHEAD);
+  if (state.day === 'custom') {
+    const from = state.customFrom || today;
+    const to = state.customTo || addDays(today, DAYS_AHEAD);
+    return dateStr >= from && dateStr <= to;
+  }
   return true;
 }
 
@@ -472,15 +518,26 @@ function formatShortDate(dateStr) {
 
 function cityOf(m) {
   if (m.city) return m.city[0] + m.city.slice(1).toLowerCase();
-  return 'Pääkaupunkiseutu';
+  return 'Muu';
 }
 
 function getFilteredMatches() {
-  return ALL_MATCHES.filter(m =>
+  const list = ALL_MATCHES.filter(m =>
     state.sports.has(m.sport) &&
     state.cities.has(cityOf(m)) &&
     passesDayFilter(m.date)
-  ).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  );
+
+  const useDistanceSort = !!USER_LOCATION && state.day === 'today';
+  return list.sort((a, b) => {
+    if (useDistanceSort) {
+      const da = distanceToUser(a), db = distanceToUser(b);
+      if (da !== null && db !== null && da !== db) return da - db;
+      if (da !== null && db === null) return -1;
+      if (da === null && db !== null) return 1;
+    }
+    return (a.date + a.time).localeCompare(b.date + b.time);
+  });
 }
 
 function renderFilters() {
@@ -504,7 +561,7 @@ function renderFilters() {
   cityEl.querySelectorAll('.chip').forEach(c => c.remove());
   DISPLAY_CITIES.forEach(city => {
     const btn = document.createElement('button');
-    btn.className = 'chip active city';
+    btn.className = 'chip active';
     btn.textContent = city;
     btn.addEventListener('click', () => {
       if (state.cities.has(city)) { state.cities.delete(city); btn.classList.remove('active'); }
@@ -517,28 +574,41 @@ function renderFilters() {
   const dayEl = document.getElementById('day-filters');
   if (!dayEl.dataset.built) {
     const days = [
-      { key: 'all', label: 'Kaikki' },
       { key: 'today', label: 'Tänään' },
-      { key: 'tomorrow', label: 'Huomenna' },
-      { key: 'week', label: 'Tämä viikko' },
+      { key: 'week', label: `Seuraavat ${DAYS_AHEAD + 1} päivää` },
+      { key: 'custom', label: 'Valitse päivämäärät' },
     ];
     days.forEach(({ key, label }) => {
       const btn = document.createElement('button');
-      btn.className = 'chip' + (key === 'all' ? ' active' : '');
+      btn.className = 'chip' + (key === state.day ? ' active' : '');
       btn.textContent = label;
       btn.addEventListener('click', () => {
         state.day = key;
         [...dayEl.querySelectorAll('.chip')].forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
+        document.getElementById('date-range').classList.toggle('active', key === 'custom');
         renderResults();
       });
       dayEl.appendChild(btn);
     });
+
+    const minDate = todayISO(0);
+    const maxDate = todayISO(DAYS_AHEAD);
+    state.customFrom = minDate;
+    state.customTo = maxDate;
+    const range = document.createElement('span');
+    range.className = 'date-range';
+    range.id = 'date-range';
+    range.innerHTML = `<input type="date" id="date-from" min="${minDate}" max="${maxDate}" value="${minDate}"><span>–</span><input type="date" id="date-to" min="${minDate}" max="${maxDate}" value="${maxDate}">`;
+    dayEl.appendChild(range);
+    range.querySelector('#date-from').addEventListener('change', e => { state.customFrom = e.target.value; renderResults(); });
+    range.querySelector('#date-to').addEventListener('change', e => { state.customTo = e.target.value; renderResults(); });
+
     dayEl.dataset.built = '1';
   }
 }
 
-function crestImg(url, alt) {
+function crestImg(url) {
   if (!url) return '';
   return `<img class="crest" src="${url}" alt="" loading="lazy" onerror="this.remove()">`;
 }
@@ -550,7 +620,7 @@ function renderBoard(filtered) {
   if (ALL_MATCHES.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = 'Ei vielä yhtään ottelua ladattu — katso yllä olevasta tilapaneelista mitkä lähteet toimivat juuri nyt.';
+    empty.textContent = 'Ei vielä yhtään ottelua ladattu — katso alta "Datalähteiden tila" mitkä lähteet toimivat juuri nyt.';
     board.appendChild(empty);
     return;
   }
@@ -564,10 +634,19 @@ function renderBoard(filtered) {
   }
 
   const today = todayISO(0);
+  const showDistance = !!USER_LOCATION;
   const grouped = {};
-  filtered.forEach(m => { grouped[m.date] = grouped[m.date] || []; grouped[m.date].push(m); });
+  const order = [];
+  filtered.forEach(m => {
+    if (!grouped[m.date]) { grouped[m.date] = []; order.push(m.date); }
+    grouped[m.date].push(m);
+  });
 
-  Object.keys(grouped).sort().forEach(date => {
+  // Kun lajitellaan etäisyyden mukaan, säilytetään se järjestys päivän sisällä
+  // sen sijaan että aakkostettaisiin päivät uudelleen aikajärjestykseen.
+  const dateKeys = (USER_LOCATION && state.day === 'today') ? order : Object.keys(grouped).sort();
+
+  dateKeys.forEach(date => {
     const group = document.createElement('div');
     group.className = 'day-group';
     const label = document.createElement('div');
@@ -577,17 +656,18 @@ function renderBoard(filtered) {
 
     grouped[date].forEach(m => {
       const meta = sportMeta(m.sport);
+      const dist = showDistance ? distanceToUser(m) : null;
       const row = document.createElement('div');
       row.className = 'row';
       row.style.borderLeftColor = meta.color;
       row.innerHTML = `
         <div class="time mono">${m.time || '–'}</div>
-        <div class="sport-tag" style="background:${meta.color};color:#0E1A2B;">${meta.icon} ${m.sport}</div>
+        <div class="sport-tag" style="background:${meta.color};">${meta.icon} ${m.sport}</div>
         <div>
           <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
           <div class="details"><span class="category">${m.category}</span></div>
         </div>
-        <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span></div>
+        <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${dist < 1 ? Math.round(dist * 1000) + ' m' : dist.toFixed(1) + ' km'}</span>` : ''}</div>
       `;
       group.appendChild(row);
     });
@@ -601,6 +681,7 @@ function renderBoard(filtered) {
 
 let mapInstance = null;
 let markerLayer = null;
+let userMarker = null;
 
 function ensureMap() {
   if (mapInstance) return mapInstance;
@@ -609,7 +690,7 @@ function ensureMap() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-tekijät',
     subdomains: 'abc',
     maxZoom: 19,
-    className: 'map-tiles-dark',
+    className: 'map-tiles-muted',
   }).addTo(mapInstance);
   markerLayer = L.layerGroup().addTo(mapInstance);
   return mapInstance;
@@ -631,6 +712,8 @@ function renderMap(filtered) {
     groups.get(key).matches.push(m);
   });
 
+  const boundsPoints = [];
+
   groups.forEach(g => {
     const meta = sportMeta(g.matches[0].sport);
     const radius = Math.min(8 + (g.matches.length - 1) * 2, 16);
@@ -651,7 +734,23 @@ function renderMap(filtered) {
       ${items}
     `);
     marker.addTo(markerLayer);
+    boundsPoints.push([g.lat, g.lon]);
   });
+
+  if (userMarker) { markerLayer.removeLayer(userMarker); userMarker = null; }
+  if (USER_LOCATION) {
+    userMarker = L.circleMarker([USER_LOCATION.lat, USER_LOCATION.lon], {
+      radius: 7, color: '#fff', weight: 2, fillColor: '#1D6FBD', fillOpacity: 1,
+    }).bindPopup('Sijaintisi');
+    userMarker.addTo(markerLayer);
+    boundsPoints.push([USER_LOCATION.lat, USER_LOCATION.lon]);
+  }
+
+  if (boundsPoints.length > 0) {
+    mapInstance.fitBounds(L.latLngBounds(boundsPoints), { padding: [40, 40], maxZoom: 14 });
+  } else {
+    mapInstance.setView([60.1908, 24.9438], 11);
+  }
 
   const note = document.getElementById('map-note');
   note.textContent = withoutCoords > 0
@@ -680,7 +779,8 @@ document.querySelectorAll('.view-tab').forEach(btn => {
 
 function renderResults() {
   const filtered = getFilteredMatches();
-  document.getElementById('result-count').textContent = `${filtered.length} ottelua näkyvissä`;
+  const distancePrefix = (USER_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin — ' : '';
+  document.getElementById('result-count').textContent = `${distancePrefix}${filtered.length} ottelua näkyvissä`;
   renderBoard(filtered);
   if (state.view === 'map' && mapInstance) renderMap(filtered);
 }
@@ -725,6 +825,7 @@ async function loadAll() {
 }
 
 document.getElementById('refresh-btn').addEventListener('click', loadAll);
+requestLocation();
 loadAll();
 </script>
 
