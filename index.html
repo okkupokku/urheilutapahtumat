@@ -254,6 +254,8 @@
 
     <div class="controls">
       <div class="control-row" id="sport-filters"><span class="label">LAJI</span></div>
+      <div class="control-row" id="gender-filters"><span class="label">SUKUPUOLI</span></div>
+      <div class="control-row" id="level-filters"><span class="label">SARJATASO</span></div>
       <div class="control-row" id="city-filters"><span class="label">ALUE</span></div>
       <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
     </div>
@@ -375,11 +377,14 @@ function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 // id:t ovat toistaiseksi paikanvaraajia (PH-alkuiset) — kun oikea rajapinta
 // ja category_id löytyvät (ks. CLAUDE.md "Ideoita jatkoa varten"), korvaa
 // id oikealla arvolla samaan tapaan kuin UNL löydettiin.
+// "level" ('paasarja'/'alempi') on vain seurasarjoilla — käytetään normihaun
+// SARJATASO-suodattimessa (ks. levelOf()). Maajoukkuesarjoilla ei ole
+// level-kenttää, joten ne näkyvät aina riippumatta Sarjataso-valinnasta.
 const KNOWN_SERIES = {
   'Jalkapallo': [
-    { id: 'VL', gender: 'Miehet', name: 'Veikkausliiga' },
-    { id: 'M1L', gender: 'Miehet', name: 'Ykkösliiga' },
-    { id: 'NL', gender: 'Naiset', name: 'Kansallinen Liiga' },
+    { id: 'VL', gender: 'Miehet', name: 'Veikkausliiga', level: 'paasarja' },
+    { id: 'M1L', gender: 'Miehet', name: 'Ykkösliiga', level: 'alempi' },
+    { id: 'NL', gender: 'Naiset', name: 'Kansallinen Liiga', level: 'paasarja' },
     { id: 'UNL', gender: 'Miehet', name: 'UEFA Nations League Huuhkajat', group: 'maajoukkue' },
     { id: 'PH-MMK-M', gender: 'Miehet', name: 'MM-karsinnat', group: 'maajoukkue' },
     { id: 'PH-EMK-M', gender: 'Miehet', name: 'EM-karsinnat', group: 'maajoukkue' },
@@ -390,46 +395,51 @@ const KNOWN_SERIES = {
     { id: 'PH-YO-N', gender: 'Naiset', name: 'Ystävyysottelut', group: 'maajoukkue' },
   ],
   'Futsal': [
-    { id: 'FML', gender: 'Miehet', name: 'Miesten Futsal-Liiga' },
-    { id: 'FNL', gender: 'Naiset', name: 'Naisten Futsal-Liiga' },
+    { id: 'FML', gender: 'Miehet', name: 'Miesten Futsal-Liiga', level: 'paasarja' },
+    { id: 'FNL', gender: 'Naiset', name: 'Naisten Futsal-Liiga', level: 'paasarja' },
   ],
   'Jääkiekko': [
-    { id: 'Liiga', gender: 'Miehet', name: 'Liiga' },
+    { id: 'Liiga', gender: 'Miehet', name: 'Liiga', level: 'paasarja' },
     { id: 'PH-MM-M', gender: 'Miehet', name: 'MM-kisat', group: 'maajoukkue' },
     { id: 'PH-EHT-M', gender: 'Miehet', name: 'Euro Hockey Tour', group: 'maajoukkue' },
     { id: 'PH-MM-N', gender: 'Naiset', name: 'MM-kisat', group: 'maajoukkue' },
   ],
   'Koripallo': [
-    { id: '4', gender: 'Miehet', name: 'Korisliiga' },
-    { id: '1', gender: 'Naiset', name: 'Naisten Korisliiga' },
-    { id: '15', gender: 'Miehet', name: 'Suomen cup' },
+    { id: '4', gender: 'Miehet', name: 'Korisliiga', level: 'paasarja' },
+    { id: '1', gender: 'Naiset', name: 'Naisten Korisliiga', level: 'paasarja' },
+    { id: '15', gender: 'Miehet', name: 'Suomen cup', level: 'paasarja' },
     { id: 'PH-EBK-M', gender: 'Miehet', name: 'EuroBasket-karsinnat', group: 'maajoukkue' },
     { id: 'PH-MMK-M', gender: 'Miehet', name: 'MM-karsinnat', group: 'maajoukkue' },
     { id: 'PH-EBK-N', gender: 'Naiset', name: 'EuroBasket-karsinnat', group: 'maajoukkue' },
   ],
   'Käsipallo': [
-    { id: 'SM-liiga', gender: 'Miehet', name: 'Aktialiiga' },
-    { id: 'NSM', gender: 'Naiset', name: 'Aktialiiga' },
-    { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup' },
-    { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup' },
+    { id: 'SM-liiga', gender: 'Miehet', name: 'Aktialiiga', level: 'paasarja' },
+    { id: 'NSM', gender: 'Naiset', name: 'Aktialiiga', level: 'paasarja' },
+    { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup', level: 'paasarja' },
+    { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup', level: 'paasarja' },
     { id: 'PH-EMMK-M', gender: 'Miehet', name: 'EM-/MM-karsinnat', group: 'maajoukkue' },
     { id: 'PH-EMMK-N', gender: 'Naiset', name: 'EM-/MM-karsinnat', group: 'maajoukkue' },
   ],
   'Lentopallo': [
-    { id: 'ML', gender: 'Miehet', name: 'Mestaruusliiga' },
-    { id: 'NL', gender: 'Naiset', name: 'Mestaruusliiga' },
+    { id: 'ML', gender: 'Miehet', name: 'Mestaruusliiga', level: 'paasarja' },
+    { id: 'NL', gender: 'Naiset', name: 'Mestaruusliiga', level: 'paasarja' },
     { id: 'PH-EMK-M', gender: 'Miehet', name: 'EM-karsinnat', group: 'maajoukkue' },
     { id: 'PH-KL-M', gender: 'Miehet', name: 'Kultaliiga / Challenger', group: 'maajoukkue' },
     { id: 'PH-EMK-N', gender: 'Naiset', name: 'EM-karsinnat', group: 'maajoukkue' },
   ],
   'Salibandy': [
-    { id: 'FLM', gender: 'Miehet', name: 'F-liiga' },
-    { id: 'FLN', gender: 'Naiset', name: 'F-liiga' },
+    { id: 'FLM', gender: 'Miehet', name: 'F-liiga', level: 'paasarja' },
+    { id: 'FLN', gender: 'Naiset', name: 'F-liiga', level: 'paasarja' },
     { id: 'PH-MM-M', gender: 'Miehet', name: 'MM-kisat', group: 'maajoukkue' },
     { id: 'PH-EFT-M', gender: 'Miehet', name: 'Euro Floorball Tour', group: 'maajoukkue' },
     { id: 'PH-MM-N', gender: 'Naiset', name: 'MM-kisat', group: 'maajoukkue' },
   ],
 };
+
+function levelOf(m) {
+  const entry = (KNOWN_SERIES[m.sport] || []).find(s => s.id === m.categoryId);
+  return entry ? (entry.level || null) : null;
+}
 
 function todayISO(offsetDays = 0) {
   const d = new Date();
@@ -758,10 +768,16 @@ document.getElementById('max-distance-input').addEventListener('input', e => {
 
 let ALL_MATCHES = [];
 const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Muu'];
+const DISPLAY_GENDERS = ['Miehet', 'Naiset', 'Muu'];
+const DISPLAY_LEVELS = [
+  { id: 'paasarja', label: 'Pääsarja' },
+  { id: 'alempi', label: 'Alemmat sarjat' },
+];
 const state = {
   sports: new Set(),
   cities: new Set(DISPLAY_CITIES),
   genders: new Set(),
+  levels: new Set(),
   categories: new Set(),
   day: 'today',
   customFrom: null,
@@ -769,6 +785,15 @@ const state = {
   maxDistanceKm: null,
   view: 'list',
 };
+
+// Yhteinen sukupuolen tila- ja näyttöpäivitys: sekä normihaun SUKUPUOLI-rivi
+// että tarkennetun haun hierarkian gender-chipit jakavat saman
+// data-gender-attribuutin, joten yhden klikkaus pitää molemmat synkassa.
+function setGenderActive(gender, isActive) {
+  if (isActive) state.genders.add(gender); else state.genders.delete(gender);
+  document.querySelectorAll(`[data-gender="${CSS.escape(gender)}"]`)
+    .forEach(c => c.classList.toggle('active', isActive));
+}
 
 function addDays(dateStr, n) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -819,6 +844,8 @@ function getFilteredMatches() {
     if (!state.sports.has(m.sport)) return false;
     if (!state.cities.has(cityOf(m))) return false;
     if (!state.genders.has(m.genderGroup)) return false;
+    const lvl = levelOf(m);
+    if (lvl && !state.levels.has(lvl)) return false;
     if (!state.categories.has(categoryKey(m))) return false;
     if (!passesDayFilter(m.date)) return false;
     if (state.maxDistanceKm != null) {
@@ -856,6 +883,36 @@ function renderFilters() {
       renderResults();
     });
     sportEl.appendChild(btn);
+  });
+
+  const genderEl = document.getElementById('gender-filters');
+  genderEl.querySelectorAll('.chip').forEach(c => c.remove());
+  DISPLAY_GENDERS.forEach(gender => {
+    if (!state.genders.has(gender)) state.genders.add(gender);
+    const btn = document.createElement('button');
+    btn.className = 'chip active';
+    btn.textContent = gender;
+    btn.dataset.gender = gender;
+    btn.addEventListener('click', () => {
+      setGenderActive(gender, !state.genders.has(gender));
+      renderResults();
+    });
+    genderEl.appendChild(btn);
+  });
+
+  const levelEl = document.getElementById('level-filters');
+  levelEl.querySelectorAll('.chip').forEach(c => c.remove());
+  DISPLAY_LEVELS.forEach(({ id, label }) => {
+    if (!state.levels.has(id)) state.levels.add(id);
+    const btn = document.createElement('button');
+    btn.className = 'chip active';
+    btn.textContent = label;
+    btn.addEventListener('click', () => {
+      if (state.levels.has(id)) { state.levels.delete(id); btn.classList.remove('active'); }
+      else { state.levels.add(id); btn.classList.add('active'); }
+      renderResults();
+    });
+    levelEl.appendChild(btn);
   });
 
   const cityEl = document.getElementById('city-filters');
@@ -1015,11 +1072,7 @@ function renderGenderRows(entriesMap, sport, container) {
     genderBtn.textContent = gender;
     genderBtn.dataset.gender = gender;
     genderBtn.addEventListener('click', () => {
-      if (state.genders.has(gender)) state.genders.delete(gender);
-      else state.genders.add(gender);
-      const isActive = state.genders.has(gender);
-      document.querySelectorAll(`.gender-chip[data-gender="${CSS.escape(gender)}"]`)
-        .forEach(c => c.classList.toggle('active', isActive));
+      setGenderActive(gender, !state.genders.has(gender));
       renderResults();
     });
     genderRow.appendChild(genderBtn);
