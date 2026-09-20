@@ -102,7 +102,16 @@
   .advanced-panel[open] summary .chev { transform: rotate(180deg); }
   .advanced-body { border-top: 1px solid var(--divider); padding: 0.9rem 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.9rem; }
   .adv-section { display: flex; flex-direction: column; gap: 0.4rem; }
-  .category-list { display: flex; flex-wrap: wrap; gap: 0.4rem; max-height: 170px; overflow-y: auto; padding: 0.15rem 0; }
+
+  #hierarchy-filters { max-height: 320px; overflow-y: auto; padding-right: 0.25rem; }
+  .sport-block { padding: 0.6rem 0 0.7rem; border-top: 1px solid var(--divider); }
+  .sport-block:first-child { border-top: none; padding-top: 0.1rem; }
+  .sport-block-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+  .gender-block { display: flex; align-items: flex-start; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.4rem; padding-left: 0.5rem; }
+  .gender-block:last-child { margin-bottom: 0; }
+  .gender-block .chip.gender-chip { flex-shrink: 0; }
+  .series-list { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+  .chip.category-chip { font-size: 0.78rem; padding: 0.32rem 0.65rem; }
   .distance-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; }
   .distance-row input[type=number] { width: 4.5rem; font-family: 'IBM Plex Mono', monospace; padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--divider); background: var(--panel); color: var(--text); }
   .distance-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--amber); }
@@ -137,8 +146,6 @@
   .row .venue-col { text-align: right; font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
   .row .venue-col .city { display: block; color: var(--text); font-weight: 500; font-size: 0.85rem; }
   .row .venue-col .distance { display: block; color: var(--amber-dim); font-size: 0.72rem; font-weight: 600; margin-top: 0.15rem; }
-  .row .venue-col .travel-times { display: flex; gap: 0.45rem; justify-content: flex-end; margin-top: 0.25rem; font-size: 0.7rem; color: var(--muted); flex-wrap: wrap; }
-  .row .venue-col .travel-times span { white-space: nowrap; }
 
   .map-view { margin-top: 0.5rem; }
   .map-wrap { position: relative; }
@@ -152,7 +159,11 @@
   .legend-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
   .map-pick-hint { top: 10px; right: 10px; background: var(--amber); color: var(--amber-ink); font-weight: 700; }
 
-  .map-marker { border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; position: relative; }
+  /* HUOM: ei "position" -sääntöä tässä — MapLibre asettaa omasta CSS:stään
+     .maplibregl-marker { position: absolute }, ja jos me ylikirjoitamme sen
+     (esim. position: relative), merkit jäävät dokumenttivirtaukseen ja
+     pinoutuvat päällekkäin sen sijaan että pysyisivät oikeissa koordinaateissa. */
+  .map-marker { border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; }
   .map-marker .count-badge { position: absolute; top: -6px; right: -6px; background: var(--text); color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; }
   .map-marker-user { width: 20px; height: 20px; border-radius: 50%; background: #1D6FBD; border: 3px solid #fff; box-shadow: 0 0 0 3px rgba(29,111,189,0.35), 0 1px 5px rgba(0,0,0,0.35); }
 
@@ -164,7 +175,6 @@
   .map-popup-match .row1 { display: flex; gap: 0.5rem; align-items: baseline; }
   .map-popup-time { font-family: 'IBM Plex Mono', monospace; color: var(--amber-dim); flex-shrink: 0; font-size: 0.75rem; }
   .map-popup-dist { color: var(--muted); font-size: 0.72rem; margin-top: 0.2rem; }
-  .map-popup-travel { display: flex; gap: 0.5rem; font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; flex-wrap: wrap; }
 
   .placeholder-card { display: flex; gap: 0.75rem; border: 1px dashed var(--divider); border-radius: var(--radius); padding: 1rem 1.1rem; margin-top: 0.75rem; color: var(--muted); font-size: 0.85rem; background: var(--panel); }
   .placeholder-card .ph-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; opacity: 0.7; }
@@ -185,7 +195,6 @@
     .row .venue-col { grid-column: 1 / -1; text-align: left; margin-top: 0.4rem; }
     .row .venue-col .city { display: inline; }
     .row .venue-col .distance { display: inline; margin-left: 0.4rem; }
-    .row .venue-col .travel-times { justify-content: flex-start; }
     .status-row { grid-template-columns: 1fr; row-gap: 0.2rem; }
     .map-el { height: 380px; }
     .map-overlay { font-size: 0.68rem; padding: 0.4rem 0.55rem; }
@@ -222,12 +231,8 @@
       <summary>⚙️ Tarkennettu haku <span class="chev">▾</span></summary>
       <div class="advanced-body">
         <div class="adv-section">
-          <span class="label">RYHMÄ</span>
-          <div class="control-row" id="gender-filters"></div>
-        </div>
-        <div class="adv-section">
           <span class="label">SARJAT</span>
-          <div class="category-list" id="category-filters"></div>
+          <div id="hierarchy-filters"></div>
         </div>
         <div class="adv-section">
           <span class="label">ETÄISYYS</span>
@@ -271,7 +276,7 @@
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy alla olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Etäisyydet ja kulkuaika-arviot lasketaan suoraan linjaa pitkin sijaintisi ja ottelupaikan välillä — ne eivät ole oikeaa reititystä, joten todellinen matka-aika voi poiketa arviosta. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain paikallisesti etäisyyksien laskemiseen, eikä sitä lähetetä minnekään.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy alla olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Etäisyys sijaintisi ja ottelupaikan välillä lasketaan suoraan linjaa pitkin (ei teitä pitkin), joten se on suuntaa-antava. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain paikallisesti etäisyyksien laskemiseen, eikä sitä lähetetä minnekään.</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -296,11 +301,6 @@ const SPORT_META = {
   '_default': { color: '#667085', icon: '🏆' },
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
-
-// Karkeat keskinopeusarviot (km/h) kulkuaika-arvioihin. Näitä EI reititetä oikeasti —
-// ne ovat suoraviivaisen etäisyyden perusteella laskettuja karkeita arvioita.
-const TRAVEL_SPEEDS_KMH = { walk: 5, bike: 15, transit: 20, car: 28 };
-const TRAVEL_ICONS = { walk: '🚶', bike: '🚴', transit: '🚌', car: '🚗' };
 
 function todayISO(offsetDays = 0) {
   const d = new Date();
@@ -534,20 +534,6 @@ function formatDistance(km) {
   return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km';
 }
 
-function formatMinutes(min) {
-  if (min < 60) return Math.round(min) + ' min';
-  const h = Math.floor(min / 60);
-  const rem = Math.round(min % 60);
-  return `${h} h ${rem} min`;
-}
-
-function travelTimesHtml(km) {
-  return Object.keys(TRAVEL_SPEEDS_KMH).map(mode => {
-    const minutes = (km / TRAVEL_SPEEDS_KMH[mode]) * 60;
-    return `<span>${TRAVEL_ICONS[mode]} ~${formatMinutes(minutes)}</span>`;
-  }).join('');
-}
-
 function updateLocationUI() {
   const note = document.getElementById('location-note');
   const gpsBtn = document.getElementById('btn-use-gps');
@@ -742,39 +728,7 @@ function renderFilters() {
     cityEl.appendChild(btn);
   });
 
-  const genderEl = document.getElementById('gender-filters');
-  genderEl.querySelectorAll('.chip').forEach(c => c.remove());
-  const genders = [...new Set(ALL_MATCHES.map(m => m.genderGroup))].sort();
-  genders.forEach(gender => {
-    if (!state.genders.has(gender)) state.genders.add(gender);
-    const btn = document.createElement('button');
-    btn.className = 'chip active';
-    btn.textContent = gender;
-    btn.addEventListener('click', () => {
-      if (state.genders.has(gender)) { state.genders.delete(gender); btn.classList.remove('active'); }
-      else { state.genders.add(gender); btn.classList.add('active'); }
-      renderResults();
-    });
-    genderEl.appendChild(btn);
-  });
-
-  const categoryEl = document.getElementById('category-filters');
-  categoryEl.querySelectorAll('.chip').forEach(c => c.remove());
-  const categories = [...new Map(ALL_MATCHES.map(m => [categoryKey(m), m])).values()]
-    .sort((a, b) => categoryKey(a).localeCompare(categoryKey(b)));
-  categories.forEach(m => {
-    const key = categoryKey(m);
-    if (!state.categories.has(key)) state.categories.add(key);
-    const btn = document.createElement('button');
-    btn.className = 'chip active';
-    btn.textContent = `${sportMeta(m.sport).icon} ${m.category}`;
-    btn.addEventListener('click', () => {
-      if (state.categories.has(key)) { state.categories.delete(key); btn.classList.remove('active'); }
-      else { state.categories.add(key); btn.classList.add('active'); }
-      renderResults();
-    });
-    categoryEl.appendChild(btn);
-  });
+  renderHierarchy();
 
   const dayEl = document.getElementById('day-filters');
   if (!dayEl.dataset.built) {
@@ -811,6 +765,72 @@ function renderFilters() {
 
     dayEl.dataset.built = '1';
   }
+}
+
+// Rakentaa tarkennetun haun hierarkian: Laji -> Sukupuoli/ikäryhmä -> Sarja.
+// Sukupuolivalinta (state.genders) on globaali kaikkien lajien kesken, joten
+// samaa arvoa (esim. "Miehet") vastaavia chippejä voi esiintyä useamman lajin
+// alla — ne pidetään synkassa keskenään data-gender-attribuutin avulla.
+function renderHierarchy() {
+  const root = document.getElementById('hierarchy-filters');
+  root.innerHTML = '';
+
+  const bySport = new Map(); // sport -> Map(gender -> Set(category))
+  ALL_MATCHES.forEach(m => {
+    if (!bySport.has(m.sport)) bySport.set(m.sport, new Map());
+    const genders = bySport.get(m.sport);
+    if (!genders.has(m.genderGroup)) genders.set(m.genderGroup, new Set());
+    genders.get(m.genderGroup).add(m.category);
+  });
+
+  [...bySport.keys()].sort().forEach(sport => {
+    const block = document.createElement('div');
+    block.className = 'sport-block';
+    const title = document.createElement('div');
+    title.className = 'sport-block-title';
+    title.textContent = `${sportMeta(sport).icon} ${sport}`;
+    block.appendChild(title);
+
+    [...bySport.get(sport).keys()].sort().forEach(gender => {
+      if (!state.genders.has(gender)) state.genders.add(gender);
+      const genderRow = document.createElement('div');
+      genderRow.className = 'gender-block';
+
+      const genderBtn = document.createElement('button');
+      genderBtn.className = 'chip gender-chip active';
+      genderBtn.textContent = gender;
+      genderBtn.dataset.gender = gender;
+      genderBtn.addEventListener('click', () => {
+        if (state.genders.has(gender)) state.genders.delete(gender);
+        else state.genders.add(gender);
+        const isActive = state.genders.has(gender);
+        document.querySelectorAll(`.gender-chip[data-gender="${CSS.escape(gender)}"]`)
+          .forEach(c => c.classList.toggle('active', isActive));
+        renderResults();
+      });
+      genderRow.appendChild(genderBtn);
+
+      const seriesList = document.createElement('div');
+      seriesList.className = 'series-list';
+      [...bySport.get(sport).get(gender)].sort().forEach(category => {
+        const key = `${sport}||${category}`;
+        if (!state.categories.has(key)) state.categories.add(key);
+        const catBtn = document.createElement('button');
+        catBtn.className = 'chip category-chip active';
+        catBtn.textContent = category;
+        catBtn.addEventListener('click', () => {
+          if (state.categories.has(key)) { state.categories.delete(key); catBtn.classList.remove('active'); }
+          else { state.categories.add(key); catBtn.classList.add('active'); }
+          renderResults();
+        });
+        seriesList.appendChild(catBtn);
+      });
+      genderRow.appendChild(seriesList);
+      block.appendChild(genderRow);
+    });
+
+    root.appendChild(block);
+  });
 }
 
 function crestImg(url) {
@@ -872,7 +892,7 @@ function renderBoard(filtered) {
           <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
           <div class="details"><span class="category">${m.category}</span></div>
         </div>
-        <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${formatDistance(dist)}</span><span class="travel-times">${travelTimesHtml(dist)}</span>` : ''}</div>
+        <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${formatDistance(dist)}</span>` : ''}</div>
       `;
       group.appendChild(row);
     });
@@ -960,7 +980,7 @@ function renderMap(filtered) {
         return `
         <div class="map-popup-match">
           <div class="row1"><span class="map-popup-time mono">${formatShortDate(m.date)} ${m.time || ''}</span><span>${sportMeta(m.sport).icon} ${m.teamA} – ${m.teamB}</span></div>
-          ${dist !== null ? `<div class="map-popup-dist">${formatDistance(dist)} sijainnistasi</div><div class="map-popup-travel">${travelTimesHtml(dist)}</div>` : ''}
+          ${dist !== null ? `<div class="map-popup-dist">${formatDistance(dist)} sijainnistasi</div>` : ''}
         </div>
       `; }).join('');
 
