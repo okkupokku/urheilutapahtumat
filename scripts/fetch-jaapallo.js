@@ -64,20 +64,39 @@ function parseFinDate(str) {
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
+// HUOM: Playwrightin page.content() palauttaa DOM:in serialisoituna. Selain
+// normalisoi tällöin sekä attribuuttien lainausmerkit (aina "-merkeiksi)
+// että class-attribuutin sisäisen välilyönnin (esim. "match " typistyy
+// muotoon "match") riippumatta siitä miltä palvelimen alkuperäinen HTML
+// näyttää (class='match '). Siksi luokkaa ei etsitä kiinteänä
+// merkkijonona vaan poimimalla koko class-attribuutin arvo ja tarkistamalla
+// sisältääkö sen välilyönnein eroteltu tokenlista halutun luokan.
+function hasClassToken(classAttr, cls) {
+  return classAttr.split(/\s+/).includes(cls);
+}
+
 function field(chunk, cls) {
-  const m = chunk.match(new RegExp(`class='${cls} [^']*'>([^<]*)<`));
-  return m ? m[1].trim() : null;
+  const re = /class=["']([^"']*)["']>([^<]*)</g;
+  let m;
+  while ((m = re.exec(chunk))) {
+    if (hasClassToken(m[1], cls)) return m[2].trim();
+  }
+  return null;
 }
 
 function crestSrc(chunk, cls) {
-  const m = chunk.match(new RegExp(`class='${cls} [^']*'>\\s*<img src='([^']*)'`));
-  return m ? m[1] : null;
+  const re = /class=["']([^"']*)["']>\s*<img src=["']([^"']*)["']/g;
+  let m;
+  while ((m = re.exec(chunk))) {
+    if (hasClassToken(m[1], cls)) return m[2];
+  }
+  return null;
 }
 
 function extractMatches(html) {
-  const items = [...html.matchAll(/<li class='match [^']*'>(.*?)<\/li>/gs)];
-  return items.map(m => {
-    const c = m[1];
+  const items = [...html.matchAll(/<li class=["']([^"']*)["']>(.*?)<\/li>/gs)];
+  return items.filter(m => hasClassToken(m[1], 'match')).map(m => {
+    const c = m[2];
     return {
       nro: field(c, 'ml_ottelunro'),
       sarja: field(c, 'ml_sarja'),
