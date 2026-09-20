@@ -51,11 +51,24 @@ async function fetchDay(page, dateStr) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+  // tulospalvelu.leijonat.fi on CloudFront/WAF-suojattu ja palauttaa 403:n
+  // Playwrightin oletusarvoisesta headless-Chromiumista (mm. navigator.webdriver
+  // -lippu paljastaa automaation) vaikka sama pyyntö toimii tavallisesta
+  // selaimesta. Piilotetaan tunnetuimmat automaatiotunnisteet ja annetaan
+  // sivulle aikaa latautua kokonaan ennen ensimmäistä fetch-kutsua.
+  const browser = await chromium.launch({
+    args: ['--disable-blink-features=AutomationControlled'],
+  });
+  const page = await browser.newPage({
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+  });
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+  });
 
   console.log('Navigoidaan origin-sivulle:', ORIGIN_PAGE);
-  await page.goto(ORIGIN_PAGE, { waitUntil: 'domcontentloaded' });
+  await page.goto(ORIGIN_PAGE, { waitUntil: 'load' });
+  await page.waitForTimeout(1500);
 
   const allMatches = [];
 
