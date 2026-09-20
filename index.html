@@ -113,6 +113,8 @@
   .gender-block .chip.gender-chip { flex-shrink: 0; }
   .series-list { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
   .chip.category-chip { font-size: 0.78rem; padding: 0.32rem 0.65rem; }
+  .chip.category-chip.chip-nodata { background: var(--panel); color: var(--muted); border-color: var(--divider); box-shadow: none; opacity: 0.55; font-weight: 500; }
+  .chip.category-chip.chip-nodata:hover { opacity: 0.85; }
   .distance-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; }
   .distance-row input[type=number] { width: 4.5rem; font-family: 'IBM Plex Mono', monospace; padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--divider); background: var(--panel); color: var(--text); }
   .distance-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--amber); }
@@ -305,6 +307,42 @@ const SPORT_META = {
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 
+// Kaikki sarjat joita sovellus on konfiguroitu hakemaan (ks. SOURCES-määrittelyt
+// alempana ja scripts/fetch-jalkapallo.js). Käytetään tarkennetun haun
+// hierarkiassa näyttämään myös sarjat joilla ei juuri nyt ole otteluita —
+// nimi päivittyy automaattisesti rajapinnan ajantasaiseen nimeen (esim.
+// sponsorinimi) heti kun sarjalla on ottelu haetulla aikavälillä.
+const KNOWN_SERIES = {
+  'Jalkapallo': [
+    { id: 'VL', gender: 'Miehet', name: 'Veikkausliiga' },
+    { id: 'M1L', gender: 'Miehet', name: 'Ykkösliiga' },
+    { id: 'NL', gender: 'Naiset', name: 'Kansallinen Liiga' },
+    { id: 'UNL', gender: 'Miehet', name: 'UEFA Nations League Huuhkajat' },
+  ],
+  'Futsal': [
+    { id: 'FML', gender: 'Miehet', name: 'Miesten Futsal-Liiga' },
+    { id: 'FNL', gender: 'Naiset', name: 'Naisten Futsal-Liiga' },
+  ],
+  'Jääkiekko': [
+    { id: 'Liiga', gender: 'Miehet', name: 'Liiga' },
+  ],
+  'Koripallo': [
+    { id: '4', gender: 'Miehet', name: 'Korisliiga' },
+    { id: '1', gender: 'Naiset', name: 'Naisten Korisliiga' },
+    { id: '15', gender: 'Miehet', name: 'Suomen cup' },
+  ],
+  'Käsipallo': [
+    { id: 'SM-liiga', gender: 'Miehet', name: 'Aktialiiga' },
+    { id: 'NSM', gender: 'Naiset', name: 'Aktialiiga' },
+    { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup' },
+    { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup' },
+  ],
+  'Lentopallo': [
+    { id: 'ML', gender: 'Miehet', name: 'Mestaruusliiga' },
+    { id: 'NL', gender: 'Naiset', name: 'Mestaruusliiga' },
+  ],
+};
+
 function todayISO(offsetDays = 0) {
   const d = new Date();
   d.setDate(d.getDate() + offsetDays);
@@ -362,6 +400,7 @@ function normalizeTorneoPal(m, sportLabel) {
     time: (m.time || '').slice(0, 5),
     sport: sportLabel,
     category: m.category_name || '',
+    categoryId: m.category_id || '',
     genderGroup: (m.category_group_name || '').trim() || 'Muu',
     teamA: m.team_A_name || m.club_A_name || '?',
     teamB: m.team_B_name || m.club_B_name || '?',
@@ -402,6 +441,7 @@ function normalizeLiiga(g) {
     time: start.length >= 16 ? start.slice(11, 16) : '',
     sport: 'Jääkiekko',
     category: 'Liiga',
+    categoryId: 'Liiga',
     genderGroup: 'Miehet',
     teamA: g.homeTeam?.teamName || '?',
     teamB: g.awayTeam?.teamName || '?',
@@ -427,7 +467,7 @@ const SOURCES = [
       const res = await fetchWithTimeout('data/jalkapallo.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
-      return (data.matches || []).map(m => ({ genderGroup: 'Muu', ...m }));
+      return (data.matches || []).map(m => ({ genderGroup: 'Muu', categoryId: '', ...m }));
     }
   },
   {
@@ -672,7 +712,7 @@ function cityOf(m) {
   return 'Muu';
 }
 
-function categoryKey(m) { return `${m.sport}||${m.category}`; }
+function categoryKey(m) { return `${m.sport}||${m.categoryId}`; }
 
 function getFilteredMatches() {
   const list = ALL_MATCHES.filter(m => {
@@ -778,12 +818,11 @@ function renderHierarchy() {
   const root = document.getElementById('hierarchy-filters');
   root.innerHTML = '';
 
-  const bySport = new Map(); // sport -> Map(gender -> Set(category))
+  // liveBySport: sport -> categoryId -> { name, gender } (vain sarjat joilla on ottelu juuri nyt)
+  const liveBySport = new Map();
   ALL_MATCHES.forEach(m => {
-    if (!bySport.has(m.sport)) bySport.set(m.sport, new Map());
-    const genders = bySport.get(m.sport);
-    if (!genders.has(m.genderGroup)) genders.set(m.genderGroup, new Set());
-    genders.get(m.genderGroup).add(m.category);
+    if (!liveBySport.has(m.sport)) liveBySport.set(m.sport, new Map());
+    liveBySport.get(m.sport).set(m.categoryId, { name: m.category, gender: m.genderGroup });
   });
 
   const knownSports = Object.keys(SPORT_META).filter(s => s !== '_default').sort();
@@ -795,16 +834,31 @@ function renderHierarchy() {
     title.textContent = `${sportMeta(sport).icon} ${sport}`;
     block.appendChild(title);
 
-    if (!bySport.has(sport)) {
+    // Yhdistetään tunnetut (konfiguroidut) sarjat ja mahdolliset datassa
+    // esiintyvät ennalta tuntemattomat sarjat, jotta mikään ei katoa vaikka
+    // rekisteri olisi puutteellinen. Ajantasainen nimi (esim. sponsorinimi)
+    // voittaa aina staattisen oletusnimen kun ottelu on saatavilla.
+    const live = liveBySport.get(sport) || new Map();
+    const entries = new Map(); // categoryId -> { gender, name, hasData }
+    (KNOWN_SERIES[sport] || []).forEach(s => entries.set(s.id, { gender: s.gender, name: s.name, hasData: false }));
+    live.forEach((info, id) => entries.set(id, { gender: info.gender, name: info.name, hasData: true }));
+
+    if (entries.size === 0) {
       const empty = document.createElement('div');
       empty.className = 'sport-block-empty';
-      empty.textContent = 'Ei otteluita juuri nyt haetulla aikavälillä.';
+      empty.textContent = 'Ei tiedossa olevia sarjoja.';
       block.appendChild(empty);
       root.appendChild(block);
       return;
     }
 
-    [...bySport.get(sport).keys()].sort().forEach(gender => {
+    const byGender = new Map(); // gender -> [{id, name, hasData}]
+    entries.forEach((info, id) => {
+      if (!byGender.has(info.gender)) byGender.set(info.gender, []);
+      byGender.get(info.gender).push({ id, name: info.name, hasData: info.hasData });
+    });
+
+    [...byGender.keys()].sort().forEach(gender => {
       if (!state.genders.has(gender)) state.genders.add(gender);
       const genderRow = document.createElement('div');
       genderRow.className = 'gender-block';
@@ -825,12 +879,13 @@ function renderHierarchy() {
 
       const seriesList = document.createElement('div');
       seriesList.className = 'series-list';
-      [...bySport.get(sport).get(gender)].sort().forEach(category => {
-        const key = `${sport}||${category}`;
+      byGender.get(gender).sort((a, b) => a.name.localeCompare(b.name)).forEach(({ id, name, hasData }) => {
+        const key = `${sport}||${id}`;
         if (!state.categories.has(key)) state.categories.add(key);
         const catBtn = document.createElement('button');
-        catBtn.className = 'chip category-chip active';
-        catBtn.textContent = category;
+        catBtn.className = 'chip category-chip active' + (hasData ? '' : ' chip-nodata');
+        catBtn.textContent = name;
+        catBtn.title = hasData ? '' : 'Ei otteluita juuri nyt haetulla aikavälillä';
         catBtn.addEventListener('click', () => {
           if (state.categories.has(key)) { state.categories.delete(key); catBtn.classList.remove('active'); }
           else { state.categories.add(key); catBtn.classList.add('active'); }

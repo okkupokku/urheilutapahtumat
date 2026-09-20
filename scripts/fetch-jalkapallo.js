@@ -43,6 +43,7 @@ function normalize(m) {
     time: (m.time || '').slice(0, 5),
     sport: FUTSAL_CATEGORIES.has(m.category_id) ? 'Futsal' : 'Jalkapallo',
     category: m.category_name || '',
+    categoryId: m.category_id || '',
     genderGroup: (m.category_group_name || '').trim() || 'Muu',
     teamA: m.team_A_name || m.club_A_name || '?',
     teamB: m.team_B_name || m.club_B_name || '?',
