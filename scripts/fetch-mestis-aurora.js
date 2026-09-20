@@ -45,12 +45,27 @@ async function fetchDay(page, dateStr) {
   return await page.evaluate(async ({ season, dateStr }) => {
     const url = `https://tulospalvelu.leijonat.fi/helpers/getgames?season=${season}&subSerieId=0&teamid=0&districtid=-1&gamedays=-1&dog=${dateStr}&levelid=-1`;
     const res = await fetch(url, { headers: { Accept: 'application/json' } });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`HTTP ${res.status} — vastauksen alku: ${body.slice(0, 300)}`);
+    }
     return await res.json();
   }, { season: SEASON, dateStr });
 }
 
+async function diagnoseDirectFetch(dateStr) {
+  const url = `https://tulospalvelu.leijonat.fi/helpers/getgames?season=${SEASON}&subSerieId=0&teamid=0&districtid=-1&gamedays=-1&dog=${dateStr}&levelid=-1`;
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    console.log(`[diagnoosi] Suora Node-fetch (ei selainta): HTTP ${res.status}`);
+  } catch (e) {
+    console.log(`[diagnoosi] Suora Node-fetch epäonnistui: ${e.message}`);
+  }
+}
+
 (async () => {
+  await diagnoseDirectFetch(todayISO(0));
+
   // tulospalvelu.leijonat.fi on CloudFront/WAF-suojattu ja palauttaa 403:n
   // Playwrightin oletusarvoisesta headless-Chromiumista (mm. navigator.webdriver
   // -lippu paljastaa automaation) vaikka sama pyyntö toimii tavallisesta
