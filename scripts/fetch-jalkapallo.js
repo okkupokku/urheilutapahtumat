@@ -41,6 +41,10 @@ function normalize(m) {
     teamB: m.team_B_name || m.club_B_name || '?',
     venue: m.venue_location_name || m.venue_name || '',
     city: m.venue_city_name || '',
+    lat: m.venue_lat ? parseFloat(m.venue_lat) : null,
+    lon: m.venue_lon ? parseFloat(m.venue_lon) : null,
+    crestA: m.club_A_crest || null,
+    crestB: m.club_B_crest || null,
   };
 }
 

@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root {
     --bg: #0E1A2B;
@@ -19,82 +20,140 @@
     --divider: #223650;
     --green: #5CC49A;
     --red: #E0654F;
+    --blue: #5AA9E6;
+    --violet: #C77DFF;
+    --radius: 10px;
+    --shadow: 0 10px 28px -14px rgba(0,0,0,0.55);
   }
   * { box-sizing: border-box; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   html, body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Archivo', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body {
+    background:
+      radial-gradient(1100px 480px at 15% -8%, rgba(242,169,59,0.10), transparent 60%),
+      radial-gradient(900px 420px at 100% 0%, rgba(90,169,230,0.08), transparent 55%),
+      var(--bg);
+  }
   .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
 
-  header.board-header { padding: 2.25rem 1.5rem 1.5rem; max-width: 980px; margin: 0 auto; }
-  .brand { display: flex; align-items: baseline; gap: 0.6rem; margin: 0 0 0.35rem; }
-  .brand .mark { width: 10px; height: 10px; background: var(--amber); display: inline-block; flex-shrink: 0; }
-  h1 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); font-weight: 800; letter-spacing: -0.01em; margin: 0; }
-  .subhead { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 56ch; line-height: 1.5; }
+  header.board-header { padding: 2.5rem 1.5rem 1.25rem; max-width: 1040px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.4rem; }
+  .brand .mark { position: relative; width: 11px; height: 11px; background: var(--amber); display: inline-block; flex-shrink: 0; border-radius: 2px; }
+  .brand .mark::after {
+    content: ''; position: absolute; inset: -4px; border: 1px solid var(--amber); border-radius: 5px;
+    opacity: 0.6; animation: ring 2.2s ease-out infinite;
+  }
+  @keyframes ring { 0% { transform: scale(0.6); opacity: 0.7; } 100% { transform: scale(1.9); opacity: 0; } }
+  h1 { font-size: clamp(1.6rem, 3.4vw, 2.25rem); font-weight: 800; letter-spacing: -0.015em; margin: 0; }
+  .subhead { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 60ch; line-height: 1.55; }
 
-  main { max-width: 980px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+  main { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem 4rem; }
 
   /* Datalähteiden tila -paneeli */
-  .status-panel { border: 1px solid var(--divider); margin: 1.5rem 0; }
-  .status-panel summary { cursor: pointer; padding: 0.9rem 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.03em; color: var(--muted); text-transform: uppercase; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .status-panel { border: 1px solid var(--divider); border-radius: var(--radius); margin: 1.5rem 0; overflow: hidden; background: var(--panel-alt); }
+  .status-panel summary { cursor: pointer; padding: 0.85rem 1.1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.76rem; letter-spacing: 0.03em; color: var(--muted); text-transform: uppercase; list-style: none; display: flex; justify-content: space-between; align-items: center; }
   .status-panel summary::-webkit-details-marker { display: none; }
   .status-panel summary .chev { transition: transform 0.15s; }
   .status-panel[open] summary .chev { transform: rotate(90deg); }
   .status-rows { border-top: 1px solid var(--divider); }
-  .status-row { display: grid; grid-template-columns: 1.4fr 1.6fr auto; gap: 0.75rem; align-items: center; padding: 0.6rem 1rem; border-bottom: 1px solid var(--divider); font-size: 0.85rem; }
+  .status-row { display: grid; grid-template-columns: 1.4fr 1.6fr auto; gap: 0.75rem; align-items: center; padding: 0.6rem 1.1rem; border-bottom: 1px solid var(--divider); font-size: 0.85rem; }
   .status-row:last-child { border-bottom: none; }
   .status-row .src-name { font-weight: 600; }
   .status-row .src-detail { color: var(--muted); font-size: 0.78rem; }
   .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.4rem; flex-shrink: 0; }
-  .dot.live { background: var(--green); }
+  .dot.live { background: var(--green); box-shadow: 0 0 0 3px rgba(92,196,154,0.18); }
   .dot.blocked { background: var(--red); }
   .dot.none { background: var(--muted); }
   .dot.loading { background: var(--amber); animation: pulse 1s infinite ease-in-out; }
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
   .status-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; white-space: nowrap; }
 
-  .refresh-btn { background: transparent; border: 1px solid var(--divider); color: var(--text); padding: 0.4rem 0.8rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-left: 0.75rem; }
-  .refresh-btn:hover { border-color: var(--amber-dim); }
+  .refresh-btn { background: transparent; border: 1px solid var(--divider); color: var(--text); padding: 0.45rem 0.85rem; border-radius: 999px; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-left: 0.75rem; transition: border-color .15s, background .15s; }
+  .refresh-btn:hover { border-color: var(--amber-dim); background: rgba(242,169,59,0.08); }
 
-  .controls { border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); padding: 1.1rem 0; margin-bottom: 0.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
-  .control-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .controls-sticky { position: sticky; top: 0; z-index: 20; background: rgba(14,26,43,0.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding-top: 0.75rem; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+
+  .view-tabs { display: flex; gap: 0.45rem; margin-bottom: 0.9rem; }
+  .view-tab { background: transparent; border: 1px solid var(--divider); color: var(--muted); padding: 0.5rem 1.1rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .view-tab:hover:not(.active) { border-color: var(--amber-dim); color: var(--text); }
+  .view-tab.active { background: var(--amber); border-color: var(--amber); color: #1A1204; }
+
+  .controls { border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); padding: 1rem 0; margin-bottom: 0.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .control-row { display: flex; flex-wrap: nowrap; gap: 0.5rem; align-items: center; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+  .control-row::-webkit-scrollbar { display: none; }
   .control-row .label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; width: 5.5rem; flex-shrink: 0; }
-  .chip { background: transparent; border: 1px solid var(--divider); color: var(--text); padding: 0.38rem 0.75rem; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .chip { background: transparent; border: 1px solid var(--divider); color: var(--text); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s; white-space: nowrap; flex-shrink: 0; }
   .chip:hover { border-color: var(--amber-dim); }
+  .chip:active { transform: scale(0.96); }
   .chip.active { background: var(--amber); border-color: var(--amber); color: #1A1204; font-weight: 600; }
   .chip.active.city { background: var(--green); border-color: var(--green); }
 
   .meta-line { display: flex; justify-content: space-between; align-items: baseline; padding: 1rem 0 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 0.5rem; }
-  .meta-line .count { color: var(--text); }
+  .meta-line .count { color: var(--text); font-weight: 600; }
 
   .day-group { margin-top: 1.75rem; }
   .day-group:first-of-type { margin-top: 0.5rem; }
-  .day-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.06em; color: var(--amber); text-transform: uppercase; padding-bottom: 0.5rem; border-bottom: 1px solid var(--divider); margin-bottom: 0.15rem; }
+  .day-label { display: flex; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.06em; color: var(--amber); text-transform: uppercase; padding-bottom: 0.5rem; border-bottom: 1px solid var(--divider); margin-bottom: 0.6rem; }
+  .day-badge { background: var(--amber); color: #1A1204; padding: 0.08rem 0.45rem; border-radius: 4px; font-size: 0.65rem; margin-left: 0.6rem; font-weight: 700; }
 
-  .row { display: grid; grid-template-columns: 3.6rem 6.4rem 1fr auto; gap: 0.9rem; align-items: center; padding: 0.85rem 0.25rem; border-bottom: 1px solid var(--divider); }
-  .row:hover { background: var(--panel-alt); }
-  .row .time { font-family: 'IBM Plex Mono', monospace; font-size: 0.95rem; color: var(--text); font-weight: 500; }
-  .row .sport-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.02em; color: var(--bg); background: var(--muted); padding: 0.2rem 0.4rem; text-align: center; text-transform: uppercase; width: fit-content; }
-  .row .matchup { font-weight: 600; font-size: 0.98rem; }
-  .row .details { color: var(--muted); font-size: 0.82rem; margin-top: 0.15rem; }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .row {
+    display: grid; grid-template-columns: 3.6rem 6.6rem 1fr auto; gap: 0.9rem; align-items: center;
+    padding: 0.85rem 0.9rem; margin-bottom: 0.45rem; border-radius: var(--radius);
+    background: var(--panel-alt); border: 1px solid var(--divider); border-left: 3px solid var(--muted);
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    animation: fadeInUp .3s ease both;
+  }
+  .row:hover { background: var(--panel); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .row .time { font-family: 'IBM Plex Mono', monospace; font-size: 0.95rem; color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .row .sport-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; letter-spacing: 0.03em; padding: 0.22rem 0.45rem; border-radius: 999px; text-align: center; text-transform: uppercase; width: fit-content; font-weight: 700; }
+  .row .matchup { font-weight: 600; font-size: 0.98rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; }
+  .row .matchup .team { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
+  .row .matchup .dash { color: var(--muted); font-weight: 400; }
+  .row .matchup .crest { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; border-radius: 3px; background: rgba(255,255,255,0.06); flex-shrink: 0; }
+  .row .details { color: var(--muted); font-size: 0.82rem; margin-top: 0.2rem; }
   .row .details .category { color: var(--amber-dim); }
   .row .venue-col { text-align: right; font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
   .row .venue-col .city { display: block; color: var(--text); font-weight: 500; font-size: 0.85rem; }
 
-  .placeholder-card { border: 1px dashed var(--divider); padding: 1rem; margin-top: 1.5rem; color: var(--muted); font-size: 0.85rem; }
+  .map-view { margin-top: 0.5rem; }
+  .map-el { height: 500px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--divider); background: var(--panel-alt); }
+  .map-el .map-tiles-dark { filter: invert(1) hue-rotate(180deg) brightness(0.93) contrast(0.88) saturate(0.85); }
+  .map-note { color: var(--muted); font-size: 0.78rem; margin: 0.7rem 0.1rem 0; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
+  .leaflet-popup-content { margin: 0.8rem 1rem; font-family: 'Archivo', sans-serif; min-width: 190px; }
+  .leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+  .leaflet-container a.leaflet-popup-close-button:hover { color: var(--text); }
+  .map-popup-venue { font-weight: 700; margin-bottom: 0.1rem; }
+  .map-popup-city { color: var(--muted); font-size: 0.75rem; margin-bottom: 0.5rem; }
+  .map-popup-match { display: flex; gap: 0.5rem; align-items: baseline; padding: 0.35rem 0; border-top: 1px solid var(--divider); font-size: 0.82rem; }
+  .map-popup-match:first-of-type { border-top: none; }
+  .map-popup-time { font-family: 'IBM Plex Mono', monospace; color: var(--amber); flex-shrink: 0; font-size: 0.75rem; }
+  .leaflet-control-attribution { background: rgba(14,26,43,0.75) !important; color: var(--muted) !important; }
+  .leaflet-control-attribution a { color: var(--muted) !important; }
+  .leaflet-control-zoom a { background: var(--panel) !important; color: var(--text) !important; border-color: var(--divider) !important; }
+
+  .placeholder-card { display: flex; gap: 0.75rem; border: 1px dashed var(--divider); border-radius: var(--radius); padding: 1rem 1.1rem; margin-top: 0.75rem; color: var(--muted); font-size: 0.85rem; }
+  .placeholder-card .ph-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; opacity: 0.7; }
   .placeholder-card .ph-title { color: var(--text); font-weight: 600; margin-bottom: 0.3rem; }
+  .placeholders-heading { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.04em; color: var(--muted); text-transform: uppercase; margin: 2.25rem 0 0; }
 
   .empty-state { padding: 3rem 0.25rem; color: var(--muted); font-size: 0.95rem; border-bottom: 1px solid var(--divider); }
 
-  footer { max-width: 980px; margin: 2.5rem auto 0; padding: 1.25rem 1.5rem 2.5rem; border-top: 1px solid var(--divider); color: var(--muted); font-size: 0.78rem; line-height: 1.6; }
+  footer { max-width: 1040px; margin: 2.5rem auto 0; padding: 1.25rem 1.5rem 2.5rem; border-top: 1px solid var(--divider); color: var(--muted); font-size: 0.78rem; line-height: 1.6; }
   footer .flag { color: var(--amber); font-weight: 600; }
 
   @media (max-width: 600px) {
+    .controls-sticky { margin: 0 -1rem; padding-left: 1rem; padding-right: 1rem; }
+    header.board-header, main, footer { padding-left: 1rem; padding-right: 1rem; }
     .row { grid-template-columns: 3rem 1fr; grid-template-rows: auto auto; }
     .row .sport-tag { grid-row: 1; grid-column: 2; justify-self: start; }
     .row .matchup, .row .details { grid-column: 2; }
     .row .venue-col { grid-column: 1 / -1; text-align: left; margin-top: 0.4rem; }
     .row .venue-col .city { display: inline; }
     .status-row { grid-template-columns: 1fr; row-gap: 0.2rem; }
+    .map-el { height: 380px; }
   }
 </style>
 </head>
@@ -102,37 +161,51 @@
 
 <header class="board-header">
   <div class="brand"><span class="mark"></span><h1>Lähtötaulu</h1></div>
-  <p class="subhead">Pääkaupunkiseudun ottelut yhdellä sivulla. Tämä on ensimmäinen toimiva versio: alla näet tarkalleen mistä data haetaan juuri nyt, ja mitkä lähteet eivät vielä toimi suoraan selaimesta (CORS/rajapintarajoitus) — ne ratkaistaan myöhemmin taustaprosessilla.</p>
+  <p class="subhead">Pääkaupunkiseudun urheiluottelut yhdellä sivulla — suodata lajin, alueen ja ajankohdan mukaan, tai katso ottelupaikat kartalta.</p>
 </header>
 
 <main>
-  <details class="status-panel" id="status-panel" open>
+  <details class="status-panel" id="status-panel">
     <summary>Datalähteiden tila <span class="chev">▸</span></summary>
     <div class="status-rows" id="status-rows"></div>
   </details>
 
-  <div class="controls">
-    <div class="control-row" id="sport-filters"><span class="label">LAJI</span></div>
-    <div class="control-row" id="city-filters"><span class="label">ALUE</span></div>
-    <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
-  </div>
+  <div class="controls-sticky">
+    <div class="view-tabs" id="view-tabs">
+      <button class="view-tab active" data-view="list" type="button">📋 Lista</button>
+      <button class="view-tab" data-view="map" type="button">🗺️ Kartta</button>
+    </div>
 
-  <div class="meta-line">
-    <span id="result-count">Ladataan datalähteitä…</span>
-    <span>
-      <span id="updated-time"></span>
-      <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
-    </span>
+    <div class="controls">
+      <div class="control-row" id="sport-filters"><span class="label">LAJI</span></div>
+      <div class="control-row" id="city-filters"><span class="label">ALUE</span></div>
+      <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
+    </div>
+
+    <div class="meta-line">
+      <span id="result-count">Ladataan datalähteitä…</span>
+      <span>
+        <span id="updated-time"></span>
+        <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
+      </span>
+    </div>
   </div>
 
   <div id="board"></div>
+
+  <div id="map-view" class="map-view" style="display:none;">
+    <div id="map" class="map-el"></div>
+    <p class="map-note" id="map-note"></p>
+  </div>
+
   <div id="placeholders"></div>
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy yllä olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Mestis/Auroraliiga, salibandyn F-liiga, jääpallo ja amerikkalainen jalkapallo näkyvät alla placeholdereina, koska niiden rajapinnat estävät sekä suoran selainkutsun että taustaprosessin. Maajoukkueottelut eivät vielä ole mukana.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy yllä olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Mestis/Auroraliiga, salibandyn F-liiga, jääpallo ja amerikkalainen jalkapallo näkyvät alla placeholdereina, koska niiden rajapinnat estävät sekä suoran selainkutsun että taustaprosessin. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Maajoukkueottelut eivät vielä ole mukana.</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 /* ============================================================
    ASETUKSET JA TUNNETUT DATALÄHTEET
@@ -141,6 +214,16 @@
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
 const DAYS_AHEAD = 6; // tänään + N seuraavaa päivää
 const REQUEST_DELAY_MS = 150; // pieni tauko peräkkäisten kutsujen välissä per lähde
+
+const SPORT_META = {
+  'Jalkapallo': { color: '#5CC49A', icon: '⚽' },
+  'Jääkiekko': { color: '#5AA9E6', icon: '🏒' },
+  'Koripallo': { color: '#F2A93B', icon: '🏀' },
+  'Käsipallo': { color: '#E0654F', icon: '🤾' },
+  'Lentopallo': { color: '#C77DFF', icon: '🏐' },
+  '_default': { color: '#7E93AC', icon: '🏆' },
+};
+function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 
 function todayISO(offsetDays = 0) {
   const d = new Date();
@@ -203,6 +286,10 @@ function normalizeTorneoPal(m, sportLabel) {
     teamB: m.team_B_name || m.club_B_name || '?',
     venue: m.venue_location_name || m.venue_name || '',
     city: m.venue_city_name || '',
+    lat: m.venue_lat ? parseFloat(m.venue_lat) : null,
+    lon: m.venue_lon ? parseFloat(m.venue_lon) : null,
+    crestA: m.club_A_crest || null,
+    crestB: m.club_B_crest || null,
   };
 }
 
@@ -238,6 +325,10 @@ function normalizeLiiga(g) {
     teamB: g.awayTeam?.teamName || '?',
     venue: g.iceRink?.name || '',
     city: g.iceRink?.city || '',
+    lat: typeof g.iceRink?.latitude === 'number' ? g.iceRink.latitude : null,
+    lon: typeof g.iceRink?.longitude === 'number' ? g.iceRink.longitude : null,
+    crestA: g.homeTeam?.logos?.darkBg || null,
+    crestB: g.awayTeam?.logos?.darkBg || null,
   };
 }
 
@@ -345,7 +436,12 @@ function renderStatusPanel() {
 
 let ALL_MATCHES = [];
 const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen'];
-const state = { sports: new Set(), cities: new Set(PK_CITIES.map(c => c[0] + c.slice(1).toLowerCase())), day: 'all' };
+const state = {
+  sports: new Set(),
+  cities: new Set(PK_CITIES.map(c => c[0] + c.slice(1).toLowerCase())),
+  day: 'all',
+  view: 'list',
+};
 
 function addDays(dateStr, n) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -369,9 +465,22 @@ function formatDayLabel(dateStr) {
   return `${weekday} ${rest}`;
 }
 
+function formatShortDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' });
+}
+
 function cityOf(m) {
   if (m.city) return m.city[0] + m.city.slice(1).toLowerCase();
   return 'Pääkaupunkiseutu';
+}
+
+function getFilteredMatches() {
+  return ALL_MATCHES.filter(m =>
+    state.sports.has(m.sport) &&
+    state.cities.has(cityOf(m)) &&
+    passesDayFilter(m.date)
+  ).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 }
 
 function renderFilters() {
@@ -382,11 +491,11 @@ function renderFilters() {
     if (!state.sports.has(sport)) state.sports.add(sport);
     const btn = document.createElement('button');
     btn.className = 'chip active';
-    btn.textContent = sport;
+    btn.textContent = `${sportMeta(sport).icon} ${sport}`;
     btn.addEventListener('click', () => {
       if (state.sports.has(sport)) { state.sports.delete(sport); btn.classList.remove('active'); }
       else { state.sports.add(sport); btn.classList.add('active'); }
-      renderBoard();
+      renderResults();
     });
     sportEl.appendChild(btn);
   });
@@ -400,7 +509,7 @@ function renderFilters() {
     btn.addEventListener('click', () => {
       if (state.cities.has(city)) { state.cities.delete(city); btn.classList.remove('active'); }
       else { state.cities.add(city); btn.classList.add('active'); }
-      renderBoard();
+      renderResults();
     });
     cityEl.appendChild(btn);
   });
@@ -421,7 +530,7 @@ function renderFilters() {
         state.day = key;
         [...dayEl.querySelectorAll('.chip')].forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
-        renderBoard();
+        renderResults();
       });
       dayEl.appendChild(btn);
     });
@@ -429,15 +538,12 @@ function renderFilters() {
   }
 }
 
-function renderBoard() {
-  const filtered = ALL_MATCHES.filter(m =>
-    state.sports.has(m.sport) &&
-    state.cities.has(cityOf(m)) &&
-    passesDayFilter(m.date)
-  ).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+function crestImg(url, alt) {
+  if (!url) return '';
+  return `<img class="crest" src="${url}" alt="" loading="lazy" onerror="this.remove()">`;
+}
 
-  document.getElementById('result-count').textContent = `${filtered.length} ottelua näkyvissä`;
-
+function renderBoard(filtered) {
   const board = document.getElementById('board');
   board.innerHTML = '';
 
@@ -457,6 +563,7 @@ function renderBoard() {
     return;
   }
 
+  const today = todayISO(0);
   const grouped = {};
   filtered.forEach(m => { grouped[m.date] = grouped[m.date] || []; grouped[m.date].push(m); });
 
@@ -465,17 +572,19 @@ function renderBoard() {
     group.className = 'day-group';
     const label = document.createElement('div');
     label.className = 'day-label';
-    label.textContent = formatDayLabel(date);
+    label.innerHTML = formatDayLabel(date) + (date === today ? '<span class="day-badge">TÄNÄÄN</span>' : '');
     group.appendChild(label);
 
     grouped[date].forEach(m => {
+      const meta = sportMeta(m.sport);
       const row = document.createElement('div');
       row.className = 'row';
+      row.style.borderLeftColor = meta.color;
       row.innerHTML = `
         <div class="time mono">${m.time || '–'}</div>
-        <div class="sport-tag">${m.sport}</div>
+        <div class="sport-tag" style="background:${meta.color};color:#0E1A2B;">${meta.icon} ${m.sport}</div>
         <div>
-          <div class="matchup">${m.teamA} – ${m.teamB}</div>
+          <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
           <div class="details"><span class="category">${m.category}</span></div>
         </div>
         <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span></div>
@@ -486,13 +595,103 @@ function renderBoard() {
   });
 }
 
+/* ============================================================
+   KARTTA
+   ============================================================ */
+
+let mapInstance = null;
+let markerLayer = null;
+
+function ensureMap() {
+  if (mapInstance) return mapInstance;
+  mapInstance = L.map('map', { zoomControl: true }).setView([60.1908, 24.9438], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-tekijät',
+    subdomains: 'abc',
+    maxZoom: 19,
+    className: 'map-tiles-dark',
+  }).addTo(mapInstance);
+  markerLayer = L.layerGroup().addTo(mapInstance);
+  return mapInstance;
+}
+
+function renderMap(filtered) {
+  if (!mapInstance) return;
+  markerLayer.clearLayers();
+
+  const groups = new Map();
+  let withoutCoords = 0;
+  filtered.forEach(m => {
+    if (typeof m.lat !== 'number' || typeof m.lon !== 'number' || isNaN(m.lat) || isNaN(m.lon)) {
+      withoutCoords++;
+      return;
+    }
+    const key = `${m.venue}|${m.lat.toFixed(3)}|${m.lon.toFixed(3)}`;
+    if (!groups.has(key)) groups.set(key, { lat: m.lat, lon: m.lon, venue: m.venue, city: cityOf(m), matches: [] });
+    groups.get(key).matches.push(m);
+  });
+
+  groups.forEach(g => {
+    const meta = sportMeta(g.matches[0].sport);
+    const radius = Math.min(8 + (g.matches.length - 1) * 2, 16);
+    const marker = L.circleMarker([g.lat, g.lon], {
+      radius, color: meta.color, weight: 2, fillColor: meta.color, fillOpacity: 0.55,
+    });
+    const items = g.matches
+      .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
+      .map(m => `
+        <div class="map-popup-match">
+          <span class="map-popup-time mono">${formatShortDate(m.date)} ${m.time || ''}</span>
+          <span>${sportMeta(m.sport).icon} ${m.teamA} – ${m.teamB}</span>
+        </div>
+      `).join('');
+    marker.bindPopup(`
+      <div class="map-popup-venue">${g.venue || 'Tuntematon paikka'}</div>
+      <div class="map-popup-city">${g.city}</div>
+      ${items}
+    `);
+    marker.addTo(markerLayer);
+  });
+
+  const note = document.getElementById('map-note');
+  note.textContent = withoutCoords > 0
+    ? `${withoutCoords} ottelua ei näy kartalla, koska niiden ottelupaikan sijaintitietoa ei ole saatavilla.`
+    : (groups.size === 0 ? 'Ei näytettäviä ottelupaikkoja valituilla suodattimilla.' : '');
+}
+
+function switchView(view) {
+  state.view = view;
+  document.querySelectorAll('.view-tab').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  document.getElementById('board').style.display = view === 'list' ? '' : 'none';
+  document.getElementById('map-view').style.display = view === 'map' ? '' : 'none';
+  if (view === 'map') {
+    const map = ensureMap();
+    setTimeout(() => { map.invalidateSize(); renderMap(getFilteredMatches()); }, 0);
+  }
+}
+
+document.querySelectorAll('.view-tab').forEach(btn => {
+  btn.addEventListener('click', () => switchView(btn.dataset.view));
+});
+
+/* ============================================================
+   TULOSTEN KOOSTAMINEN
+   ============================================================ */
+
+function renderResults() {
+  const filtered = getFilteredMatches();
+  document.getElementById('result-count').textContent = `${filtered.length} ottelua näkyvissä`;
+  renderBoard(filtered);
+  if (state.view === 'map' && mapInstance) renderMap(filtered);
+}
+
 function renderPlaceholders() {
   const el = document.getElementById('placeholders');
-  el.innerHTML = '';
+  el.innerHTML = '<div class="placeholders-heading">Ei vielä mukana</div>';
   PLACEHOLDER_SPORTS.forEach(p => {
     const card = document.createElement('div');
     card.className = 'placeholder-card';
-    card.innerHTML = `<div class="ph-title">${p.label}</div><div>${p.note}</div>`;
+    card.innerHTML = `<span class="ph-icon">🚧</span><div><div class="ph-title">${p.label}</div><div>${p.note}</div></div>`;
     el.appendChild(card);
   });
 }
@@ -518,7 +717,7 @@ async function loadAll() {
     }
     renderStatusPanel();
     renderFilters();
-    renderBoard();
+    renderResults();
   }));
 
   document.getElementById('updated-time').textContent =
