@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-20T14:03:06.530Z",
+  "updated": "2026-09-20T14:17:58.973Z",
   "source": "spl.torneopal.net (Playwright)",
   "matches": [
     {
@@ -7,6 +7,7 @@
       "time": "19:00",
       "sport": "Jalkapallo",
       "category": "Ykkösliiga",
+      "genderGroup": "Miehet",
       "teamA": "KäPa",
       "teamB": "FC Haka",
       "venue": "Oulunkylän urheilupuisto",
@@ -21,6 +22,7 @@
       "time": "12:30",
       "sport": "Jalkapallo",
       "category": "Briotech Kansallinen Liiga",
+      "genderGroup": "Naiset",
       "teamA": "IF Gnistan",
       "teamB": "Ilves",
       "venue": "Oulunkylän urheilupuisto",
@@ -35,6 +37,7 @@
       "time": "14:00",
       "sport": "Jalkapallo",
       "category": "Briotech Kansallinen Liiga",
+      "genderGroup": "Naiset",
       "teamA": "HPS",
       "teamB": "Åland United",
       "venue": "Paloheinä",
@@ -49,6 +52,7 @@
       "time": "19:00",
       "sport": "Jalkapallo",
       "category": "Ykkösliiga",
+      "genderGroup": "Miehet",
       "teamA": "HJK Klubi 04",
       "teamB": "JäPS",
       "venue": "Töölön pallokenttä",
