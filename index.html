@@ -464,7 +464,9 @@ const SOURCES = [
     label: 'Palloliitto (jalkapallo, futsal, maajoukkue)',
     detail: 'data/jalkapallo.json — VL, M1L, NL, FML, FNL, UNL (taustaprosessi)',
     run: async () => {
-      const res = await fetchWithTimeout('data/jalkapallo.json');
+      // Cache-bust: taustaprosessi ylikirjoittaa tämän tiedoston 4h välein, ja
+      // selain/CDN saattaa muuten palauttaa vanhentuneen välimuistikopion.
+      const res = await fetchWithTimeout(`data/jalkapallo.json?t=${Date.now()}`);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       return (data.matches || []).map(m => ({ genderGroup: 'Muu', categoryId: '', ...m }));
