@@ -1,5 +1,46 @@
 {
-  "updated": null,
+  "updated": "2026-09-20T12:40:45.316Z",
   "source": "spl.torneopal.net (Playwright)",
-  "matches": []
+  "matches": [
+    {
+      "date": "2026-09-25",
+      "time": "19:00",
+      "sport": "Jalkapallo",
+      "category": "Ykkösliiga",
+      "teamA": "KäPa",
+      "teamB": "FC Haka",
+      "venue": "Oulunkylän urheilupuisto",
+      "city": "Helsinki"
+    },
+    {
+      "date": "2026-09-26",
+      "time": "12:30",
+      "sport": "Jalkapallo",
+      "category": "Briotech Kansallinen Liiga",
+      "teamA": "IF Gnistan",
+      "teamB": "Ilves",
+      "venue": "Oulunkylän urheilupuisto",
+      "city": "Helsinki"
+    },
+    {
+      "date": "2026-09-26",
+      "time": "14:00",
+      "sport": "Jalkapallo",
+      "category": "Briotech Kansallinen Liiga",
+      "teamA": "HPS",
+      "teamB": "Åland United",
+      "venue": "Paloheinä",
+      "city": "Helsinki"
+    },
+    {
+      "date": "2026-09-26",
+      "time": "19:00",
+      "sport": "Jalkapallo",
+      "category": "Ykkösliiga",
+      "teamA": "HJK Klubi 04",
+      "teamB": "JäPS",
+      "venue": "Töölön pallokenttä",
+      "city": "Helsinki"
+    }
+  ]
 }
