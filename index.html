@@ -160,6 +160,20 @@
 
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+  /* Data latautuu useasta lähteestä eri tahtiin (ks. loadAll()), joten
+     #board piirtyy uudelleen useita kertoja peräkkäin ensimmäisten
+     sekuntien aikana. Ilman pehmennystä tämä näkyy rumana vilkkumisena kun
+     koko lista tyhjenee ja täyttyy uudelleen jokaisella lähteellä — siksi
+     opacity-siirtymä board-updating-luokan kautta (ks. renderResults()). */
+  #board { transition: opacity 0.18s ease; }
+  #board.board-updating { opacity: 0.45; }
+  .loading-spinner {
+    display: inline-block; width: 0.8em; height: 0.8em; margin-left: 0.5rem; vertical-align: -0.1em;
+    border: 2px solid var(--divider); border-top-color: var(--amber); border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   .row {
     display: grid; grid-template-columns: 3.6rem 6.6rem 1fr auto; gap: 0.9rem; align-items: center;
     padding: 0.85rem 0.9rem; margin-bottom: 0.45rem; border-radius: var(--radius);
@@ -282,7 +296,7 @@
     </details>
 
     <div class="meta-line">
-      <span id="result-count">Ladataan datalähteitä…</span>
+      <span id="result-count">Ladataan datalähteitä…</span><span id="loading-spinner" class="loading-spinner" hidden></span>
       <span>
         <span id="updated-time"></span>
         <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
@@ -1361,7 +1375,12 @@ function renderResults() {
   const filtered = getFilteredMatches();
   const distancePrefix = (REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin — ' : '';
   document.getElementById('result-count').textContent = `${distancePrefix}${filtered.length} ottelua näkyvissä`;
+  const stillLoading = Object.values(sourceState).some(s => s.status === 'loading');
+  document.getElementById('loading-spinner').hidden = !stillLoading;
+  const board = document.getElementById('board');
+  board.classList.add('board-updating');
   renderBoard(filtered);
+  requestAnimationFrame(() => board.classList.remove('board-updating'));
   if (state.view === 'map' && mapInstance) renderMap(filtered);
 }
 
