@@ -257,7 +257,7 @@
     <div class="controls">
       <div class="control-row" id="sport-filters"><span class="label">LAJI</span></div>
       <div class="control-row" id="gender-filters"><span class="label">SUKUPUOLI</span></div>
-      <div class="control-row" id="level-filters"><span class="label">SARJATASO</span></div>
+      <div class="control-row" id="level-filters"><span class="label">KILPAILUTASO</span></div>
       <div class="control-row" id="city-filters"><span class="label">ALUE</span></div>
       <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
     </div>
@@ -382,9 +382,10 @@ function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 // jääkiekon ja salibandyn maajoukkue-id:t (PH-alkuiset) ovat yhä
 // paikanvaraajia, koska niille ei ole löydetty toimivaa rajapintaa (ks.
 // CLAUDE.md "Ideoita jatkoa varten").
-// "level" ('paasarja'/'alempi') on vain seurasarjoilla — käytetään normihaun
-// SARJATASO-suodattimessa (ks. levelOf()). Maajoukkuesarjoilla ei ole
-// level-kenttää, joten ne näkyvät aina riippumatta Sarjataso-valinnasta.
+// "level" ('paasarja'/'alempi') on vain kotimaisilla seurasarjoilla.
+// Normihaun KILPAILUTASO-suodatin (ks. competitionTypeOf()) yhdistää tämän
+// ja "group"-kentän ('eurooppa'/'maajoukkue') neljäksi valinnaksi: Pääsarja,
+// Alemmat sarjat, Eurooppalaiset seurasarjat, Maajoukkueiden ottelut.
 const KNOWN_SERIES = {
   'Jalkapallo': [
     { id: 'VL', gender: 'Miehet', name: 'Veikkausliiga', level: 'paasarja' },
@@ -468,9 +469,15 @@ const KNOWN_SERIES = {
   ],
 };
 
-function levelOf(m) {
+// Yhdistää KNOWN_SERIES:n level- ja group-kentät yhdeksi KILPAILUTASO-
+// suodattimen arvoksi: 'paasarja'/'alempi' (kotimaiset sarjat, level-kenttä)
+// tai 'eurooppa'/'maajoukkue' (group-kenttä). Palauttaa null jos sarjaa ei
+// tunneta — silloin ottelu näkyy aina riippumatta KILPAILUTASO-valinnasta.
+function competitionTypeOf(m) {
   const entry = (KNOWN_SERIES[m.sport] || []).find(s => s.id === m.categoryId);
-  return entry ? (entry.level || null) : null;
+  if (!entry) return null;
+  if (entry.group === 'eurooppa' || entry.group === 'maajoukkue') return entry.group;
+  return entry.level || null;
 }
 
 function todayISO(offsetDays = 0) {
@@ -814,15 +821,19 @@ document.getElementById('max-distance-input').addEventListener('input', e => {
 let ALL_MATCHES = [];
 const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Muu'];
 const DISPLAY_GENDERS = ['Miehet', 'Naiset', 'Muu'];
-const DISPLAY_LEVELS = [
+// KILPAILUTASO (ent. "Sarjataso") — laajennettu kattamaan level- ja
+// group-kenttien koko arvojoukko, ks. competitionTypeOf().
+const DISPLAY_COMPETITION_TYPES = [
   { id: 'paasarja', label: 'Pääsarja' },
   { id: 'alempi', label: 'Alemmat sarjat' },
+  { id: 'eurooppa', label: 'Eurooppalaiset seurasarjat' },
+  { id: 'maajoukkue', label: 'Maajoukkueiden ottelut' },
 ];
 const state = {
   sports: new Set(),
   cities: new Set(DISPLAY_CITIES),
   genders: new Set(),
-  levels: new Set(),
+  competitionTypes: new Set(),
   categories: new Set(),
   day: 'today',
   customFrom: null,
@@ -889,8 +900,8 @@ function getFilteredMatches() {
     if (!state.sports.has(m.sport)) return false;
     if (!state.cities.has(cityOf(m))) return false;
     if (!state.genders.has(m.genderGroup)) return false;
-    const lvl = levelOf(m);
-    if (lvl && !state.levels.has(lvl)) return false;
+    const compType = competitionTypeOf(m);
+    if (compType && !state.competitionTypes.has(compType)) return false;
     if (!state.categories.has(categoryKey(m))) return false;
     if (!passesDayFilter(m.date)) return false;
     if (state.maxDistanceKm != null) {
@@ -947,14 +958,14 @@ function renderFilters() {
 
   const levelEl = document.getElementById('level-filters');
   levelEl.querySelectorAll('.chip').forEach(c => c.remove());
-  DISPLAY_LEVELS.forEach(({ id, label }) => {
-    if (!state.levels.has(id)) state.levels.add(id);
+  DISPLAY_COMPETITION_TYPES.forEach(({ id, label }) => {
+    if (!state.competitionTypes.has(id)) state.competitionTypes.add(id);
     const btn = document.createElement('button');
     btn.className = 'chip active';
     btn.textContent = label;
     btn.addEventListener('click', () => {
-      if (state.levels.has(id)) { state.levels.delete(id); btn.classList.remove('active'); }
-      else { state.levels.add(id); btn.classList.add('active'); }
+      if (state.competitionTypes.has(id)) { state.competitionTypes.delete(id); btn.classList.remove('active'); }
+      else { state.competitionTypes.add(id); btn.classList.add('active'); }
       renderResults();
     });
     levelEl.appendChild(btn);
