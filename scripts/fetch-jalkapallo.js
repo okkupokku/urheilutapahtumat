@@ -14,7 +14,11 @@ const path = require('path');
 const BASE_URL = 'https://spl.torneopal.net';
 const ACCEPT_TOKEN = 'json/4h7dznqdxwtp3hsfdyf5r793uahfxy7x';
 const ORIGIN_PAGE = 'https://tulospalvelu.palloliitto.fi/';
-const ALLOWED_CATEGORIES = new Set(['VL', 'M1L', 'NL']); // Veikkausliiga, Ykkösliiga, naisten Kansallinen Liiga
+const ALLOWED_CATEGORIES = new Set([
+  'VL', 'M1L', 'NL',   // Veikkausliiga, Ykkösliiga, naisten Kansallinen Liiga
+  'FML', 'FNL',        // Miesten ja naisten Futsal-Liiga
+  'UNL',               // Miesten maajoukkue (Huuhkajat), UEFA Nations League
+]);
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
 const DAYS_AHEAD = 13; // tänään + 13 seuraavaa päivää (sama ikkuna kuin index.html:n "valitse päivämäärät")
 const REQUEST_DELAY_MS = 200;

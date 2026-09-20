@@ -420,7 +420,7 @@ const SOURCES = [
   {
     id: 'jalkapallo',
     label: 'Jalkapallo (Palloliitto)',
-    detail: 'data/jalkapallo.json — VL, M1L, NL (taustaprosessi)',
+    detail: 'data/jalkapallo.json — VL, M1L, NL, futsal, maajoukkue (taustaprosessi)',
     run: async () => {
       const res = await fetchWithTimeout('data/jalkapallo.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -478,7 +478,7 @@ const SOURCES = [
 ];
 
 const PLACEHOLDER_SPORTS = [
-  { label: 'Maaottelut', note: 'Maajoukkueiden ottelut haetaan eri kilpailu-/turnaustunnuksilla kuin kotimaiset sarjat, joten ne eivät vielä sisälly nykyisiin rajapintakutsuihin.' },
+  { label: 'Maaottelut (muut kuin jalkapallo)', note: 'Jalkapallon miesten maajoukkue (Huuhkajat, UEFA Nations League) on jo mukana. Muiden lajien maajoukkueiden ottelut haetaan eri kilpailutunnuksilla kuin kotimaiset sarjat, joten ne eivät vielä sisälly nykyisiin rajapintakutsuihin.' },
   { label: 'Jääkiekko — Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) — vaatisi ajon toisesta verkosta.' },
   { label: 'Salibandy — F-liiga (miehet ja naiset)', note: 'fliiga.com ei tarjoa JSON-rajapintaa — vaatii sivun sisällön hakua toisella tavalla.' },
   { label: 'Jääpallo — Bandyliiga', note: 'finbandy.torneopal.fi:n rajapinta vaatii avaimen jota ei ole saatavilla selaimesta.' },
