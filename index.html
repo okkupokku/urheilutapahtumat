@@ -130,7 +130,7 @@
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon sekä Mestiksen ja Auroraliigan ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/</code>-kansioon, koska Palloliiton ja Leijonat.fi:n rajapinnat estävät suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy yllä olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Salibandyn F-liiga, jääpallo ja amerikkalainen jalkapallo eivät vielä tarjoa rajapintaa lainkaan (edellyttävät myöhemmin sivun sisällön hakua toisella tavalla) ja näkyvät alla placeholdereina. Maajoukkueottelut eivät vielä ole mukana.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy yllä olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Mestis/Auroraliiga, salibandyn F-liiga, jääpallo ja amerikkalainen jalkapallo näkyvät alla placeholdereina, koska niiden rajapinnat estävät sekä suoran selainkutsun että taustaprosessin. Maajoukkueottelut eivät vielä ole mukana.</p>
 </footer>
 
 <script>
@@ -304,20 +304,10 @@ const SOURCES = [
         .map(normalizeLiiga);
     }
   },
-  {
-    id: 'mestis-aurora',
-    label: 'Jääkiekko — Mestis / Auroraliiga',
-    detail: 'data/jaakiekko-mestis-aurora.json (taustaprosessi)',
-    run: async () => {
-      const res = await fetchWithTimeout('data/jaakiekko-mestis-aurora.json');
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      return data.matches || [];
-    }
-  },
 ];
 
 const PLACEHOLDER_SPORTS = [
+  { label: 'Jääkiekko — Mestis / Auroraliiga', note: 'tulospalvelu.leijonat.fi estää sekä suorat selainkutsut (CORS) että taustaprosessin (CloudFront-suojaus torjuu GitHub Actionsin IP-osoitteet HTTP 403 -virheellä) — vaatisi ajon toisesta verkosta.' },
   { label: 'Salibandy — F-liiga (miehet ja naiset)', note: 'fliiga.com ei tarjoa JSON-rajapintaa — vaatii sivun sisällön hakua toisella tavalla.' },
   { label: 'Jääpallo — Bandyliiga', note: 'finbandy.torneopal.fi:n rajapinta vaatii avaimen jota ei ole saatavilla selaimesta.' },
   { label: 'Amerikkalainen jalkapallo — Vaahteraliiga', note: 'Ei tiedossa olevaa rajapintaa vielä.' },
@@ -354,8 +344,8 @@ function renderStatusPanel() {
    ============================================================ */
 
 let ALL_MATCHES = [];
-const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Pääkaupunkiseutu'];
-const state = { sports: new Set(), cities: new Set(DISPLAY_CITIES), day: 'all' };
+const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen'];
+const state = { sports: new Set(), cities: new Set(PK_CITIES.map(c => c[0] + c.slice(1).toLowerCase())), day: 'all' };
 
 function addDays(dateStr, n) {
   const d = new Date(dateStr + 'T00:00:00');
