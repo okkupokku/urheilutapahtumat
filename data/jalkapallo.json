@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-20T14:17:58.973Z",
+  "updated": "2026-09-20T14:45:19.240Z",
   "source": "spl.torneopal.net (Playwright)",
   "matches": [
     {
@@ -61,6 +61,36 @@
       "lon": 24.923453144872,
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/1x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/72x.png"
+    },
+    {
+      "date": "2026-09-29",
+      "time": "19:00",
+      "sport": "Jalkapallo",
+      "category": "UEFA Nations League Huuhkajat",
+      "genderGroup": "Miehet",
+      "teamA": "Suomi",
+      "teamB": "Valko-Venäjä",
+      "venue": "Olympiastadion",
+      "city": "Helsinki",
+      "lat": null,
+      "lon": null,
+      "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
+      "crestB": "https://cdn.torneopal.net/logo/palloliitto/4040x.png"
+    },
+    {
+      "date": "2026-10-03",
+      "time": "16:00",
+      "sport": "Jalkapallo",
+      "category": "UEFA Nations League Huuhkajat",
+      "genderGroup": "Miehet",
+      "teamA": "Suomi",
+      "teamB": "Albania",
+      "venue": "Olympiastadion",
+      "city": "Helsinki",
+      "lat": null,
+      "lon": null,
+      "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
+      "crestB": "https://cdn.torneopal.net/logo/palloliitto/4255x.png"
     }
   ]
 }
