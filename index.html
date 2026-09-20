@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
   :root {
     --bg: #F3F5F8;
@@ -43,7 +43,12 @@
   @keyframes ring { 0% { transform: scale(0.6); opacity: 0.7; } 100% { transform: scale(1.9); opacity: 0; } }
   h1 { font-size: clamp(1.6rem, 3.4vw, 2.25rem); font-weight: 800; letter-spacing: -0.015em; margin: 0; }
   .subhead { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 62ch; line-height: 1.55; }
-  .location-note { color: var(--amber-dim); font-size: 0.83rem; margin: 0.5rem 0 0; font-weight: 600; }
+
+  .location-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.85rem; }
+  .loc-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--text); padding: 0.4rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: border-color .15s, background .15s; }
+  .loc-btn:hover { border-color: var(--amber-dim); }
+  .loc-btn.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); }
+  .location-note { color: var(--amber-dim); font-size: 0.83rem; font-weight: 600; margin: 0; }
 
   main { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem 4rem; }
 
@@ -90,6 +95,19 @@
   .date-range span { color: var(--muted); font-size: 0.8rem; }
   .date-range input[type=date] { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--divider); background: var(--panel); color: var(--text); }
 
+  .advanced-panel { border: 1px solid var(--divider); border-radius: var(--radius); margin: 0.25rem 0 0.5rem; background: var(--panel); overflow: hidden; }
+  .advanced-panel summary { cursor: pointer; padding: 0.7rem 1rem; font-size: 0.85rem; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .advanced-panel summary::-webkit-details-marker { display: none; }
+  .advanced-panel summary .chev { transition: transform 0.15s; color: var(--muted); }
+  .advanced-panel[open] summary .chev { transform: rotate(180deg); }
+  .advanced-body { border-top: 1px solid var(--divider); padding: 0.9rem 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.9rem; }
+  .adv-section { display: flex; flex-direction: column; gap: 0.4rem; }
+  .category-list { display: flex; flex-wrap: wrap; gap: 0.4rem; max-height: 170px; overflow-y: auto; padding: 0.15rem 0; }
+  .distance-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; }
+  .distance-row input[type=number] { width: 4.5rem; font-family: 'IBM Plex Mono', monospace; padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--divider); background: var(--panel); color: var(--text); }
+  .distance-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--amber); }
+  .distance-row.disabled { opacity: 0.5; }
+
   .meta-line { display: flex; justify-content: space-between; align-items: baseline; padding: 1rem 0 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 0.5rem; }
   .meta-line .count { color: var(--text); font-weight: 600; }
 
@@ -118,24 +136,35 @@
   .row .details .category { color: var(--amber-dim); }
   .row .venue-col { text-align: right; font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
   .row .venue-col .city { display: block; color: var(--text); font-weight: 500; font-size: 0.85rem; }
-  .row .venue-col .distance { display: block; color: var(--amber-dim); font-size: 0.72rem; font-weight: 600; margin-top: 0.1rem; }
+  .row .venue-col .distance { display: block; color: var(--amber-dim); font-size: 0.72rem; font-weight: 600; margin-top: 0.15rem; }
+  .row .venue-col .travel-times { display: flex; gap: 0.45rem; justify-content: flex-end; margin-top: 0.25rem; font-size: 0.7rem; color: var(--muted); flex-wrap: wrap; }
+  .row .venue-col .travel-times span { white-space: nowrap; }
 
   .map-view { margin-top: 0.5rem; }
+  .map-wrap { position: relative; }
   .map-el { height: 500px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--divider); background: var(--panel-alt); }
-  .map-el .map-tiles-muted { filter: saturate(0.7) brightness(1.02); }
   .map-note { color: var(--muted); font-size: 0.78rem; margin: 0.7rem 0.1rem 0; }
-  .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
-  .leaflet-popup-content { margin: 0.8rem 1rem; font-family: 'Archivo', sans-serif; min-width: 190px; }
-  .leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
-  .leaflet-container a.leaflet-popup-close-button:hover { color: var(--text); }
-  .map-popup-venue { font-weight: 700; margin-bottom: 0.1rem; }
+
+  .map-overlay { position: absolute; z-index: 5; background: rgba(255,255,255,0.94); border: 1px solid var(--divider); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.75rem; box-shadow: var(--shadow); }
+  .map-daterange { top: 10px; left: 10px; font-weight: 700; color: var(--text); font-family: 'IBM Plex Mono', monospace; max-width: 60%; }
+  .map-legend { bottom: 10px; left: 10px; display: flex; flex-direction: column; gap: 0.3rem; }
+  .map-legend .legend-item { display: flex; align-items: center; gap: 0.45rem; color: var(--text); }
+  .legend-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+  .map-pick-hint { top: 10px; right: 10px; background: var(--amber); color: var(--amber-ink); font-weight: 700; }
+
+  .map-marker { border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; position: relative; }
+  .map-marker .count-badge { position: absolute; top: -6px; right: -6px; background: var(--text); color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; }
+  .map-marker-user { width: 20px; height: 20px; border-radius: 50%; background: #1D6FBD; border: 3px solid #fff; box-shadow: 0 0 0 3px rgba(29,111,189,0.35), 0 1px 5px rgba(0,0,0,0.35); }
+
+  .maplibregl-popup-content { font-family: 'Archivo', sans-serif; border-radius: 8px; padding: 0.8rem 0.9rem; min-width: 200px; }
+  .map-popup-venue { font-weight: 700; margin-bottom: 0.1rem; color: var(--text); }
   .map-popup-city { color: var(--muted); font-size: 0.75rem; margin-bottom: 0.5rem; }
-  .map-popup-match { display: flex; gap: 0.5rem; align-items: baseline; padding: 0.35rem 0; border-top: 1px solid var(--divider); font-size: 0.82rem; }
+  .map-popup-match { padding: 0.4rem 0; border-top: 1px solid var(--divider); font-size: 0.82rem; }
   .map-popup-match:first-of-type { border-top: none; }
+  .map-popup-match .row1 { display: flex; gap: 0.5rem; align-items: baseline; }
   .map-popup-time { font-family: 'IBM Plex Mono', monospace; color: var(--amber-dim); flex-shrink: 0; font-size: 0.75rem; }
-  .leaflet-control-attribution { background: rgba(255,255,255,0.85) !important; color: var(--muted) !important; }
-  .leaflet-control-attribution a { color: var(--muted) !important; }
-  .leaflet-control-zoom a { background: var(--panel) !important; color: var(--text) !important; border-color: var(--divider) !important; }
+  .map-popup-dist { color: var(--muted); font-size: 0.72rem; margin-top: 0.2rem; }
+  .map-popup-travel { display: flex; gap: 0.5rem; font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; flex-wrap: wrap; }
 
   .placeholder-card { display: flex; gap: 0.75rem; border: 1px dashed var(--divider); border-radius: var(--radius); padding: 1rem 1.1rem; margin-top: 0.75rem; color: var(--muted); font-size: 0.85rem; background: var(--panel); }
   .placeholder-card .ph-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; opacity: 0.7; }
@@ -156,8 +185,10 @@
     .row .venue-col { grid-column: 1 / -1; text-align: left; margin-top: 0.4rem; }
     .row .venue-col .city { display: inline; }
     .row .venue-col .distance { display: inline; margin-left: 0.4rem; }
+    .row .venue-col .travel-times { justify-content: flex-start; }
     .status-row { grid-template-columns: 1fr; row-gap: 0.2rem; }
     .map-el { height: 380px; }
+    .map-overlay { font-size: 0.68rem; padding: 0.4rem 0.55rem; }
   }
 </style>
 </head>
@@ -166,6 +197,11 @@
 <header class="board-header">
   <div class="brand"><span class="mark"></span><h1>Lähtötaulu</h1></div>
   <p class="subhead">Pääkaupunkiseudun urheiluottelut yhdellä sivulla — suodata lajin, alueen ja ajankohdan mukaan, tai katso ottelupaikat kartalta.</p>
+  <div class="location-controls">
+    <button class="loc-btn" id="btn-use-gps" type="button">📍 Käytä sijaintiani</button>
+    <button class="loc-btn" id="btn-pick-map" type="button">🖱️ Valitse sijainti kartalta</button>
+    <button class="loc-btn" id="btn-clear-location" type="button" style="display:none;">✕ Poista sijainti</button>
+  </div>
   <p class="location-note" id="location-note" style="display:none;"></p>
 </header>
 
@@ -182,6 +218,29 @@
       <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
     </div>
 
+    <details class="advanced-panel" id="advanced-panel">
+      <summary>⚙️ Tarkennettu haku <span class="chev">▾</span></summary>
+      <div class="advanced-body">
+        <div class="adv-section">
+          <span class="label">RYHMÄ</span>
+          <div class="control-row" id="gender-filters"></div>
+        </div>
+        <div class="adv-section">
+          <span class="label">SARJAT</span>
+          <div class="category-list" id="category-filters"></div>
+        </div>
+        <div class="adv-section">
+          <span class="label">ETÄISYYS</span>
+          <div class="distance-row disabled" id="distance-row">
+            <input type="checkbox" id="max-distance-toggle" disabled>
+            <label for="max-distance-toggle">Näytä vain enintään</label>
+            <input type="number" id="max-distance-input" min="1" max="100" value="10" disabled>
+            <span>km sijainnista</span>
+          </div>
+        </div>
+      </div>
+    </details>
+
     <div class="meta-line">
       <span id="result-count">Ladataan datalähteitä…</span>
       <span>
@@ -194,7 +253,12 @@
   <div id="board"></div>
 
   <div id="map-view" class="map-view" style="display:none;">
-    <div id="map" class="map-el"></div>
+    <div class="map-wrap">
+      <div id="map" class="map-el"></div>
+      <div class="map-overlay map-daterange" id="map-daterange"></div>
+      <div class="map-overlay map-legend" id="map-legend"></div>
+      <div class="map-overlay map-pick-hint" id="map-pick-hint" style="display:none;">🖱️ Klikkaa karttaa asettaaksesi sijainti</div>
+    </div>
     <p class="map-note" id="map-note"></p>
   </div>
 
@@ -207,10 +271,10 @@
 </main>
 
 <footer>
-  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä (erityisesti Salibandyliitto, Koripalloliitto, Lentopalloliitto, Käsipalloliitto) saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy alla olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Liiga.fi sallii ulkopuoliset kutsut suoraan, joten se toimii varmimmin. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain lähimpien tämän päivän otteluiden ehdottamiseen, eikä sitä lähetetä minnekään.</p>
+  <p><span class="flag">Ensimmäinen live-versio.</span> Jalkapallon ottelut haetaan taustaprosessilla (Playwright, GitHub Actions joka 4. tunti) ja tallennetaan tähän repoon <code>data/jalkapallo.json</code>-tiedostoksi, koska Palloliiton rajapinta estää suorat selainkutsut. Muiden lajien ottelut haetaan suoraan selaimestasi kunkin lajiliiton omasta rajapinnasta juuri nyt kun tämä sivu latautuu. Osa niistä saattaa estää suoran selainkutsun toiselta sivustolta (CORS) — jos näin käy, se näkyy alla olevassa "Datalähteiden tila" -paneelissa, eikä sivu kaadu. Kartalla näkyvät vain ottelut, joiden ottelupaikalle rajapinta antaa koordinaatit. Etäisyydet ja kulkuaika-arviot lasketaan suoraan linjaa pitkin sijaintisi ja ottelupaikan välillä — ne eivät ole oikeaa reititystä, joten todellinen matka-aika voi poiketa arviosta. Selain saattaa kysyä lupaa käyttää sijaintiasi — sitä käytetään vain paikallisesti etäisyyksien laskemiseen, eikä sitä lähetetä minnekään.</p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
 /* ============================================================
    ASETUKSET JA TUNNETUT DATALÄHTEET
@@ -219,6 +283,9 @@
 const PK_CITIES = ['HELSINKI', 'ESPOO', 'VANTAA', 'KAUNIAINEN'];
 const DAYS_AHEAD = 13; // tänään + N seuraavaa päivää (rajaa myös "valitse päivämäärät" -valitsimen ylärajan)
 const REQUEST_DELAY_MS = 150; // pieni tauko peräkkäisten kutsujen välissä per lähde
+
+// Pääkaupunkiseudun kiinteä oletusnäkymä kartalle — ei muutu hakutulosten mukaan.
+const PK_BOUNDS = [[24.45, 60.03], [25.32, 60.37]]; // [[lounas], [koillinen]]
 
 const SPORT_META = {
   'Jalkapallo': { color: '#128363', icon: '⚽' },
@@ -229,6 +296,11 @@ const SPORT_META = {
   '_default': { color: '#667085', icon: '🏆' },
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
+
+// Karkeat keskinopeusarviot (km/h) kulkuaika-arvioihin. Näitä EI reititetä oikeasti —
+// ne ovat suoraviivaisen etäisyyden perusteella laskettuja karkeita arvioita.
+const TRAVEL_SPEEDS_KMH = { walk: 5, bike: 15, transit: 20, car: 28 };
+const TRAVEL_ICONS = { walk: '🚶', bike: '🚴', transit: '🚌', car: '🚗' };
 
 function todayISO(offsetDays = 0) {
   const d = new Date();
@@ -287,6 +359,7 @@ function normalizeTorneoPal(m, sportLabel) {
     time: (m.time || '').slice(0, 5),
     sport: sportLabel,
     category: m.category_name || '',
+    genderGroup: (m.category_group_name || '').trim() || 'Muu',
     teamA: m.team_A_name || m.club_A_name || '?',
     teamB: m.team_B_name || m.club_B_name || '?',
     venue: (m.venue_location_name || m.venue_name || '').trim(),
@@ -326,6 +399,7 @@ function normalizeLiiga(g) {
     time: start.length >= 16 ? start.slice(11, 16) : '',
     sport: 'Jääkiekko',
     category: 'Liiga',
+    genderGroup: 'Miehet',
     teamA: g.homeTeam?.teamName || '?',
     teamB: g.awayTeam?.teamName || '?',
     venue: (g.iceRink?.name || '').trim(),
@@ -350,7 +424,7 @@ const SOURCES = [
       const res = await fetchWithTimeout('data/jalkapallo.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
-      return data.matches || [];
+      return (data.matches || []).map(m => ({ genderGroup: 'Muu', ...m }));
     }
   },
   {
@@ -437,10 +511,10 @@ function renderStatusPanel() {
 }
 
 /* ============================================================
-   SIJAINTI
+   SIJAINTI JA ETÄISYYDET
    ============================================================ */
 
-let USER_LOCATION = null; // { lat, lon } tai null jos ei saatavilla/lupaa
+let REFERENCE_LOCATION = null; // { lat, lon, source: 'gps'|'manual' }
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -451,25 +525,103 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function distanceToUser(m) {
-  if (!USER_LOCATION || typeof m.lat !== 'number' || typeof m.lon !== 'number') return null;
-  return haversineKm(USER_LOCATION.lat, USER_LOCATION.lon, m.lat, m.lon);
+function distanceToRef(m) {
+  if (!REFERENCE_LOCATION || typeof m.lat !== 'number' || typeof m.lon !== 'number') return null;
+  return haversineKm(REFERENCE_LOCATION.lat, REFERENCE_LOCATION.lon, m.lat, m.lon);
+}
+
+function formatDistance(km) {
+  return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km';
+}
+
+function formatMinutes(min) {
+  if (min < 60) return Math.round(min) + ' min';
+  const h = Math.floor(min / 60);
+  const rem = Math.round(min % 60);
+  return `${h} h ${rem} min`;
+}
+
+function travelTimesHtml(km) {
+  return Object.keys(TRAVEL_SPEEDS_KMH).map(mode => {
+    const minutes = (km / TRAVEL_SPEEDS_KMH[mode]) * 60;
+    return `<span>${TRAVEL_ICONS[mode]} ~${formatMinutes(minutes)}</span>`;
+  }).join('');
+}
+
+function updateLocationUI() {
+  const note = document.getElementById('location-note');
+  const gpsBtn = document.getElementById('btn-use-gps');
+  const pickBtn = document.getElementById('btn-pick-map');
+  const clearBtn = document.getElementById('btn-clear-location');
+  gpsBtn.classList.toggle('active', REFERENCE_LOCATION?.source === 'gps');
+  pickBtn.classList.toggle('active', REFERENCE_LOCATION?.source === 'manual');
+  clearBtn.style.display = REFERENCE_LOCATION ? '' : 'none';
+  if (REFERENCE_LOCATION) {
+    note.style.display = '';
+    note.textContent = REFERENCE_LOCATION.source === 'gps'
+      ? '📍 Käytetään sijaintiasi — etäisyydet ja kulkuajat näytetään otteluille.'
+      : '📍 Käytetään kartalta valittua sijaintia — etäisyydet ja kulkuajat näytetään otteluille.';
+  } else {
+    note.style.display = 'none';
+  }
+  const distToggle = document.getElementById('max-distance-toggle');
+  const distInput = document.getElementById('max-distance-input');
+  const distRow = document.getElementById('distance-row');
+  const hasLocation = !!REFERENCE_LOCATION;
+  distToggle.disabled = !hasLocation;
+  distInput.disabled = !hasLocation || !distToggle.checked;
+  distRow.classList.toggle('disabled', !hasLocation);
+  if (!hasLocation) { distToggle.checked = false; state.maxDistanceKm = null; }
 }
 
 function requestLocation() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
     pos => {
-      USER_LOCATION = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-      const note = document.getElementById('location-note');
-      note.textContent = '📍 Näytämme oletuksena tämän päivän lähimmät ottelusi ensin.';
-      note.style.display = '';
+      REFERENCE_LOCATION = { lat: pos.coords.latitude, lon: pos.coords.longitude, source: 'gps' };
+      updateLocationUI();
       renderResults();
     },
     () => { /* evätty tai ei saatavilla — jatketaan ilman sijaintia */ },
     { maximumAge: 300000, timeout: 8000 }
   );
 }
+
+let mapPickArmed = false;
+function enableMapPick() {
+  switchView('map');
+  const map = ensureMap();
+  mapPickArmed = true;
+  document.getElementById('map-pick-hint').style.display = '';
+  document.getElementById('map').style.cursor = 'crosshair';
+  map.once('click', e => {
+    REFERENCE_LOCATION = { lat: e.lngLat.lat, lon: e.lngLat.lng, source: 'manual' };
+    mapPickArmed = false;
+    document.getElementById('map-pick-hint').style.display = 'none';
+    document.getElementById('map').style.cursor = '';
+    updateLocationUI();
+    renderResults();
+  });
+}
+
+document.getElementById('btn-use-gps').addEventListener('click', requestLocation);
+document.getElementById('btn-pick-map').addEventListener('click', enableMapPick);
+document.getElementById('btn-clear-location').addEventListener('click', () => {
+  REFERENCE_LOCATION = null;
+  updateLocationUI();
+  renderResults();
+});
+document.getElementById('max-distance-toggle').addEventListener('change', e => {
+  document.getElementById('max-distance-input').disabled = !e.target.checked;
+  state.maxDistanceKm = e.target.checked ? Number(document.getElementById('max-distance-input').value) : null;
+  renderResults();
+});
+document.getElementById('max-distance-input').addEventListener('input', e => {
+  if (document.getElementById('max-distance-toggle').checked) {
+    state.maxDistanceKm = Number(e.target.value);
+    renderResults();
+  }
+});
 
 /* ============================================================
    SUODATTIMET JA NÄYTTÖ
@@ -480,9 +632,12 @@ const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Muu'];
 const state = {
   sports: new Set(),
   cities: new Set(DISPLAY_CITIES),
+  genders: new Set(),
+  categories: new Set(),
   day: 'today',
   customFrom: null,
   customTo: null,
+  maxDistanceKm: null,
   view: 'list',
 };
 
@@ -504,6 +659,13 @@ function passesDayFilter(dateStr) {
   return true;
 }
 
+function currentDayRangeLabel() {
+  if (state.day === 'today') return `📅 Tänään · ${formatShortDate(todayISO(0))}`;
+  if (state.day === 'week') return `📅 Seuraavat ${DAYS_AHEAD + 1} pv · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(DAYS_AHEAD))}`;
+  if (state.day === 'custom') return `📅 ${formatShortDate(state.customFrom || todayISO(0))}–${formatShortDate(state.customTo || todayISO(DAYS_AHEAD))}`;
+  return '';
+}
+
 function formatDayLabel(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
   const weekday = d.toLocaleDateString('fi-FI', { weekday: 'long' });
@@ -521,17 +683,26 @@ function cityOf(m) {
   return 'Muu';
 }
 
-function getFilteredMatches() {
-  const list = ALL_MATCHES.filter(m =>
-    state.sports.has(m.sport) &&
-    state.cities.has(cityOf(m)) &&
-    passesDayFilter(m.date)
-  );
+function categoryKey(m) { return `${m.sport}||${m.category}`; }
 
-  const useDistanceSort = !!USER_LOCATION && state.day === 'today';
+function getFilteredMatches() {
+  const list = ALL_MATCHES.filter(m => {
+    if (!state.sports.has(m.sport)) return false;
+    if (!state.cities.has(cityOf(m))) return false;
+    if (!state.genders.has(m.genderGroup)) return false;
+    if (!state.categories.has(categoryKey(m))) return false;
+    if (!passesDayFilter(m.date)) return false;
+    if (state.maxDistanceKm != null) {
+      const d = distanceToRef(m);
+      if (d === null || d > state.maxDistanceKm) return false;
+    }
+    return true;
+  });
+
+  const useDistanceSort = !!REFERENCE_LOCATION && state.day === 'today';
   return list.sort((a, b) => {
     if (useDistanceSort) {
-      const da = distanceToUser(a), db = distanceToUser(b);
+      const da = distanceToRef(a), db = distanceToRef(b);
       if (da !== null && db !== null && da !== db) return da - db;
       if (da !== null && db === null) return -1;
       if (da === null && db !== null) return 1;
@@ -569,6 +740,40 @@ function renderFilters() {
       renderResults();
     });
     cityEl.appendChild(btn);
+  });
+
+  const genderEl = document.getElementById('gender-filters');
+  genderEl.querySelectorAll('.chip').forEach(c => c.remove());
+  const genders = [...new Set(ALL_MATCHES.map(m => m.genderGroup))].sort();
+  genders.forEach(gender => {
+    if (!state.genders.has(gender)) state.genders.add(gender);
+    const btn = document.createElement('button');
+    btn.className = 'chip active';
+    btn.textContent = gender;
+    btn.addEventListener('click', () => {
+      if (state.genders.has(gender)) { state.genders.delete(gender); btn.classList.remove('active'); }
+      else { state.genders.add(gender); btn.classList.add('active'); }
+      renderResults();
+    });
+    genderEl.appendChild(btn);
+  });
+
+  const categoryEl = document.getElementById('category-filters');
+  categoryEl.querySelectorAll('.chip').forEach(c => c.remove());
+  const categories = [...new Map(ALL_MATCHES.map(m => [categoryKey(m), m])).values()]
+    .sort((a, b) => categoryKey(a).localeCompare(categoryKey(b)));
+  categories.forEach(m => {
+    const key = categoryKey(m);
+    if (!state.categories.has(key)) state.categories.add(key);
+    const btn = document.createElement('button');
+    btn.className = 'chip active';
+    btn.textContent = `${sportMeta(m.sport).icon} ${m.category}`;
+    btn.addEventListener('click', () => {
+      if (state.categories.has(key)) { state.categories.delete(key); btn.classList.remove('active'); }
+      else { state.categories.add(key); btn.classList.add('active'); }
+      renderResults();
+    });
+    categoryEl.appendChild(btn);
   });
 
   const dayEl = document.getElementById('day-filters');
@@ -634,7 +839,7 @@ function renderBoard(filtered) {
   }
 
   const today = todayISO(0);
-  const showDistance = !!USER_LOCATION;
+  const showDistance = !!REFERENCE_LOCATION;
   const grouped = {};
   const order = [];
   filtered.forEach(m => {
@@ -644,7 +849,7 @@ function renderBoard(filtered) {
 
   // Kun lajitellaan etäisyyden mukaan, säilytetään se järjestys päivän sisällä
   // sen sijaan että aakkostettaisiin päivät uudelleen aikajärjestykseen.
-  const dateKeys = (USER_LOCATION && state.day === 'today') ? order : Object.keys(grouped).sort();
+  const dateKeys = (REFERENCE_LOCATION && state.day === 'today') ? order : Object.keys(grouped).sort();
 
   dateKeys.forEach(date => {
     const group = document.createElement('div');
@@ -656,7 +861,7 @@ function renderBoard(filtered) {
 
     grouped[date].forEach(m => {
       const meta = sportMeta(m.sport);
-      const dist = showDistance ? distanceToUser(m) : null;
+      const dist = showDistance ? distanceToRef(m) : null;
       const row = document.createElement('div');
       row.className = 'row';
       row.style.borderLeftColor = meta.color;
@@ -667,7 +872,7 @@ function renderBoard(filtered) {
           <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
           <div class="details"><span class="category">${m.category}</span></div>
         </div>
-        <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${dist < 1 ? Math.round(dist * 1000) + ' m' : dist.toFixed(1) + ' km'}</span>` : ''}</div>
+        <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${formatDistance(dist)}</span><span class="travel-times">${travelTimesHtml(dist)}</span>` : ''}</div>
       `;
       group.appendChild(row);
     });
@@ -676,29 +881,48 @@ function renderBoard(filtered) {
 }
 
 /* ============================================================
-   KARTTA
+   KARTTA (MapLibre GL + OpenFreeMap Positron, avaimeton)
    ============================================================ */
 
 let mapInstance = null;
-let markerLayer = null;
-let userMarker = null;
+let mapMarkers = [];
+let userMapMarker = null;
+
+function renderLegend() {
+  const el = document.getElementById('map-legend');
+  el.innerHTML = Object.entries(SPORT_META)
+    .filter(([key]) => key !== '_default')
+    .map(([sport, meta]) => `
+      <div class="legend-item">
+        <span class="legend-dot" style="background:${meta.color};">${meta.icon}</span>
+        <span>${sport}</span>
+      </div>
+    `).join('');
+}
 
 function ensureMap() {
   if (mapInstance) return mapInstance;
-  mapInstance = L.map('map', { zoomControl: true }).setView([60.1908, 24.9438], 11);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-tekijät',
-    subdomains: 'abc',
-    maxZoom: 19,
-    className: 'map-tiles-muted',
-  }).addTo(mapInstance);
-  markerLayer = L.layerGroup().addTo(mapInstance);
+  mapInstance = new maplibregl.Map({
+    container: 'map',
+    style: 'https://tiles.openfreemap.org/styles/positron',
+    bounds: PK_BOUNDS,
+    fitBoundsOptions: { padding: 20 },
+    attributionControl: { compact: true },
+  });
+  mapInstance.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  renderLegend();
   return mapInstance;
+}
+
+function clearMarkers() {
+  mapMarkers.forEach(m => m.remove());
+  mapMarkers = [];
+  if (userMapMarker) { userMapMarker.remove(); userMapMarker = null; }
 }
 
 function renderMap(filtered) {
   if (!mapInstance) return;
-  markerLayer.clearLayers();
+  clearMarkers();
 
   const groups = new Map();
   let withoutCoords = 0;
@@ -712,45 +936,54 @@ function renderMap(filtered) {
     groups.get(key).matches.push(m);
   });
 
-  const boundsPoints = [];
-
   groups.forEach(g => {
     const meta = sportMeta(g.matches[0].sport);
-    const radius = Math.min(8 + (g.matches.length - 1) * 2, 16);
-    const marker = L.circleMarker([g.lat, g.lon], {
-      radius, color: meta.color, weight: 2, fillColor: meta.color, fillOpacity: 0.55,
-    });
+    const size = Math.min(22 + (g.matches.length - 1) * 3, 34);
+    const el = document.createElement('div');
+    el.className = 'map-marker';
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.background = meta.color;
+    el.style.fontSize = Math.round(size * 0.5) + 'px';
+    el.textContent = meta.icon;
+    if (g.matches.length > 1) {
+      const badge = document.createElement('span');
+      badge.className = 'count-badge';
+      badge.textContent = g.matches.length;
+      el.appendChild(badge);
+    }
+
     const items = g.matches
       .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
-      .map(m => `
+      .map(m => {
+        const dist = distanceToRef(m);
+        return `
         <div class="map-popup-match">
-          <span class="map-popup-time mono">${formatShortDate(m.date)} ${m.time || ''}</span>
-          <span>${sportMeta(m.sport).icon} ${m.teamA} – ${m.teamB}</span>
+          <div class="row1"><span class="map-popup-time mono">${formatShortDate(m.date)} ${m.time || ''}</span><span>${sportMeta(m.sport).icon} ${m.teamA} – ${m.teamB}</span></div>
+          ${dist !== null ? `<div class="map-popup-dist">${formatDistance(dist)} sijainnistasi</div><div class="map-popup-travel">${travelTimesHtml(dist)}</div>` : ''}
         </div>
-      `).join('');
-    marker.bindPopup(`
+      `; }).join('');
+
+    const popup = new maplibregl.Popup({ offset: size / 2 + 4, maxWidth: '260px' }).setHTML(`
       <div class="map-popup-venue">${g.venue || 'Tuntematon paikka'}</div>
       <div class="map-popup-city">${g.city}</div>
       ${items}
     `);
-    marker.addTo(markerLayer);
-    boundsPoints.push([g.lat, g.lon]);
+
+    const marker = new maplibregl.Marker({ element: el }).setLngLat([g.lon, g.lat]).setPopup(popup).addTo(mapInstance);
+    mapMarkers.push(marker);
   });
 
-  if (userMarker) { markerLayer.removeLayer(userMarker); userMarker = null; }
-  if (USER_LOCATION) {
-    userMarker = L.circleMarker([USER_LOCATION.lat, USER_LOCATION.lon], {
-      radius: 7, color: '#fff', weight: 2, fillColor: '#1D6FBD', fillOpacity: 1,
-    }).bindPopup('Sijaintisi');
-    userMarker.addTo(markerLayer);
-    boundsPoints.push([USER_LOCATION.lat, USER_LOCATION.lon]);
+  if (REFERENCE_LOCATION) {
+    const el = document.createElement('div');
+    el.className = 'map-marker-user';
+    userMapMarker = new maplibregl.Marker({ element: el })
+      .setLngLat([REFERENCE_LOCATION.lon, REFERENCE_LOCATION.lat])
+      .setPopup(new maplibregl.Popup({ offset: 14 }).setHTML('<div class="map-popup-venue">Sijaintisi</div>'))
+      .addTo(mapInstance);
   }
 
-  if (boundsPoints.length > 0) {
-    mapInstance.fitBounds(L.latLngBounds(boundsPoints), { padding: [40, 40], maxZoom: 14 });
-  } else {
-    mapInstance.setView([60.1908, 24.9438], 11);
-  }
+  document.getElementById('map-daterange').textContent = currentDayRangeLabel();
 
   const note = document.getElementById('map-note');
   note.textContent = withoutCoords > 0
@@ -765,7 +998,7 @@ function switchView(view) {
   document.getElementById('map-view').style.display = view === 'map' ? '' : 'none';
   if (view === 'map') {
     const map = ensureMap();
-    setTimeout(() => { map.invalidateSize(); renderMap(getFilteredMatches()); }, 0);
+    setTimeout(() => { map.resize(); renderMap(getFilteredMatches()); }, 0);
   }
 }
 
@@ -778,8 +1011,9 @@ document.querySelectorAll('.view-tab').forEach(btn => {
    ============================================================ */
 
 function renderResults() {
+  updateLocationUI();
   const filtered = getFilteredMatches();
-  const distancePrefix = (USER_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin — ' : '';
+  const distancePrefix = (REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin — ' : '';
   document.getElementById('result-count').textContent = `${distancePrefix}${filtered.length} ottelua näkyvissä`;
   renderBoard(filtered);
   if (state.view === 'map' && mapInstance) renderMap(filtered);
