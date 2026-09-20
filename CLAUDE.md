@@ -98,10 +98,21 @@ tarkistamalla oikea live-data eri päiviltä — katso `KNOWN_SERIES` vakio
   tarkista jos sarja ei koskaan tuota tuloksia. Maajoukkueet (miehet): `EM`,
   `EM-Karsinta`, `GLM`=Kultainen liiga, `ELM`=Euroopan liiga, `Maaottelu`=
   harjoitusottelut. Maajoukkueet (naiset): `EL`=Euroopan liiga, `Harj`=
-  harjoitusottelut. **HUOM:** samalla rajapinnalla on myös eurooppalaisia
-  SEURAcupeja (`CLM`/`CHL`/`CEVC`=Mestareiden liiga/Challenge liiga/CEV Cup
-  miehillä, `CEVcup`/`CHLW` naisilla) — nämä ovat klubijoukkueiden, ei
-  maajoukkueen, otteluita, joten niitä ei ole lisätty maajoukkuesarjoihin.
+  harjoitusottelut. Eurooppalaiset seuracupit: `CLM`/`CHL`/`CEVC`=
+  Mestareiden liiga/Challenge liiga/CEV Cup (miehet), `CEVcup`/`CHLW`
+  (naiset) — nämä ovat klubijoukkueiden, ei maajoukkueen, otteluita.
+  Käsipallolla vastaava on `EC_M`=EHF European Cup (vain miehet, naisten
+  vastaavaa ei löytynyt getCategories-hausta).
+
+**Kolmas hierarkiataso "Eurooppalaiset seurasarjat":** `KNOWN_SERIES`:n
+`group`-kenttä voi olla `'seura'` (oletus), `'maajoukkue'` tai `'eurooppa'`
+(kotimaisten klubien kansainväliset cupit, esim. jääkiekon Champions Hockey
+League, jalkapallon UEFA-cupit). `renderHierarchy()` näyttää kaikki kolme
+ryhmää omina otsikoinaan kun lajilla on useampi kuin yksi. Jalkapallolle,
+koripallolle, jääkiekolle ja salibandylle ei löytynyt avointa dataa
+eurooppalaisille seuracupeille (UEFA/FIBA/IIHF järjestävät ne itse, eivät
+näy TorneoPal- tai Liiga.fi-rajapinnoissa) — nämä ovat siis `PH-EUR-`-
+paikanvaraajia, ei todellista dataa.
 
 `isPKAreaTorneoPal()` suodattaa alueen `venue_area_name`/`venue_city_name`
 -kentistä. **Käsipalloliiton data sisältää ylimääräisiä välilyöntejä**
@@ -236,3 +247,10 @@ otteluohjelmaa), iframe `engine.groweo.com` (vain chat-widget, ei dataa,
   rajapintaa (jääkiekon Liiga.fi ei kata maajoukkuetta lainkaan, salibandyn
   fliiga.com:sta ei löytynyt maajoukkuesivua `/maajoukkueet/`-osoitteesta).
   Jos näille löytyy joskus data, sama korvausmenettely kuin jalkapallolle.
+- Eurooppalaiset seuracupit (uusi `group: 'eurooppa'`, ks. yllä): lentopallon
+  ja käsipallon (miesten EC_M) osalta oikeaa dataa on jo mukana. Jalkapallon
+  UEFA-cupit, koripallon FIBA-cupit, jääkiekon Champions Hockey League ja
+  salibandyn Champions Cup ovat `PH-EUR-`-paikanvaraajia, koska niitä
+  järjestävät kansainväliset kattojärjestöt (UEFA/FIBA/IIHF/IFF) eivätkä ne
+  näy Suomen liittojen omissa rajapinnoissa — vaatisi kunkin kattojärjestön
+  oman (todennäköisesti maksullisen tai suljetun) rajapinnan.
