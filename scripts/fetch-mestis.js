@@ -90,6 +90,7 @@ function extractMatches(html) {
         city: PK_VENUE.city,
         lat: PK_VENUE.lat,
         lon: PK_VENUE.lon,
+        matchUrl: `${SCHEDULE_URL}${m.id}/`,
         crestA: null,
         crestB: null,
       });

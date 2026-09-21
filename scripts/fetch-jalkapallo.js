@@ -56,13 +56,15 @@ function normalize(m) {
     sport: FUTSAL_CATEGORIES.has(m.category_id) ? 'Futsal' : 'Jalkapallo',
     category: m.category_name || '',
     categoryId: m.category_id || '',
-    genderGroup: (m.category_group_name || '').trim() || 'Muu',
+    // Ei "Muu"-oletusarvoa - sarjat ovat aina miesten tai naisten.
+    genderGroup: (m.category_group_name || '').trim() || 'Miehet',
     teamA: m.team_A_name || m.club_A_name || '?',
     teamB: m.team_B_name || m.club_B_name || '?',
     venue: (m.venue_location_name || m.venue_name || '').trim(),
     city: (m.venue_city_name || '').trim(),
     lat: m.venue_lat ? parseFloat(m.venue_lat) : null,
     lon: m.venue_lon ? parseFloat(m.venue_lon) : null,
+    matchUrl: m.match_id ? `https://tulospalvelu.palloliitto.fi/match/${m.match_id}` : null,
     crestA: m.club_A_crest || null,
     crestB: m.club_B_crest || null,
   };

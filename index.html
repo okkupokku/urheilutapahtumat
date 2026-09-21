@@ -190,13 +190,17 @@
   }
   .row:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
   .row .time { font-family: 'IBM Plex Mono', monospace; font-size: 0.95rem; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .row .sport-col { display: flex; flex-direction: column; gap: 0.28rem; align-items: flex-start; }
   .row .sport-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; letter-spacing: 0.03em; padding: 0.22rem 0.45rem; border-radius: 999px; text-align: center; text-transform: uppercase; width: fit-content; font-weight: 700; color: #fff; }
+  .row .gender-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding-left: 0.15rem; }
   .row .matchup { font-weight: 600; font-size: 0.98rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; }
   .row .matchup .team { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
   .row .matchup .dash { color: var(--muted); font-weight: 400; }
   .row .matchup .crest { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; border-radius: 3px; background: rgba(0,0,0,0.04); flex-shrink: 0; }
   .row .details { color: var(--muted); font-size: 0.82rem; margin-top: 0.2rem; }
   .row .details .category { color: var(--amber-dim); }
+  .row .details .category-link { color: var(--amber-dim); text-decoration: none; border-bottom: 1px dotted var(--amber-dim); }
+  .row .details .category-link:hover { color: var(--text); border-bottom-color: var(--text); }
   .row .venue-col { text-align: right; font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
   .row .venue-col .city { display: block; color: var(--text); font-weight: 500; font-size: 0.85rem; }
   .row .venue-col .distance { display: block; color: var(--amber-dim); font-size: 0.72rem; font-weight: 600; margin-top: 0.15rem; }
@@ -247,7 +251,7 @@
     .controls-sticky { margin: 0 -1rem; padding-left: 1rem; padding-right: 1rem; }
     header.board-header, main, footer { padding-left: 1rem; padding-right: 1rem; }
     .row { grid-template-columns: 3rem 1fr; grid-template-rows: auto auto; }
-    .row .sport-tag { grid-row: 1; grid-column: 2; justify-self: start; }
+    .row .sport-col { grid-row: 1; grid-column: 2; justify-self: start; }
     .row .matchup, .row .details { grid-column: 2; }
     .row .venue-col { grid-column: 1 / -1; text-align: left; margin-top: 0.4rem; }
     .row .venue-col .city { display: inline; }
@@ -282,7 +286,7 @@
       <div class="control-row" id="sport-filters"><span class="label">LAJI</span></div>
       <div class="control-row" id="gender-filters"><span class="label">SUKUPUOLI</span></div>
       <div class="control-row" id="level-filters"><span class="label">KILPAILUTASO</span></div>
-      <div class="control-row" id="city-filters"><span class="label">ALUE</span></div>
+      <div class="control-row" id="city-filters"><span class="label">KAUPUNKI</span></div>
       <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
     </div>
 
@@ -470,10 +474,12 @@ const KNOWN_SERIES = {
     { id: 'NSM', gender: 'Naiset', name: 'Aktialiiga', level: 'paasarja' },
     { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup', level: 'paasarja' },
     { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup', level: 'paasarja' },
-    // Käsipalloliitolla on vain yksi yhteinen maajoukkuekategoria (id "Maa")
-    // molemmille sukupuolille - oikea sukupuoli tulee kunkin ottelun omasta
-    // datasta heti kun sellainen ilmestyy, ks. SOURCES-kommentti.
-    { id: 'Maa', gender: 'Muu', name: 'Maajoukkueet', group: 'maajoukkue' },
+    // Käsipalloliiton rajapinnan "Maa"-kategoria jaetaan sukupuolen mukaan
+    // kahdeksi id:ksi (Maa-M/Maa-N) fixKasipalloMaajoukkue()-funktiossa
+    // (ks. SOURCES), koska rajapinnan oma category_group_name on kaikilla
+    // näillä otteluilla kirjaimellisesti aina "Maajoukkueet".
+    { id: 'Maa-M', gender: 'Miehet', name: 'Maajoukkueet', group: 'maajoukkue' },
+    { id: 'Maa-N', gender: 'Naiset', name: 'Maajoukkueet', group: 'maajoukkue' },
     { id: 'EC_M', gender: 'Miehet', name: 'EHF European Cup', group: 'eurooppa' },
     { id: 'PH-EUR-N', gender: 'Naiset', name: 'EHF-seuracupit', group: 'eurooppa' },
   ],
@@ -587,23 +593,53 @@ async function fetchTorneoPalCategories(baseUrl, acceptToken, allowedCategoryIds
   return all;
 }
 
-function normalizeTorneoPal(m, sportLabel) {
+// publicMatchBaseUrl: kunkin liiton oma julkinen tulospalvelu, jolla on
+// kaikilla sama TorneoPal-alustan yhteinen polku "/match/<match_id>"
+// (vahvistettu 2026-09-21 sekä jalkapallolle että koripallolle/
+// lentopallolle/käsipallolle, ks. CLAUDE.md).
+function normalizeTorneoPal(m, sportLabel, publicMatchBaseUrl) {
   return {
     date: m.date,
     time: (m.time || '').slice(0, 5),
     sport: sportLabel,
     category: m.category_name || '',
     categoryId: m.category_id || '',
-    genderGroup: (m.category_group_name || '').trim() || 'Muu',
+    // Ei "Muu"-oletusarvoa: sarjat ovat aina miesten tai naisten (ks.
+    // CLAUDE.md). Jos category_group_name puuttuu (harvinaista), oletetaan
+    // miehet - useimmat tähän mennessä nähdyt puuttuvat tapaukset ovat
+    // olleet miesten sarjoja.
+    genderGroup: (m.category_group_name || '').trim() || 'Miehet',
     teamA: m.team_A_name || m.club_A_name || '?',
     teamB: m.team_B_name || m.club_B_name || '?',
     venue: (m.venue_location_name || m.venue_name || '').trim(),
     city: (m.venue_city_name || '').trim(),
     lat: m.venue_lat ? parseFloat(m.venue_lat) : null,
     lon: m.venue_lon ? parseFloat(m.venue_lon) : null,
+    matchUrl: (publicMatchBaseUrl && m.match_id) ? `${publicMatchBaseUrl}/match/${m.match_id}` : null,
     crestA: m.club_A_crest || null,
     crestB: m.club_B_crest || null,
   };
+}
+
+// Käsipalloliiton "Maa"-kategorian sukupuoli/ikäluokka joukkuenimen
+// M/N-päätteestä (ks. kommentti SOURCES-määrittelyssä). Palauttaa null
+// nuorten otteluille (P##/T##-pääte) - ne suodatetaan pois kokonaan.
+// categoryId vaihdetaan Maa-M/Maa-N:ksi jotta KNOWN_SERIES voi rekisteröidä
+// molemmat sukupuolet erikseen (sama id ei voisi näkyä kahdesti
+// hierarkiassa).
+function kasipalloMaaGender(m) {
+  const suffixOf = (name) => (name || '').trim().split(/\s+/).pop();
+  const a = suffixOf(m.teamA), b = suffixOf(m.teamB);
+  if (a === 'M' || b === 'M') return 'Miehet';
+  if (a === 'N' || b === 'N') return 'Naiset';
+  return null;
+}
+
+function fixKasipalloMaajoukkue(m) {
+  if (m.categoryId !== 'Maa') return m;
+  const gender = kasipalloMaaGender(m);
+  if (!gender) return null;
+  return { ...m, categoryId: gender === 'Miehet' ? 'Maa-M' : 'Maa-N', genderGroup: gender };
 }
 
 /* --- Liiga.fi (jääkiekko, Liiga) --- */
@@ -634,6 +670,7 @@ function normalizeLiiga(g) {
     lon: typeof g.iceRink?.longitude === 'number' ? g.iceRink.longitude : null,
     crestA: g.homeTeam?.logos?.darkBg || null,
     crestB: g.awayTeam?.logos?.darkBg || null,
+    matchUrl: g.id ? `https://liiga.fi/fi/peli/${g.season}/${g.id}` : null,
   };
 }
 
@@ -652,7 +689,7 @@ const SOURCES = [
       const res = await fetchWithTimeout(`data/jalkapallo.json?t=${Date.now()}`);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
-      return (data.matches || []).map(m => ({ genderGroup: 'Muu', categoryId: '', ...m }));
+      return (data.matches || []).map(m => ({ genderGroup: 'Miehet', categoryId: '', ...m }));
     }
   },
   {
@@ -667,7 +704,7 @@ const SOURCES = [
       const raw = await fetchTorneoPalCategories('https://koripallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h', allow);
       return raw
         .filter(m => isPKAreaTorneoPal(m))
-        .map(m => normalizeTorneoPal(m, 'Koripallo'));
+        .map(m => normalizeTorneoPal(m, 'Koripallo', 'https://tulospalvelu.basket.fi'));
     }
   },
   {
@@ -684,7 +721,7 @@ const SOURCES = [
       const raw = await fetchTorneoPalCategories('https://lentopallo-api.torneopal.net', 'json/df8e84j9xtdz269euy3h', allow);
       return raw
         .filter(m => isPKAreaTorneoPal(m))
-        .map(m => normalizeTorneoPal(m, 'Lentopallo'));
+        .map(m => normalizeTorneoPal(m, 'Lentopallo', 'https://tulospalvelu.lentopallo.fi'));
     }
   },
   {
@@ -692,16 +729,25 @@ const SOURCES = [
     label: 'Käsipallo (Käsipalloliitto)',
     detail: 'hb-api.torneopal.net - Aktialiiga (M/N), Suomen cup, maajoukkueet, EHF European Cup',
     run: async () => {
-      // 'Maa' = kaikki maajoukkueottelut (Käsipalloliitolla ei ole erillistä
-      // id:tä miehille/naisille tässä kategoriassa - sukupuoli tulee
-      // kunkin ottelun omasta category_group_name-kentästä). 'EC_M' =
-      // EHF European Cup (miesten seuracup, ei maajoukkue) - naisten
-      // vastaavaa ei löytynyt getCategories-hausta.
+      // 'Maa' = kaikki maajoukkueottelut KAIKISTA ikäluokista (Käsipalloliitto
+      // ei erottele niitä omiksi category_id:iksi, ja category_group_name on
+      // jokaisella ottelulla kirjaimellisesti aina "Maajoukkueet" riippumatta
+      // oikeasta sukupuolesta/ikäluokasta - täysin käyttökelvoton kenttä
+      // tähän). Oikea sukupuoli ja ikäluokka pitää siis päätellä joukkueiden
+      // nimistä (esim. "FIN M"/"CRO M" = miehet, "FIN N"/"KOS N" = naiset,
+      // "FIN P06"/"LAT T10" = nuoret ikäluokat, kirjain+kaksinumeroinen
+      // syntymävuosi). Vain aikuisten A-maajoukkueet (pelkkä M/N-pääte)
+      // otetaan mukaan, samaan tapaan kuin muillakin lajeilla - nuorten
+      // ottelut jätetään pois (ks. kasipalloMaaGender()). 'EC_M' = EHF
+      // European Cup (miesten seuracup, ei maajoukkue) - naisten vastaavaa
+      // ei löytynyt getCategories-hausta.
       const allow = new Set(['SM-liiga', 'NSM', 'MSC', 'NSC', 'Maa', 'EC_M']);
       const raw = await fetchTorneoPalCategories('https://hb-api.torneopal.net', 'json/pfqmz9z6ea43uqy2hzfxpcpxr4svqunn', allow);
       return raw
         .filter(m => isPKAreaTorneoPal(m))
-        .map(m => normalizeTorneoPal(m, 'Käsipallo'));
+        .map(m => normalizeTorneoPal(m, 'Käsipallo', 'https://tulospalvelu.finnhandball.net'))
+        .map(fixKasipalloMaajoukkue)
+        .filter(m => m !== null);
     }
   },
   {
@@ -886,8 +932,11 @@ document.getElementById('max-distance-input').addEventListener('input', e => {
    ============================================================ */
 
 let ALL_MATCHES = [];
-const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen', 'Muu'];
-const DISPLAY_GENDERS = ['Miehet', 'Naiset', 'Muu'];
+// Ei "Muu"-vaihtoehtoa kummassakaan: PK-seudulla ei ole muita kaupunkeja
+// kuin nämä neljä (kaikki lähteet suodattavat jo PK-alueeseen), eikä
+// sarjoja pelata muualla kuin miesten/naisten kesken.
+const DISPLAY_CITIES = ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen'];
+const DISPLAY_GENDERS = ['Miehet', 'Naiset'];
 // KILPAILUTASO (ent. "Sarjataso") - laajennettu kattamaan level- ja
 // group-kenttien koko arvojoukko, ks. competitionTypeOf().
 const DISPLAY_COMPETITION_TYPES = [
@@ -1284,12 +1333,18 @@ function renderBoard(filtered) {
       const row = document.createElement('div');
       row.className = 'row';
       row.style.borderLeftColor = meta.color;
+      const categoryHtml = m.matchUrl
+        ? `<a class="category-link" href="${m.matchUrl}" target="_blank" rel="noopener noreferrer">${m.category} ↗</a>`
+        : `<span class="category">${m.category}</span>`;
       row.innerHTML = `
         <div class="time mono">${m.time || '–'}</div>
-        <div class="sport-tag" style="background:${meta.color};">${meta.icon} ${m.sport}</div>
+        <div class="sport-col">
+          <div class="sport-tag" style="background:${meta.color};">${meta.icon} ${m.sport}</div>
+          <div class="gender-tag">${m.genderGroup || ''}</div>
+        </div>
         <div>
           <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
-          <div class="details"><span class="category">${m.category}</span></div>
+          <div class="details">${categoryHtml}</div>
         </div>
         <div class="venue-col">${m.venue || ''}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${formatDistance(dist)}</span>` : ''}</div>
       `;

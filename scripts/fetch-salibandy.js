@@ -118,6 +118,10 @@ function extractMatches(html) {
           city: pkVenue.city,
           lat: pkVenue.lat,
           lon: pkVenue.lon,
+          // fliiga.com ei tarjoa erillistä ottelusivua (ei permalink-kenttää
+          // upotetussa datassa) - linkataan sen sijaan joukkueen omalle
+          // otteluohjelmasivulle, jolta tämä ottelu löytyy.
+          matchUrl: url,
           crestA: null,
           crestB: null,
         });

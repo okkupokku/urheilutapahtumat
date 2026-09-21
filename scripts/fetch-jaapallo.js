@@ -91,11 +91,15 @@ function crestSrc(chunk, cls) {
   return null;
 }
 
+// HUOM: <li class="match">-elementin sisältämä "Nro" (ml_ottelunro, esim.
+// 546) EI ole sama kuin ottelusivun oikea tietokanta-id - se löytyy vain
+// elementin ympäröivästä <a href="/taso/ottelu.php?ottelu=24858">-linkistä.
 function extractMatches(html) {
-  const items = [...html.matchAll(/<li class=["']([^"']*)["']>(.*?)<\/li>/gs)];
-  return items.filter(m => hasClassToken(m[1], 'match')).map(m => {
-    const c = m[2];
+  const items = [...html.matchAll(/<a href=["']([^"']*ottelu=(\d+)[^"']*)["']>\s*<li class=["']([^"']*)["']>(.*?)<\/li>/gs)];
+  return items.filter(m => hasClassToken(m[3], 'match')).map(m => {
+    const c = m[4];
     return {
+      ottelu: m[2],
       nro: field(c, 'ml_ottelunro'),
       sarja: field(c, 'ml_sarja'),
       sarjanimi: field(c, 'ml_sarjanimi'),
@@ -149,6 +153,7 @@ function extractMatches(html) {
           city: pkVenue.city,
           lat: pkVenue.lat,
           lon: pkVenue.lon,
+          matchUrl: m.ottelu ? `${BASE_URL}/taso/ottelu.php?ottelu=${m.ottelu}` : null,
           crestA: m.kotilogo || null,
           crestB: m.vieraslogo || null,
         });
