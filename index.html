@@ -989,7 +989,10 @@ const state = {
   genders: new Set(),
   competitionTypes: new Set(),
   categories: new Set(),
-  day: 'today',
+  // Oletus "Seuraavat 7 päivää" eikä "Tänään" (käyttäjän toive 2026-09-21) -
+  // pelkkä tämä päivä on usein tyhjä, jolloin sivu näyttäisi heti aluksi
+  // tyhjältä vaikka otteluita olisi tulossa lähipäivinä.
+  day: 'week',
   customFrom: null,
   customTo: null,
   maxDistanceKm: null,
@@ -1070,7 +1073,7 @@ function buildShareUrl() {
   if (allTypes.some(t => !state.competitionTypes.has(t)) || state.competitionTypes.size !== allTypes.length) {
     params.set('level', [...state.competitionTypes].join(','));
   }
-  if (state.day !== 'today') params.set('day', state.day);
+  if (state.day !== 'week') params.set('day', state.day);
   if (state.day === 'custom') {
     if (state.customFrom) params.set('from', state.customFrom);
     if (state.customTo) params.set('to', state.customTo);

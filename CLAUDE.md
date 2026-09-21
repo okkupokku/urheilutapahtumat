@@ -480,7 +480,13 @@ infrarajoitukset".
   testattu vasta oikeasti GitHub Actionsissa, ei paikallisesti).
 - **AJANKOHTA-suodattimen laajennus (2026-09-20):** normihaun AJANKOHTA on
   nyt Tänään / Seuraavat 7 päivää / Seuraavat 30 päivää / Kaikki saatavilla
-  olevat / Valitse päivämäärät. Tämän mahdollisti yllä kuvattu koko kauden
+  olevat / Valitse päivämäärät. Oletus on **"Seuraavat 7 päivää"**, ei
+  "Tänään" (`state.day = 'week'` [index.html](index.html):ssä, käyttäjän
+  toive 2026-09-21) - pelkkä tämä päivä on usein tyhjä, jolloin sivu
+  näyttäisi heti aluksi tyhjältä vaikka otteluita olisi tulossa
+  lähipäivinä. `buildShareUrl()`:n oletusvertailu (ks. "Jaettava URL"
+  yllä) on päivitetty samaan - jos joskus vaihdat oletusta uudelleen,
+  muista päivittää molemmat. Tämän mahdollisti yllä kuvattu koko kauden
   yhden kutsun haku - kaikki lähteet (myös scripts/fetch-*.js-skriptit)
   hakevat nyt koko kauden dataa eivätkä enää rajaa mitään DAYS_AHEAD-tyyppisellä
   ikkunalla haku- tai tallennusvaiheessa. `DAYS_AHEAD`-vakio
