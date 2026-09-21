@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21T09:26:52.506Z",
+  "updated": "2026-09-21T09:38:41.970Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -15,7 +15,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-nokian-krp-2-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -32,7 +32,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-ols-10-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -49,7 +49,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-hawks-30-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -66,7 +66,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-indians-6-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -83,7 +83,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-spv-14-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -100,7 +100,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-lasb-20-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -117,7 +117,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-oilers-18-12-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -134,7 +134,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-o2-jyvaskyla-20-12-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -151,7 +151,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-oilers-9-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -168,7 +168,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-oilers-14-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -185,7 +185,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-jymy-6-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -202,7 +202,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-oilers-12-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -219,7 +219,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-classic-19-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -236,7 +236,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-oilers-20-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -253,7 +253,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-eraviikingit-23-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -270,7 +270,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-indians-5-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -287,7 +287,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-eraviikingit-10-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -304,7 +304,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/oilers/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-oilers-12-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -321,7 +321,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-spv-3-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -338,7 +338,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-tps-9-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -355,7 +355,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-eraviikingit-30-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -372,7 +372,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-nokian-krp-14-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -389,7 +389,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-hawks-20-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -406,7 +406,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-indians-21-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -423,7 +423,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-ols-8-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -440,7 +440,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-classic-15-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -457,7 +457,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-indians-17-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -474,7 +474,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-lasb-22-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -491,7 +491,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-indians-30-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -508,7 +508,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-jymy-5-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -525,7 +525,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-eraviikingit-6-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -542,7 +542,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-hawks-12-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -559,7 +559,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-hawks-25-9-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -576,7 +576,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-lasb-3-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -593,7 +593,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-spv-10-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -610,7 +610,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-nokian-krp-7-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -627,7 +627,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-jymy-19-12-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -644,7 +644,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-eraviikingit-27-12-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -661,7 +661,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-classic-2-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -678,7 +678,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-hawks-22-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -695,7 +695,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-ols-7-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -712,7 +712,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-o2-jyvaskyla-14-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -729,7 +729,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/hawks/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-tps-6-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -746,7 +746,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-lasb-30-9-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -763,7 +763,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-classic-9-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -780,7 +780,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-o2-jyvaskyla-31-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -797,7 +797,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-jymy-18-12-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -814,7 +814,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-ols-9-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -831,7 +831,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-spv-6-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -848,7 +848,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
+      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-nokian-krp-17-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -865,7 +865,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-pss-23-9-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -882,7 +882,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-fbc-loisto-7-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -899,7 +899,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-tps-16-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -916,7 +916,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-sb-pro-30-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -933,7 +933,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-koovee-18-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -950,7 +950,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-pirkat-16-12-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -967,7 +967,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-sbs-wirmo-6-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -984,7 +984,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-northern-stars-13-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -1001,7 +1001,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-ssra-23-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -1018,7 +1018,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-spv-6-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -1035,7 +1035,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-eraviikingit-5-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -1052,7 +1052,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-classic-13-3-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -1069,7 +1069,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-ssra-3-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -1086,7 +1086,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-classic-16-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -1103,7 +1103,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-northern-stars-24-10-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -1120,7 +1120,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-tps-6-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -1137,7 +1137,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-sb-pro-22-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -1154,7 +1154,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-pirkat-28-11-2026/",
       "crestA": null,
       "crestB": null
     },
@@ -1171,7 +1171,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-sbs-wirmo-23-1-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -1188,7 +1188,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-spv-7-2-2027/",
       "crestA": null,
       "crestB": null
     },
@@ -1205,7 +1205,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
-      "matchUrl": "https://fliiga.com/pss/naiset/",
+      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-fbc-loisto-13-2-2027/",
       "crestA": null,
       "crestB": null
     }
