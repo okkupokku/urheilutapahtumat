@@ -15,7 +15,11 @@ https://okkupokku.github.io/urheilutapahtumat/
 
 Sivulla on oma "Tietoa tästä sivustosta" -paneeli (kiinni oletuksena, aivan
 sivun alaosassa) joka selittää käyttäjälle saman asian lyhyemmin - pidä
-se ajan tasalla jos teet isoja muutoksia.
+se ajan tasalla jos teet isoja muutoksia. Myös lajit/sarjat joita EI vielä
+ole mukana ("Ei vielä mukana" -kortit, `PLACEHOLDER_SPORTS`
+[index.html](index.html):ssä) renderöidään tämän saman paneelin sisään
+(`#placeholders-doc`) eivätkä enää omana lohkonaan etusivulla (2026-09-21,
+käyttäjän toive - vei liikaa tilaa pääsivulta).
 
 ## Kirjoitustyyli
 
@@ -39,6 +43,50 @@ jälkeen kirjoitettu teksti noudattaa tätä.
   paniikkinappi.
 - `genderGroup`-kentän oletusarvo (kun `category_group_name` puuttuu) on
   `'Miehet'`, ei `'Muu'` - sama sääntö.
+- **Suodatinrivit (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA)
+  rivittyvät (`flex-wrap: wrap`) sen sijaan että vierisivät vaakasuunnassa**
+  (2026-09-21, käyttäjän toive - lajeja/sarjoja kertyi niin paljon ettei
+  vaakascrollaus mahtunut näytölle eikä ollut sujuvaa). `.control-row`
+  [index.html](index.html):ssä - älä palauta `overflow-x: auto`/`nowrap`:ia.
+- **"Valitse päivämäärät" avaa selaimen natiivin date-valitsimen
+  automaattisesti** (`input.showPicker()`, `tryShowPicker()`-apufunktio
+  [index.html](index.html):ssä) - ensin alkupäivämäärälle kun AJANKOHTA-
+  chippiä klikataan, sitten loppupäivämäärälle heti kun alkupäivämäärä on
+  valittu (2026-09-21, käyttäjän toive). `showPicker()` vaatii tuoreen
+  käyttäjätapahtuman eikä kaikki selaimet tue sitä - epäonnistuminen
+  ohitetaan hiljaa (`try/catch`), käyttäjä voi silti avata kentän itse.
+
+## Jaettava URL (suodatinvalinnan jakaminen)
+
+(2026-09-21, käyttäjän toive: "voisiko jakaa linkin isälle jalkapallo- ja
+jääkiekko-otteluista tänä viikonloppuna") Sivu lukee suodattimet
+osoiterivin query-parametreista heti latautuessa ja "🔗 Jaa valinta"
+-nappi (meta-line, [index.html](index.html)) kopioi nykyisen valinnan
+vastaavaksi linkiksi leikepöydälle (`navigator.clipboard.writeText`,
+varalla `showShareUrlFallback()` joka näyttää linkin valmiiksi valittuna
+tekstikenttänä jos leikepöytä ei ole käytettävissä - **ei
+`window.prompt()`:ia**, koska se ei toimi kaikissa upotetuissa
+selainkonteksteissa, ks. Sudenkuopat).
+
+Tuetut parametrit (kaikki valinnaisia, puuttuva = "kaikki mukana"):
+`sports`, `genders`, `cities`, `level` (=KILPAILUTASO-id:t) ovat
+pilkulla eroteltuja listoja, `day` on yksi AJANKOHTA-avaimista
+(`today`/`week`/`month`/`all`/`custom`), `from`/`to` (YYYY-MM-DD) asettavat
+`day=custom`-välin. Yksittäisiä sarjoja (`state.categories`) EI voi jakaa
+URL:lla - ne kasvavat asteittain sitä mukaa kun dataa saapuu, joten
+oletus "kaikki sarjat mukana" riittää useimmille jaettaville näkymille.
+
+Toteutus `parseUrlState()`/`buildShareUrl()`:ssä. Tärkeä yksityiskohta:
+lisäsimme tämän myötä `defaultsToSkip`+`filtersDefaultsApplied`-lipun
+joka estää `renderFilters()`/`renderGenderRows()`:ää täyttämästä
+URL:n rajaamia kenttiä (sports/genders/cities/competitionTypes)
+automaattisesti takaisin "kaikki valittuna" -tilaan - **tämä korjasi
+samalla piilevän bugin**, jossa nämä chipit piirtyivät AINA `active`-
+luokalla riippumatta `state`:n todellisesta sisällöstä (näkyi vain jos
+käyttäjä ehti togglata suodattimen pois päältä ennen kuin viimeinenkin
+datalähde ehti latautua - `renderFilters()` kutsutaan uudelleen jokaisen
+lähteen valmistuttua). Chipin `active`-luokka lasketaan nyt aina
+`state.X.has(...)`:sta, ei kovakoodattuna.
 
 ## Ottelusivujen linkit
 
@@ -83,6 +131,20 @@ otteluohjelman sarjan nimeen (näkyy listassa "Sarja ↗" -linkkinä,
     täsmäsivät täydellisesti. Ks.
     [scripts/fetch-salibandy.js](scripts/fetch-salibandy.js):n
     `slugify()`.
+
+## Kartta ja Google Maps -linkit
+
+(2026-09-21, käyttäjän toive) Jokaisen ottelun `googleMapsUrl(m)`
+([index.html](index.html)) rakentaa linkin Google Mapsiin -
+koordinaateilla jos ne ovat saatavilla (`?api=1&query=<lat>,<lon>`,
+tarkin tulos), muuten `venue`+`city`-tekstihaulla. Näkyy sekä
+listanäkymän ottelurivillä (ottelupaikan nimi on klikattava linkki,
+`.venue-link`) että karttapopupissa otsikon vieressä ("🗺️ Google Maps ↗").
+Karttapopup näyttää nykyään myös lajin, sukupuolen ja sarjan nimen
+jokaisen ottelun kohdalla (`.map-popup-meta`, esim. "Jääkiekko · Miehet ·
+Liiga") - aiemmin popupissa näkyi vain joukkueet ja kellonaika, mikä ei
+riittänyt erottamaan otteluita kun samalla areenalla pelataan useampaa
+lajia/sukupuolta.
 
 ## Arkkitehtuuri: kaksi datanhakutapaa
 
@@ -384,6 +446,15 @@ infrarajoitukset".
    jos samalla luokalla on muualla `display`-sääntö. Ks. myös
    `static-site-scraping`-skillin (`~/.claude/skills/`) yleisempi kuvaus
    tästä CSS-cascade-sudenkuopasta.
+7. **Älä käytä `window.prompt()`:ia varavaihtoehtona** (esim. leikepöytä-
+   kopioinnin epäonnistuessa) - havaittu 2026-09-21 kun "Jaa valinta"
+   -napin `navigator.clipboard.writeText()`-varakoodi kaatui
+   `Uncaught: prompt() is not supported`-virheeseen sisäänrakennetussa
+   selainkontekstissa (Claude Coden oma esikatselupaneeli). `alert()`/
+   `confirm()`/`prompt()` eivät ole tuettuja kaikissa upotetuissa
+   webview-/automaatioympäristöissä toisin kuin tavallisessa selaimessa -
+   käytä sen sijaan tavallista DOM-elementtiä (esim. valmiiksi valittu
+   `<input readonly>`, ks. `showShareUrlFallback()` index.html:ssä).
 
 ## Ylläpito
 
