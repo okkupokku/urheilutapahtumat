@@ -26,6 +26,52 @@ pilkkua/kaksoispistettä jos se sopii paremmin lauseeseen. Sääntö on
 käyttäjän eksplisiittinen toive (2026-09-20) - kaikki tämän päivämäärän
 jälkeen kirjoitettu teksti noudattaa tätä.
 
+## Käyttöliittymän suodattimet
+
+- **Ei "Muu"-vaihtoehtoa SUKUPUOLI- tai KAUPUNKI (ent. ALUE) -suodattimissa**
+  (2026-09-21, käyttäjän eksplisiittinen toive). Kaikki sarjat ovat aina
+  miesten tai naisten, ja PK-seudulla ei ole muita kaupunkeja kuin Helsinki/
+  Espoo/Vantaa/Kauniainen (kaikki lähteet suodattavat jo PK-alueeseen).
+  `DISPLAY_GENDERS`/`DISPLAY_CITIES` [index.html](index.html):ssä listaavat
+  vain nämä - älä lisää "Muu"-vaihtoehtoa takaisin. Jos jokin data-arvo
+  tuottaisi jotain muuta, se on datavirhe joka pitää korjata lähteessä (ks.
+  Käsipallon `Maa`-kategoria-bugi alla), ei suodattimeen lisättävä
+  paniikkinappi.
+- `genderGroup`-kentän oletusarvo (kun `category_group_name` puuttuu) on
+  `'Miehet'`, ei `'Muu'` - sama sääntö.
+
+## Ottelusivujen linkit
+
+Jokainen ottelu voi kantaa valinnaisen `matchUrl`-kentän joka linkittää
+otteluohjelman sarjan nimeen (näkyy listassa "Sarja ↗" -linkkinä,
+[index.html](index.html):n `renderBoard()`). Löydetyt URL-kaavat
+(2026-09-21):
+- **TorneoPal-federaatiot** (jalkapallo/futsal, koripallo, lentopallo,
+  käsipallo): kaikilla sama polku `<federaation oma tulospalvelu-domain>/
+  match/<match_id>` - `match_id` tulee suoraan `getMatches`-vastauksen
+  `match_id`-kentästä. Domainit ovat ERI kuin `*-api.torneopal.net`
+  (jotka ovat vain rajapinta, ei julkista sivua):
+  - Jalkapallo/futsal: `tulospalvelu.palloliitto.fi`
+  - Koripallo: `tulospalvelu.basket.fi`
+  - Lentopallo: `tulospalvelu.lentopallo.fi`
+  - Käsipallo: `tulospalvelu.finnhandball.net`
+  - (löytöjärjestys: kunkin liiton oma etusivu → linkki "Tulospalvelu")
+- **Liiga.fi**: `https://liiga.fi/fi/peli/<season>/<id>` (`season`/`id`
+  suoraan `getMatches`-vastauksen kentistä `season`/`id`). Sivu on
+  React-SPA - lataa hetken ennen kuin sisältö näkyy, mutta itse URL toimii
+  suoraan ilman kyselyparametreja.
+- **Jääpallo**: `https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=<id>`
+  - **HUOM:** tämä `<id>` on ERI kuin taulukossa näkyvä "Nro"-sarake
+    (`ml_ottelunro`, esim. 546) - oikea id löytyy vain `<li>`-elementin
+    ympäröivästä `<a href="...ottelu=NNNNN">`-linkistä. Ks.
+    [scripts/fetch-jaapallo.js](scripts/fetch-jaapallo.js):n
+    `extractMatches()`.
+  - **Mestis**: `https://mestis.fi/fi/ottelut/<kausi>/runkosarja/<id>/` -
+    `id` on jo talteen otettu ottelurivin hrefistä.
+  - **Salibandy** (fliiga.com): ei löytynyt erillistä ottelusivua (ei
+    permalink-kenttää upotetussa datassa) - `matchUrl` linkkaa sen sijaan
+    joukkueen omalle otteluohjelmasivulle.
+
 ## Arkkitehtuuri: kaksi datanhakutapaa
 
 1. **Suora selainhaku** (koripallo, lentopallo, käsipallo, jääkiekko/Liiga.fi):
@@ -112,12 +158,22 @@ tarkistamalla oikea live-data eri päiviltä - katso `KNOWN_SERIES` vakio
   Palloliitto). Löytyi myös `45051`=Miesten haastajamaajoukkue (B-joukkue),
   ei lisätty (ei koettu tarpeeksi relevantiksi).
 - Käsipallo: `SM-liiga`=Miesten Aktialiiga, `NSM`=Naisten Aktialiiga,
-  `MSC`=Miesten Suomen Cup, `NSC`=Naisten Suomen Cup. Maajoukkue: `Maa`
-  ("Maajoukkueet") - **HUOM:** Käsipalloliitolla on vain YKSI yhteinen
-  category_id molemmille sukupuolille (rekisterissä `category_group_name`
-  on kirjaimellisesti "Maajoukkueet"), joten `KNOWN_SERIES`:ssä se on
-  merkitty gender: 'Muu' ja oikea sukupuoli tulee vasta live-datasta kun
-  ensimmäinen ottelu ilmestyy.
+  `MSC`=Miesten Suomen Cup, `NSC`=Naisten Suomen Cup. Maajoukkueet:
+  `Maa-M`/`Maa-N` (miehet/naiset) - **HUOM (2026-09-21 löydetty bugi ja
+  korjaus):** rajapinnan oma `Maa`-kategoria on YHTEINEN kaikille
+  ikäluokille (aikuiset JA kaikki nuorten maajoukkueet, esim. P06/T10),
+  ja jokaisen ottelun `category_group_name`-kenttä on kirjaimellisesti
+  aina `"Maajoukkueet"` riippumatta oikeasta sukupuolesta/ikäluokasta -
+  täysin hyödytön kenttä. Oikea sukupuoli ja ikäluokka pääteltiin
+  joukkueiden nimien päätteestä (`kasipalloMaaGender()`
+  [index.html](index.html):ssä): `"FIN M"`/`"CRO M"` = miehet, `"FIN
+  N"`/`"KOS N"` = naiset, `"FIN P06"`/`"LAT T10"` (kirjain + kaksinumeroinen
+  syntymävuosi) = nuoret, jätetään pois. `fixKasipalloMaajoukkue()`
+  muuttaa live-datan categoryId:n `Maa`:sta `Maa-M`/`Maa-N`:ksi jotta
+  molemmat sukupuolet saavat oman rivinsä hierarkiassa (sama `id` ei voisi
+  näkyä kahdesti). **Jos joskus lisäät toiselle lajille vastaavan
+  "yhteinen id, oikea tieto vain joukkuenimistä" -ratkaisun, kopioi tämä
+  malli.**
 - Lentopallo: `NL`=Naisten Mestaruusliiga (vahvistettu livenä). `ML`=Miesten
   Mestaruusliiga - **ei koskaan nähty livenä tässä projektissa** (kausi ei
   ollut käynnissä haun aikaan, vain "PREM"-preseason-otteluita näkyi), joten
@@ -332,6 +388,9 @@ infrarajoitukset".
 
 ## Ideoita jatkoa varten
 
+- Salibandy: ei löytynyt erillistä ottelusivua matchUrl:ia varten
+  (ks. "Ottelusivujen linkit" yllä) - jos fliiga.com joskus lisää sellaisen,
+  päivitä [scripts/fetch-salibandy.js](scripts/fetch-salibandy.js).
 - Salibandy: laajenna kattamaan myös muut mahdolliset uudet PK-joukkueet
   jos niitä nousee sarjaan.
 - ~~Jääpallo~~ - löydetty ja lisätty 2026-09-20 (käyttäjän löytämä
