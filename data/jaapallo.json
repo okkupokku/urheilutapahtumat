@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21T02:26:43.354Z",
+  "updated": "2026-09-21T04:47:47.247Z",
   "source": "finbandy.torneopal.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
     {
@@ -16,6 +16,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24862",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/5x.png"
     },
@@ -33,6 +34,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24912",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/1x.png"
     },
@@ -50,6 +52,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24902",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/4x.png"
     },
@@ -67,6 +70,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24854",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/7x.png"
     },
@@ -84,6 +88,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24909",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/2x.png"
     },
@@ -101,6 +106,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24873",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/3x.png"
     },
@@ -118,6 +124,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24885",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/9x.png"
     },
@@ -135,6 +142,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24881",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/10x.png"
     },
@@ -152,6 +160,7 @@
       "city": "Helsinki",
       "lat": 60.1877,
       "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24894",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/6x.png"
     },
@@ -169,6 +178,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24901",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/5x.png"
     },
@@ -186,6 +196,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24869",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/4x.png"
     },
@@ -203,6 +214,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24884",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/10x.png"
     },
@@ -220,6 +232,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24861",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/6x.png"
     },
@@ -237,6 +250,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24893",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/7x.png"
     },
@@ -254,6 +268,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24880",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/1x.png"
     },
@@ -271,6 +286,7 @@
       "city": "Helsinki",
       "lat": 60.2185,
       "lon": 24.9503,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24853",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/9x.png"
     }

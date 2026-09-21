@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21T02:26:37.735Z",
+  "updated": "2026-09-21T04:47:42.454Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -15,6 +15,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -31,6 +32,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -47,6 +49,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -63,6 +66,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -79,6 +83,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -95,6 +100,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -111,6 +117,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -127,6 +134,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -143,6 +151,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -159,6 +168,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -175,6 +185,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -191,6 +202,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -207,6 +219,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -223,6 +236,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -239,6 +253,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -255,6 +270,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -271,6 +287,7 @@
       "city": "Espoo",
       "lat": 60.1756,
       "lon": 24.8025,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -287,6 +304,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/oilers/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -303,6 +321,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -319,6 +338,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -335,6 +355,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -351,6 +372,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -367,6 +389,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -383,6 +406,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -399,6 +423,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -415,6 +440,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -431,6 +457,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -447,6 +474,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -463,6 +491,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -479,6 +508,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -495,6 +525,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -511,6 +542,7 @@
       "city": "Espoo",
       "lat": 60.1875,
       "lon": 24.8296,
+      "matchUrl": "https://fliiga.com/westend-indians/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -527,6 +559,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -543,6 +576,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -559,6 +593,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -575,6 +610,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -591,6 +627,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -607,6 +644,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -623,6 +661,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -639,6 +678,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -655,6 +695,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -671,6 +712,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -687,6 +729,7 @@
       "city": "Helsinki",
       "lat": 60.2263,
       "lon": 25.0788,
+      "matchUrl": "https://fliiga.com/hawks/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -703,6 +746,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -719,6 +763,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -735,6 +780,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -751,6 +797,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -767,6 +814,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -783,6 +831,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -799,6 +848,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/miehet/",
       "crestA": null,
       "crestB": null
     },
@@ -815,6 +865,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -831,6 +882,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -847,6 +899,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -863,6 +916,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -879,6 +933,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -895,6 +950,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -911,6 +967,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -927,6 +984,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -943,6 +1001,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -959,6 +1018,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -975,6 +1035,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -991,6 +1052,7 @@
       "city": "Vantaa",
       "lat": 60.2707,
       "lon": 24.8395,
+      "matchUrl": "https://fliiga.com/eraviikingit/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1007,6 +1069,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1023,6 +1086,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1039,6 +1103,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1055,6 +1120,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1071,6 +1137,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1087,6 +1154,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1103,6 +1171,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1119,6 +1188,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     },
@@ -1135,6 +1205,7 @@
       "city": "Helsinki",
       "lat": 60.203,
       "lon": 24.925,
+      "matchUrl": "https://fliiga.com/pss/naiset/",
       "crestA": null,
       "crestB": null
     }

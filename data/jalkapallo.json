@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21T02:26:25.241Z",
+  "updated": "2026-09-21T04:47:29.803Z",
   "source": "spl.torneopal.net (Playwright)",
   "matches": [
     {
@@ -15,6 +15,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270170",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2880x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3197x.png"
     },
@@ -31,6 +32,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270189",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2880x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3894x.png"
     },
@@ -47,6 +49,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270259",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/150x.png"
     },
@@ -63,6 +66,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270258",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2442x.png"
     },
@@ -79,6 +83,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270265",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2829x.png"
     },
@@ -95,6 +100,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270269",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3039x.png"
     },
@@ -111,6 +117,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270276",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2909x.png"
     },
@@ -127,6 +134,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270283",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/82x.png"
     },
@@ -143,6 +151,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270290",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3275x.png"
     },
@@ -159,6 +168,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270289",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/21x.png"
     },
@@ -175,6 +185,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270294",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2829x.png"
     },
@@ -191,6 +202,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270300",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/460x.png"
     },
@@ -207,6 +219,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270307",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/150x.png"
     },
@@ -223,6 +236,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270312",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3039x.png"
     },
@@ -239,6 +253,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270324",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2442x.png"
     },
@@ -255,6 +270,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270323",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2909x.png"
     },
@@ -271,6 +287,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270328",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/460x.png"
     },
@@ -287,6 +304,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270346",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3087x.png"
     },
@@ -303,6 +321,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270351",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3087x.png"
     },
@@ -319,6 +338,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270356",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2876x.png"
     },
@@ -335,6 +355,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270360",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2825x.png"
     },
@@ -351,6 +372,7 @@
       "city": "Helsinki",
       "lat": 60.23243,
       "lon": 24.909818,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270374",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2876x.png"
     },
@@ -367,6 +389,7 @@
       "city": "Espoo",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270373",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3275x.png"
     },
@@ -383,6 +406,7 @@
       "city": "Helsinki",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4151251",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/4040x.png"
     },
@@ -399,6 +423,7 @@
       "city": "Helsinki",
       "lat": null,
       "lon": null,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4151243",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/4255x.png"
     },
@@ -415,6 +440,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4151247",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/5304x.png"
     },
@@ -431,6 +457,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353542",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/54x.png"
     },
@@ -447,6 +474,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353553",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2611x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/440x.png"
     },
@@ -463,6 +491,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353570",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2611x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/14x.png"
     },
@@ -479,6 +508,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353547",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3458x.png"
     },
@@ -495,6 +525,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353561",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2611x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2963x.png"
     },
@@ -511,6 +542,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353558",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/2611x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/3458x.png"
     },
@@ -527,6 +559,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353565",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/440x.png"
     },
@@ -543,6 +576,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4336851",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/21x.png"
     },
@@ -559,6 +593,7 @@
       "city": "Helsinki",
       "lat": 60.247834262237,
       "lon": 24.922114682298,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4336849",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/5x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/231x.png"
     },
@@ -575,6 +610,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4336854",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/1x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/5x.png"
     },
@@ -591,6 +627,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4336855",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2963x.png"
     },
@@ -607,6 +644,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4336858",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/1x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/21x.png"
     },
@@ -623,6 +661,7 @@
       "city": "Helsinki",
       "lat": 60.247834262237,
       "lon": 24.922114682298,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4336860",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/5x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/14x.png"
     },
@@ -639,6 +678,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4038164",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/13x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/525x.png"
     },
@@ -655,6 +695,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4038167",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/1x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/72x.png"
     },
@@ -671,6 +712,7 @@
       "city": "Helsinki",
       "lat": 60.185854953551,
       "lon": 24.923453144872,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4038170",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/1x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/188x.png"
     },
@@ -687,6 +729,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4038168",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/13x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2905x.png"
     },
@@ -703,6 +746,7 @@
       "city": "Helsinki",
       "lat": 60.234015680055,
       "lon": 24.966134123568,
+      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4038177",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/4x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/2545x.png"
     }
