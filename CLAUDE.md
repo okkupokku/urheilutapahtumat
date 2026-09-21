@@ -372,9 +372,28 @@ infrarajoitukset".
    tutkimusta curlilla, odota sekunteja pyyntöjen välissä tai käytä
    selainta `fetch()`:n kautta sen sijaan (ei näyttänyt kärsivän samasta
    rajoituksesta tässä projektissa).
+6. **`hidden`-attribuutti + oma `display`-sääntö samalle luokalle = elementti
+   ei koskaan oikeasti piilotu** (2026-09-21, sama bugiluokka kuin
+   sudenkuoppa 1). Latausindikaattori jäi pyörimään myös latauksen
+   valmistuttua, koska `.loading-spinner { display: inline-block }`
+   voitti aina selaimen oman `[hidden] { display: none }` -säännön
+   samalla spesifisyydellä (author-tyyli voittaa user-agent-tyylin).
+   `hidden`-attribuutin JS-togglaus näytti siis toimivan (oikea arvo
+   DOM:issa) mutta elementti ei silti piiloutunut - helposti sekoitettavissa
+   JS-bugiin. Korjaus: lisää aina `.<luokka>[hidden] { display: none }`
+   jos samalla luokalla on muualla `display`-sääntö. Ks. myös
+   `static-site-scraping`-skillin (`~/.claude/skills/`) yleisempi kuvaus
+   tästä CSS-cascade-sudenkuopasta.
 
 ## Ylläpito
 
+- **Lajien järjestys** LAJI-suodattimessa ja tarkennetussa haussa tulee
+  `SPORT_ORDER`-vakiosta [index.html](index.html):ssä (suosituimmuus-
+  järjestys, ei aakkosjärjestys - käyttäjän toive 2026-09-21). Jos lisäät
+  uuden lajin `SPORT_META`:an, lisää se myös `SPORT_ORDER`:iin haluttuun
+  kohtaan - muuten se putoaa listan loppuun aakkosjärjestyksessä
+  (`sortSports()`:n fallback, ei kaada mitään mutta ei myöskään noudata
+  suosituimmuutta).
 - **Uuden sarjan lisääminen** olemassa olevaan TorneoPal-lajiin: lisää
   `category_id` kyseisen lajin `ALLOWED_CATEGORIES`/`allow`-settiin
   ([scripts/fetch-jalkapallo.js](scripts/fetch-jalkapallo.js) tai
