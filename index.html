@@ -177,6 +177,11 @@
     border: 2px solid var(--divider); border-top-color: var(--amber); border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
+  /* Author-tyylin display: inline-block voittaisi muuten aina selaimen oman
+     [hidden] { display: none } -säännön samalla spesifisyydellä, jolloin
+     spinneri jäisi ikuisesti näkyviin hidden-attribuutista riippumatta -
+     ks. static-site-scraping-skillin CSS-cascade-sudenkuoppa. */
+  .loading-spinner[hidden] { display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-progress { margin-left: 0.5rem; color: var(--muted); font-size: 0.82rem; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 2px; }
   .loading-progress:hover { color: var(--text); }
@@ -404,6 +409,21 @@ const SPORT_META = {
   '_default': { color: '#667085', icon: '🏆' },
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
+
+// Lajien järjestys LAJI-suodattimessa ja tarkennetussa haussa: suositummat
+// ensin (käyttäjän toive), ei aakkosjärjestyksessä. Tuntematon laji (jos
+// SPORT_META kasvaa tulevaisuudessa ilman että tätä päivitetään) putoaa
+// automaattisesti listan loppuun aakkosjärjestyksessä.
+const SPORT_ORDER = ['Jalkapallo', 'Jääkiekko', 'Koripallo', 'Salibandy', 'Lentopallo', 'Käsipallo', 'Futsal', 'Jääpallo'];
+function sortSports(sports) {
+  return [...sports].sort((a, b) => {
+    const ia = SPORT_ORDER.indexOf(a), ib = SPORT_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+}
 
 // Kaikki sarjat joita sovellus on konfiguroitu hakemaan (ks. SOURCES-määrittelyt
 // alempana ja scripts/fetch-jalkapallo.js). Käytetään tarkennetun haun
@@ -1046,7 +1066,7 @@ function getFilteredMatches() {
 function renderFilters() {
   const sportEl = document.getElementById('sport-filters');
   sportEl.querySelectorAll('.chip').forEach(c => c.remove());
-  const sports = Object.keys(SPORT_META).filter(s => s !== '_default').sort();
+  const sports = sortSports(Object.keys(SPORT_META).filter(s => s !== '_default'));
   sports.forEach(sport => {
     if (!state.sports.has(sport)) state.sports.add(sport);
     const btn = document.createElement('button');
@@ -1164,7 +1184,7 @@ function renderHierarchy() {
   // Näytetään tarkennetussa haussa vain LAJI-suodattimessa parhaillaan
   // valitut lajit - jos laji poistetaan käytöstä ylhäällä, sen sarjat
   // eivät ole enää valittavissa täällä.
-  const knownSports = Object.keys(SPORT_META).filter(s => s !== '_default' && state.sports.has(s)).sort();
+  const knownSports = sortSports(Object.keys(SPORT_META).filter(s => s !== '_default' && state.sports.has(s)));
 
   if (knownSports.length === 0) {
     root.innerHTML = '<div class="sport-block-empty">Ei valittuja lajeja - valitse laji yltä LAJI-suodattimesta.</div>';

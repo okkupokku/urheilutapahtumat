@@ -58,6 +58,23 @@ function decodeUnicodeEscapes(str) {
   return str.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }
 
+// fliiga.com:n ottelusivujen (Ottelukeskus-linkki jokaisella ottelukortilla)
+// URL-kaava on https://fliiga.com/ottelut/<miehet|naiset>/<koti>-<vieras>-
+// <d>-<m>-<yyyy>/ jossa <koti>/<vieras> ovat joukkueiden nimet slugattuna
+// (pienet kirjaimet, äöå -> aoa, muut kuin a-z0-9- -merkit väliviivaksi) ja
+// päivämäärä on d-m-yyyy IlMAN etunollia. Tämä ei ole erillinen kenttä
+// upotetussa datassa - se täytyy rakentaa itse samoista home_club/
+// away_club/gameday-kentistä joita muutenkin käytetään. Vahvistettu
+// 2026-09-21 vertaamalla oikeisiin Ottelukeskus-linkkeihin sivulla.
+function slugify(name) {
+  return (name || '')
+    .toLowerCase()
+    .replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/å/g, 'a')
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 // Ottelut ovat sivun HTML:ssä yksinkertaisina "avain":"arvo"-pareina ilman
 // kenoviivapakoja (ei siis sisäkkäin toisen JSON-merkkijonon sisällä), joten
 // jokainen ottelu löydetään "gameday"-aikaleiman kohdalta ja muut kentät
@@ -118,10 +135,7 @@ function extractMatches(html) {
           city: pkVenue.city,
           lat: pkVenue.lat,
           lon: pkVenue.lon,
-          // fliiga.com ei tarjoa erillistä ottelusivua (ei permalink-kenttää
-          // upotetussa datassa) - linkataan sen sijaan joukkueen omalle
-          // otteluohjelmasivulle, jolta tämä ottelu löytyy.
-          matchUrl: url,
+          matchUrl: `https://fliiga.com/ottelut/${genderGroup === 'Naiset' ? 'naiset' : 'miehet'}/${slugify(m.homeClub)}-${slugify(m.awayClub)}-${Number(dateStr.slice(8,10))}-${Number(dateStr.slice(5,7))}-${dateStr.slice(0,4)}/`,
           crestA: null,
           crestB: null,
         });

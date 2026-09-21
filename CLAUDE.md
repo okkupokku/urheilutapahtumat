@@ -68,9 +68,21 @@ otteluohjelman sarjan nimeen (näkyy listassa "Sarja ↗" -linkkinä,
     `extractMatches()`.
   - **Mestis**: `https://mestis.fi/fi/ottelut/<kausi>/runkosarja/<id>/` -
     `id` on jo talteen otettu ottelurivin hrefistä.
-  - **Salibandy** (fliiga.com): ei löytynyt erillistä ottelusivua (ei
-    permalink-kenttää upotetussa datassa) - `matchUrl` linkkaa sen sijaan
-    joukkueen omalle otteluohjelmasivulle.
+  - **Salibandy** (fliiga.com, korjattu 2026-09-21): ottelusivu on
+    olemassa (jokaisella ottelukortilla "Ottelukeskus"-linkki), mutta sen
+    URL ei ole erillinen kenttä upotetussa datassa - se pitää RAKENTAA
+    itse: `https://fliiga.com/ottelut/<miehet|naiset>/<koti-slug>-
+    <vieras-slug>-<d>-<m>-<yyyy>/` (päivämäärä ilman etunollia). Joukkueen
+    slug saadaan `slugify()`-funktiolla (pienet kirjaimet, äöå -> aoa,
+    muu -> väliviiva) suoraan samoista `home_club`/`away_club`-kentistä
+    joita muutenkin käytetään - ei tarvitse erillistä nimikartoitusta,
+    vaikka joukkuesivun oma URL-slug olisikin eri (esim. joukkuesivu on
+    `/westend-indians/` mutta `home_club`-kenttä ja siten myös
+    ottelu-URL käyttävät pelkkää "Indians"). Vahvistettu vertaamalla
+    rakennettuja URL:eja oikeisiin "Ottelukeskus"-linkkeihin sivulla -
+    täsmäsivät täydellisesti. Ks.
+    [scripts/fetch-salibandy.js](scripts/fetch-salibandy.js):n
+    `slugify()`.
 
 ## Arkkitehtuuri: kaksi datanhakutapaa
 
@@ -388,9 +400,8 @@ infrarajoitukset".
 
 ## Ideoita jatkoa varten
 
-- Salibandy: ei löytynyt erillistä ottelusivua matchUrl:ia varten
-  (ks. "Ottelusivujen linkit" yllä) - jos fliiga.com joskus lisää sellaisen,
-  päivitä [scripts/fetch-salibandy.js](scripts/fetch-salibandy.js).
+- ~~Salibandyn ottelusivulinkki~~ - löydetty ja korjattu 2026-09-21
+  (rakennetaan slugeista, ks. "Ottelusivujen linkit" yllä).
 - Salibandy: laajenna kattamaan myös muut mahdolliset uudet PK-joukkueet
   jos niitä nousee sarjaan.
 - ~~Jääpallo~~ - löydetty ja lisätty 2026-09-20 (käyttäjän löytämä
