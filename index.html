@@ -1269,9 +1269,19 @@ function renderFilters() {
     dayEl.appendChild(range);
     range.querySelector('#date-from').addEventListener('change', e => {
       state.customFrom = e.target.value;
+      // Nollataan loppupäivä samaksi kuin alkupäivä ennen valitsimen
+      // avaamista - muuten selain avaisi loppupäivän valitsimen edellisen
+      // arvon kuukaudelle (oletuksena n. vuosi eteenpäin), vaikka käyttäjä
+      // yleensä haluaa valita lähellä alkupäivää olevan päivän (esim. saman
+      // viikon/viikonlopun). Koska .value asetetaan ohjelmallisesti eikä
+      // käyttäjän toimesta, "change"-tapahtuma ei laukea siitä - state on
+      // siis päivitettävä myös käsin, ei vain input-elementin arvo.
+      const toInput = document.getElementById('date-to');
+      state.customTo = state.customFrom;
+      toInput.value = state.customFrom;
       renderResults();
       // Loppupäivämäärän valitsin auki heti kun alkupäivämäärä on valittu.
-      tryShowPicker(document.getElementById('date-to'));
+      tryShowPicker(toInput);
     });
     range.querySelector('#date-to').addEventListener('change', e => { state.customTo = e.target.value; renderResults(); });
 
