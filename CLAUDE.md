@@ -55,6 +55,22 @@ jälkeen kirjoitettu teksti noudattaa tätä.
   valittu (2026-09-21, käyttäjän toive). `showPicker()` vaatii tuoreen
   käyttäjätapahtuman eikä kaikki selaimet tue sitä - epäonnistuminen
   ohitetaan hiljaa (`try/catch`), käyttäjä voi silti avata kentän itse.
+- **"Valitse kaikki" / "Poista kaikki" -pikanapit** LAJI/SUKUPUOLI/
+  KILPAILUTASO/KAUPUNKI-riveillä (2026-09-23, käyttäjän toive - helpottaa
+  esim. yhden lajin valitsemista ilman että pitää klikata jokaista muuta
+  pois erikseen). `ensureRowActions(rowEl, onSelectAll, onSelectNone)`
+  [index.html](index.html):ssä rakentaa napit vain kerran per rivi
+  (`dataset.actionsBuilt`-lippu, sama kuvio kuin AJANKOHTA-rivin date-
+  range-kentillä) ja siirtää ne aina rivin loppuun uudelleenrenderöinnin
+  yhteydessä, koska chipit poistetaan ja luodaan uudelleen joka
+  `renderFilters()`-kutsulla. **HUOM:** nappien klikkauskuuntelijat
+  liitetään vain ensimmäisellä `renderFilters()`-kutsulla eivätkä
+  päivity myöhemmin - tämä on turvallista koska ne sulkeutuvat vain
+  kiinteiden listojen ympärille (`sports`/`DISPLAY_GENDERS`/
+  `DISPLAY_COMPETITION_TYPES`/`DISPLAY_CITIES`, eivät koskaan muutu ajon
+  aikana) ja suoraan `state`-olioon (ei kopiota), joten ne toimivat aina
+  ajantasaisen tilan päällä. AJANKOHTA on yksivalintainen (chip-chip
+  toggle, ei Set) eikä siksi tarvitse/saa vastaavia nappeja.
 
 ## Jaettava URL (suodatinvalinnan jakaminen)
 

@@ -105,6 +105,9 @@
   .chip:hover { border-color: var(--amber-dim); opacity: 1; color: var(--text); }
   .chip:active { transform: scale(0.96); }
   .chip.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); font-weight: 700; opacity: 1; box-shadow: 0 3px 10px -4px rgba(232,149,43,0.6); }
+  .row-actions { display: flex; gap: 0.6rem; align-items: center; margin-left: 0.2rem; flex-shrink: 0; }
+  .row-action-btn { background: none; border: none; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.02em; text-decoration: underline dotted; text-underline-offset: 2px; cursor: pointer; padding: 0; white-space: nowrap; }
+  .row-action-btn:hover { color: var(--amber-dim); }
 
   .date-range { display: none; align-items: center; gap: 0.4rem; margin-left: 0.2rem; flex-shrink: 0; }
   .date-range.active { display: inline-flex; }
@@ -1167,6 +1170,35 @@ function getFilteredMatches() {
   });
 }
 
+// "Valitse kaikki" / "Poista kaikki" -pikanapit LAJI/SUKUPUOLI/KILPAILUTASO/
+// KAUPUNKI-riveille - helpottaa esim. yhden lajin valitsemista ilman että
+// pitää klikata jokaista muuta pois erikseen (käyttäjän toive 2026-09-23).
+// Rakennetaan vain kerran per rivi (kuten AJANKOHTA-rivin date-range) ja
+// siirretään aina rivin loppuun, koska chipit poistetaan ja luodaan
+// uudelleen joka renderFilters()-kutsulla.
+function ensureRowActions(rowEl, onSelectAll, onSelectNone) {
+  if (!rowEl.dataset.actionsBuilt) {
+    const wrap = document.createElement('span');
+    wrap.className = 'row-actions';
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.className = 'row-action-btn';
+    allBtn.textContent = 'Valitse kaikki';
+    allBtn.addEventListener('click', onSelectAll);
+    const noneBtn = document.createElement('button');
+    noneBtn.type = 'button';
+    noneBtn.className = 'row-action-btn';
+    noneBtn.textContent = 'Poista kaikki';
+    noneBtn.addEventListener('click', onSelectNone);
+    wrap.appendChild(allBtn);
+    wrap.appendChild(noneBtn);
+    rowEl.appendChild(wrap);
+    rowEl.dataset.actionsBuilt = '1';
+  } else {
+    rowEl.appendChild(rowEl.querySelector('.row-actions'));
+  }
+}
+
 function renderFilters() {
   const sportEl = document.getElementById('sport-filters');
   sportEl.querySelectorAll('.chip').forEach(c => c.remove());
@@ -1184,6 +1216,10 @@ function renderFilters() {
     });
     sportEl.appendChild(btn);
   });
+  ensureRowActions(sportEl,
+    () => { sports.forEach(s => state.sports.add(s)); renderFilters(); renderResults(); },
+    () => { state.sports.clear(); renderFilters(); renderResults(); }
+  );
 
   const genderEl = document.getElementById('gender-filters');
   genderEl.querySelectorAll('.chip').forEach(c => c.remove());
@@ -1199,6 +1235,10 @@ function renderFilters() {
     });
     genderEl.appendChild(btn);
   });
+  ensureRowActions(genderEl,
+    () => { DISPLAY_GENDERS.forEach(g => state.genders.add(g)); renderFilters(); renderResults(); },
+    () => { state.genders.clear(); renderFilters(); renderResults(); }
+  );
 
   const levelEl = document.getElementById('level-filters');
   levelEl.querySelectorAll('.chip').forEach(c => c.remove());
@@ -1214,6 +1254,10 @@ function renderFilters() {
     });
     levelEl.appendChild(btn);
   });
+  ensureRowActions(levelEl,
+    () => { DISPLAY_COMPETITION_TYPES.forEach(({ id }) => state.competitionTypes.add(id)); renderFilters(); renderResults(); },
+    () => { state.competitionTypes.clear(); renderFilters(); renderResults(); }
+  );
 
   const cityEl = document.getElementById('city-filters');
   cityEl.querySelectorAll('.chip').forEach(c => c.remove());
@@ -1228,6 +1272,10 @@ function renderFilters() {
     });
     cityEl.appendChild(btn);
   });
+  ensureRowActions(cityEl,
+    () => { DISPLAY_CITIES.forEach(c => state.cities.add(c)); renderFilters(); renderResults(); },
+    () => { state.cities.clear(); renderFilters(); renderResults(); }
+  );
 
   renderHierarchy();
 
