@@ -46,8 +46,9 @@ oranssin sijaan. Suunnittelupäätökset:
   - **LAJI**: jokainen chip kantaa oman lajinsa väriä (`SPORT_META.color`,
     asetetaan inline-tyylinä JS:stä koska väri vaihtelee per-chip - ks.
     `.chip.chip-sport` ja `applySportActive()` `renderFilters()`:ssä).
-    Ei-valittuna näkyy pieni väripallo (`.chip-dot`) + ohut väritetty
-    reunaviiva (`hexToRgba()`-apufunktiolla laskettu 35% läpinäkyvyys).
+    Emoji + lajin nimi näkyvät aina (ks. alla), täyttöväri vain kun
+    valittu; ei-valittuna reunaviiva on lajin väriä 35%-läpinäkyvyydellä
+    (`hexToRgba()`-apufunktio).
   - **SUKUPUOLI/KILPAILUTASO/KAUPUNKI** ja tarkennetun haun sarjachipit:
     neutraali "muste"-täyttö (`.chip.active { background: var(--text) }`)
     amberin sijaan.
@@ -57,18 +58,32 @@ oranssin sijaan. Suunnittelupäätökset:
   - Lajien värit itsessään syvennettiin hillitymmiksi (esim. jääkiekko
     `#1D6FBD` &#8594; `#1D5DA0`) - ks. `SPORT_META`:n kommentit
     [index.html](index.html):ssä alkuperäisistä arvoista.
-- **Ei enää emojia lajien tunnisteena** (ottelurivin lajimerkki, kartan
-  selite, karttamerkit, tarkennetun haun lajiotsikot) - korvattu
-  väripallolla + tekstillä, karttamerkeissä 2-kirjaimisella
-  `SPORT_META.mono`-koodilla (esim. jääkiekko `JK`). Perustelu: emoji
-  lajitunnisteena on tyypillinen "AI-vibe-koodattu" -kuvio, jota
-  käyttäjä halusi nimenomaan välttää. Muut toiminnalliset emojit (📍🖱️
-  📋🗺️📅ℹ️🚧) säilytetty ennallaan - kyse oli nimenomaan lajitunnisteista.
+- **Lajiemojit (⚽🏒🏀 jne, `SPORT_META.icon`) säilyvät** - kokeiltiin
+  poistaa ne "AI-vibe-koodattu"-kuvion välttämiseksi (väripallo/monogrammi
+  tilalle), mutta käyttäjä halusi ne eksplisiittisesti takaisin heti
+  perään (2026-09-23, "pidin niistä") - älä poista näitä enää ilman
+  eksplisiittistä pyyntöä. Emoji näkyy ottelurivin lajimerkissä
+  (`.sport-badge`, lajivärillä himmeästi täytetty ympyrä), LAJI-chipeissä,
+  kartan selitteessä ja karttamerkeissä sekä tarkennetun haun
+  lajiotsikoissa.
 - **Ei enää värillistä reunaviivaa ottelurivin vasemmassa laidassa**
-  (`.row { border-left: 3px solid ... }` poistettu) - toinen tyypillinen
-  "AI-vibe"-kuvio. Lajitunniste on nyt pieni pyöreä lajivärinen
-  merkki (`.sport-badge`/`.sport-dot`) rivin sisällä, ei koko rivin
-  reunaviiva.
+  (`.row { border-left: 3px solid ... }` poistettu, tämä muutos SÄILYI
+  vaikka emoji palautettiin) - lajitunniste on pieni pyöreä lajivärinen
+  emoji-merkki (`.sport-badge`) rivin sisällä, ei koko rivin reunaviiva.
+- **"Kaikki / Ei mitään" -pikanapit** (`.row-actions`/`.row-action-btn`
+  [index.html](index.html):ssä): uudelleenmuotoiltu tekstilinkeistä
+  pieniksi pillereiksi ohuen pystyviivan taakse erotettuna, koska
+  alkuperäinen alleviivattu mono-tekstilinkki "ei näyttänyt hyvältä"
+  chippien vieressä (käyttäjän palaute 2026-09-23). Napit löytyvät nyt
+  **kaikilta tasoilta, ei vain ylätason LAJI/SUKUPUOLI/KILPAILUTASO/
+  KAUPUNKI-riveiltä**: myös tarkennetun haun jokaisella sukupuoli-
+  ryhmällä on omat "Kaikki/Ei mitään" -nappinsa sen sarjavalinnoille
+  (`renderGenderRows()`:n loppu, näkyy vain jos sarjoja on useampi kuin
+  yksi). Ylätason rivit käyttävät `ensureRowActions()`-apufunktiota
+  (rakennetaan kerran, siirretään rivin loppuun joka renderöinnillä),
+  hierarkian sarjatason napit rakennetaan joka kerta uudelleen koska
+  koko gender-block piirtyy joka tapauksessa uusiksi `renderHierarchy()`-
+  kutsulla eikä erillistä "rakenna vain kerran" -logiikkaa tarvita siellä.
 - Kokeiltiin ensin näyttää suunnitelma erillisenä Artifact-esikatseluna
   (sekä "Design"-kanvas-tyyppinä että kevyenä staattisena HTML-sivuna)
   ennen oikeaan koodiin koskemista, mutta linkit eivät ladanneet

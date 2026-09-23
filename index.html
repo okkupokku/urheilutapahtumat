@@ -118,14 +118,17 @@
   #day-filters .chip.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); font-weight: 700; box-shadow: 0 3px 10px -4px rgba(193,87,26,0.55); }
 
   /* LAJI-chipit kantavat lajin omaa väriä (SPORT_META, asetetaan JS:stä
-     inline-tyylinä koska väri vaihtelee per-chip) - pallo näkyy aina, täyttö
-     vain kun valittu. */
-  .chip.chip-sport { display: inline-flex; align-items: center; gap: 0.4rem; }
-  .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+     inline-tyylinä koska väri vaihtelee per-chip) - täyttö vain kun
+     valittu, emoji + nimi näkyy aina. */
   .chip.chip-sport.active { color: #FFFDF9; font-weight: 600; }
-  .row-actions { display: flex; gap: 0.6rem; align-items: center; margin-left: 0.2rem; flex-shrink: 0; }
-  .row-action-btn { background: none; border: none; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.02em; text-decoration: underline dotted; text-underline-offset: 2px; cursor: pointer; padding: 0; white-space: nowrap; }
-  .row-action-btn:hover { color: var(--amber-dim); }
+
+  /* "Kaikki/Ei mitään" -pikanapit: pieniä hillittyjä pillereitä, erotettu
+     chip-listasta ohuella pystyviivalla - alkuperäinen alleviivattu
+     mono-tekstilinkki näytti sekavalta/rikkinäiseltä chippien vieressä
+     (käyttäjän palaute 2026-09-23). */
+  .row-actions { display: flex; gap: 0.35rem; align-items: center; margin-left: 0.3rem; padding-left: 0.75rem; border-left: 1px solid var(--divider); flex-shrink: 0; }
+  .row-action-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); font-family: 'IBM Plex Sans', sans-serif; font-size: 0.72rem; font-weight: 500; border-radius: 999px; padding: 0.28rem 0.65rem; cursor: pointer; white-space: nowrap; transition: border-color .15s, color .15s; }
+  .row-action-btn:hover { border-color: var(--amber-dim); color: var(--text); }
 
   .date-range { display: none; align-items: center; gap: 0.4rem; margin-left: 0.2rem; flex-shrink: 0; }
   .date-range.active { display: inline-flex; }
@@ -223,8 +226,7 @@
      kantapään kautta 2026-09-23 - klassinen "AI-vibe"-kuvio) - lajin
      tunniste on pieni pyöreä lajivärinen merkki + nimi omalla värillään. */
   .row .sport-line { display: flex; align-items: center; gap: 0.4rem; }
-  .row .sport-badge { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .row .sport-badge .sport-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .row .sport-badge { width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.78rem; }
   .row .sport-name { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.01em; }
   .row .gender-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding-left: 1.7rem; }
   .row .matchup { font-weight: 600; font-size: 0.98rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; }
@@ -253,7 +255,7 @@
   .map-overlay { position: absolute; z-index: 5; background: rgba(255,255,255,0.94); border: 1px solid var(--divider); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.75rem; box-shadow: var(--shadow); }
   .map-legend { bottom: 10px; left: 10px; display: flex; flex-direction: column; gap: 0.3rem; }
   .map-legend .legend-item { display: flex; align-items: center; gap: 0.45rem; color: var(--text); }
-  .legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+  .legend-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
   .map-pick-hint { top: 10px; right: 10px; background: var(--amber); color: var(--amber-ink); font-weight: 700; }
 
   /* HUOM: ei "position" -sääntöä tässä - MapLibre asettaa omasta CSS:stään
@@ -435,18 +437,20 @@ const PK_BOUNDS = [[24.45, 60.03], [25.32, 60.37]]; // [[lounas], [koillinen]]
 // Värit syvennetty lämpimämpään, hillitympään sävyyn 2026-09-23 (aiemmat
 // kirkkaat perusvärit suluissa alkuperäisen KNOWN_SERIES/dokumentaation
 // vertailua varten - itse arvot eivät ole kategorioita, joten muutos on
-// puhtaasti visuaalinen). "mono" on lyhyt 2-kirjaiminen tunniste
-// karttamerkkeihin (ei emojia - ks. CLAUDE.md "Visuaalinen ilme").
+// puhtaasti visuaalinen). Emojit poistettiin väliaikaisesti samassa
+// visuaalisessa uudistuksessa mutta palautettiin heti perään (2026-09-23,
+// käyttäjän eksplisiittinen toive - piti niistä) - ks. CLAUDE.md
+// "Visuaalinen ilme".
 const SPORT_META = {
-  'Jalkapallo': { color: '#146B4E', mono: 'JP' }, // oli #128363
-  'Futsal': { color: '#0C7688', mono: 'FS' }, // oli #0E8DA6
-  'Jääkiekko': { color: '#1D5DA0', mono: 'JK' }, // oli #1D6FBD
-  'Koripallo': { color: '#B8431F', mono: 'KP' }, // oli #C94A24
-  'Käsipallo': { color: '#8E2A50', mono: 'KÄ' }, // oli #A8305F
-  'Lentopallo': { color: '#5636A8', mono: 'LP' }, // oli #6142C7
-  'Salibandy': { color: '#8A6D1B', mono: 'SB' },
-  'Jääpallo': { color: '#1F8A72', mono: 'JÄ' }, // oli #2F9E44
-  '_default': { color: '#6B6459', mono: '?' },
+  'Jalkapallo': { color: '#146B4E', icon: '⚽' }, // oli #128363
+  'Futsal': { color: '#0C7688', icon: '🥅' }, // oli #0E8DA6
+  'Jääkiekko': { color: '#1D5DA0', icon: '🏒' }, // oli #1D6FBD
+  'Koripallo': { color: '#B8431F', icon: '🏀' }, // oli #C94A24
+  'Käsipallo': { color: '#8E2A50', icon: '🤾' }, // oli #A8305F
+  'Lentopallo': { color: '#5636A8', icon: '🏐' }, // oli #6142C7
+  'Salibandy': { color: '#8A6D1B', icon: '🏑' },
+  'Jääpallo': { color: '#1F8A72', icon: '⛸️' }, // oli #2F9E44
+  '_default': { color: '#6B6459', icon: '🏆' },
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
 
@@ -1219,12 +1223,14 @@ function ensureRowActions(rowEl, onSelectAll, onSelectNone) {
     const allBtn = document.createElement('button');
     allBtn.type = 'button';
     allBtn.className = 'row-action-btn';
-    allBtn.textContent = 'Valitse kaikki';
+    allBtn.textContent = 'Kaikki';
+    allBtn.title = 'Valitse kaikki';
     allBtn.addEventListener('click', onSelectAll);
     const noneBtn = document.createElement('button');
     noneBtn.type = 'button';
     noneBtn.className = 'row-action-btn';
-    noneBtn.textContent = 'Poista kaikki';
+    noneBtn.textContent = 'Ei mitään';
+    noneBtn.title = 'Poista kaikki valinnat';
     noneBtn.addEventListener('click', onSelectNone);
     wrap.appendChild(allBtn);
     wrap.appendChild(noneBtn);
@@ -1244,7 +1250,7 @@ function renderFilters() {
     const color = sportMeta(sport).color;
     const btn = document.createElement('button');
     btn.className = 'chip chip-sport';
-    btn.innerHTML = `<span class="chip-dot" style="background:${color};"></span>${sport}`;
+    btn.textContent = `${sportMeta(sport).icon} ${sport}`;
     // LAJI-chipin väri on aina kyseisen lajin oma (SPORT_META), ei
     // yleistä amber-aktiivisuutta - siksi täyttö/reunaväri asetetaan
     // inline-tyylinä eikä .chip.active-CSS-säännöllä (käyttäjän toive
@@ -1422,7 +1428,7 @@ function renderHierarchy() {
     block.className = 'sport-block';
     const title = document.createElement('div');
     title.className = 'sport-block-title';
-    title.innerHTML = `<span class="chip-dot" style="background:${sportMeta(sport).color};"></span>${sport}`;
+    title.textContent = `${sportMeta(sport).icon} ${sport}`;
     block.appendChild(title);
 
     // Yhdistetään tunnetut (konfiguroidut) sarjat ja mahdolliset datassa
@@ -1525,6 +1531,41 @@ function renderGenderRows(entriesMap, sport, container) {
       });
       seriesList.appendChild(catBtn);
     });
+
+    // "Kaikki/Ei mitään" myös sarjatasolla, ei vain ylätason riveillä
+    // (käyttäjän toive 2026-09-23) - vain jos sarjoja on useampi kuin
+    // yksi, muuten napit olisivat turhat. Koko gender-block rakennetaan
+    // aina uudelleen renderHierarchy()-kutsulla, joten ei tarvita
+    // ensureRowActions()-tyylistä "rakenna vain kerran" -logiikkaa.
+    const seriesKeys = byGender.get(gender).map(({ id }) => `${sport}||${id}`);
+    if (seriesKeys.length > 1) {
+      const actions = document.createElement('span');
+      actions.className = 'row-actions';
+      const allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = 'row-action-btn';
+      allBtn.textContent = 'Kaikki';
+      allBtn.title = 'Valitse kaikki';
+      allBtn.addEventListener('click', () => {
+        seriesKeys.forEach(k => state.categories.add(k));
+        renderHierarchy();
+        renderResults();
+      });
+      const noneBtn = document.createElement('button');
+      noneBtn.type = 'button';
+      noneBtn.className = 'row-action-btn';
+      noneBtn.textContent = 'Ei mitään';
+      noneBtn.title = 'Poista kaikki valinnat';
+      noneBtn.addEventListener('click', () => {
+        seriesKeys.forEach(k => state.categories.delete(k));
+        renderHierarchy();
+        renderResults();
+      });
+      actions.appendChild(allBtn);
+      actions.appendChild(noneBtn);
+      seriesList.appendChild(actions);
+    }
+
     genderRow.appendChild(seriesList);
     container.appendChild(genderRow);
   });
@@ -1602,7 +1643,7 @@ function renderBoard(filtered) {
         <div class="time mono">${m.time || '–'}</div>
         <div class="sport-col">
           <div class="sport-line">
-            <span class="sport-badge" style="background:${hexToRgba(meta.color, 0.13)};"><span class="sport-dot" style="background:${meta.color};"></span></span>
+            <span class="sport-badge" style="background:${hexToRgba(meta.color, 0.13)};">${meta.icon}</span>
             <span class="sport-name" style="color:${meta.color};">${m.sport}</span>
           </div>
           <div class="gender-tag">${m.genderGroup || ''}</div>
@@ -1633,7 +1674,7 @@ function renderLegend() {
     .filter(([key]) => key !== '_default')
     .map(([sport, meta]) => `
       <div class="legend-item">
-        <span class="legend-dot" style="background:${meta.color};"></span>
+        <span class="legend-dot" style="background:${meta.color};">${meta.icon}</span>
         <span>${sport}</span>
       </div>
     `).join('');
@@ -1683,11 +1724,8 @@ function renderMap(filtered) {
     el.style.width = size + 'px';
     el.style.height = size + 'px';
     el.style.background = meta.color;
-    el.style.fontSize = Math.round(size * 0.3) + 'px';
-    el.style.fontFamily = "'IBM Plex Mono', monospace";
-    el.style.fontWeight = '700';
-    el.style.letterSpacing = '-0.02em';
-    el.textContent = meta.mono;
+    el.style.fontSize = Math.round(size * 0.5) + 'px';
+    el.textContent = meta.icon;
     if (g.matches.length > 1) {
       const badge = document.createElement('span');
       badge.className = 'count-badge';
