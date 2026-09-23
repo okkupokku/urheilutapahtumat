@@ -70,20 +70,22 @@ oranssin sijaan. Suunnittelupäätökset:
   (`.row { border-left: 3px solid ... }` poistettu, tämä muutos SÄILYI
   vaikka emoji palautettiin) - lajitunniste on pieni pyöreä lajivärinen
   emoji-merkki (`.sport-badge`) rivin sisällä, ei koko rivin reunaviiva.
-- **"Kaikki / Ei mitään" -pikanapit** (`.row-actions`/`.row-action-btn`
-  [index.html](index.html):ssä): uudelleenmuotoiltu tekstilinkeistä
-  pieniksi pillereiksi ohuen pystyviivan taakse erotettuna, koska
-  alkuperäinen alleviivattu mono-tekstilinkki "ei näyttänyt hyvältä"
-  chippien vieressä (käyttäjän palaute 2026-09-23). Napit löytyvät nyt
-  **kaikilta tasoilta, ei vain ylätason LAJI/SUKUPUOLI/KILPAILUTASO/
-  KAUPUNKI-riveiltä**: myös tarkennetun haun jokaisella sukupuoli-
-  ryhmällä on omat "Kaikki/Ei mitään" -nappinsa sen sarjavalinnoille
-  (`renderGenderRows()`:n loppu, näkyy vain jos sarjoja on useampi kuin
-  yksi). Ylätason rivit käyttävät `ensureRowActions()`-apufunktiota
-  (rakennetaan kerran, siirretään rivin loppuun joka renderöinnillä),
-  hierarkian sarjatason napit rakennetaan joka kerta uudelleen koska
-  koko gender-block piirtyy joka tapauksessa uusiksi `renderHierarchy()`-
-  kutsulla eikä erillistä "rakenna vain kerran" -logiikkaa tarvita siellä.
+- **"Kaikki / Ei mitään" -pikanapit ovat yksi yhteinen pari koko sivulle**,
+  ei enää per-rivi (2026-09-23, käyttäjän toive - per-rivi-napit
+  kokeiltiin ensin sekä control-row-tasolla että tarkennetun haun
+  sarjatasolla, mutta käyttäjä koki niin monta erillistä paria
+  sekavaksi/ei-hyvän-näköiseksi). Napit (`#select-all-btn`/
+  `#select-none-btn`) ovat meta-linella [index.html](index.html):ssä,
+  `.row-action-btn`-tyylillä (pieni pilleri). `selectAllFilters()`/
+  `selectNoFilters()` täyttävät/tyhjentävät kerralla kaikki neljä
+  monivalintasuodatinta (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI) sekä
+  tarkennetun haun sarjavalinnat (`state.categories`) - AJANKOHTA ei
+  kuulu tähän, koska se on yksivalintainen eikä looginen osa
+  "valitse/poista kaikki" -toimintoa. `selectAllFilters()` tyhjentää
+  `state.categories`:n ENSIN ja luottaa `renderHierarchy()`:n lazy-
+  addiin täyttämään sen takaisin - näin myös aiemmin yksitellen pois
+  togglatut yksittäiset sarjat palautuvat mukaan ("Kaikki" tarkoittaa
+  kirjaimellisesti kaikkea, ei vain rivitason oletusta).
 - Kokeiltiin ensin näyttää suunnitelma erillisenä Artifact-esikatseluna
   (sekä "Design"-kanvas-tyyppinä että kevyenä staattisena HTML-sivuna)
   ennen oikeaan koodiin koskemista, mutta linkit eivät ladanneet

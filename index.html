@@ -122,11 +122,10 @@
      valittu, emoji + nimi näkyy aina. */
   .chip.chip-sport.active { color: #FFFDF9; font-weight: 600; }
 
-  /* "Kaikki/Ei mitään" -pikanapit: pieniä hillittyjä pillereitä, erotettu
-     chip-listasta ohuella pystyviivalla - alkuperäinen alleviivattu
-     mono-tekstilinkki näytti sekavalta/rikkinäiseltä chippien vieressä
-     (käyttäjän palaute 2026-09-23). */
-  .row-actions { display: flex; gap: 0.35rem; align-items: center; margin-left: 0.3rem; padding-left: 0.75rem; border-left: 1px solid var(--divider); flex-shrink: 0; }
+  /* Yksi yhteinen "Kaikki/Ei mitään" -pari koko suodatinvalinnalle
+     (meta-line, ei enää per-rivi - käyttäjän toive 2026-09-23: per-rivi-
+     napit koettiin turhiksi/sekaviksi kun niitä oli monta erillistä). */
+  .global-actions { display: inline-flex; gap: 0.4rem; margin-left: 0.75rem; }
   .row-action-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); font-family: 'IBM Plex Sans', sans-serif; font-size: 0.72rem; font-weight: 500; border-radius: 999px; padding: 0.28rem 0.65rem; cursor: pointer; white-space: nowrap; transition: border-color .15s, color .15s; }
   .row-action-btn:hover { border-color: var(--amber-dim); color: var(--text); }
 
@@ -353,6 +352,10 @@
       <span id="result-count">Ladataan datalähteitä…</span><span id="loading-spinner" class="loading-spinner" hidden></span><span id="loading-progress" class="loading-progress" hidden></span>
       <span>
         <span id="updated-time"></span>
+        <span class="global-actions">
+          <button class="row-action-btn" id="select-all-btn" type="button" title="Valitse kaikki">Kaikki</button>
+          <button class="row-action-btn" id="select-none-btn" type="button" title="Poista kaikki valinnat">Ei mitään</button>
+        </span>
         <button class="refresh-btn" id="share-btn" type="button" disabled>🔗 Jaa valinta</button>
         <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
       </span>
@@ -1210,35 +1213,35 @@ function getFilteredMatches() {
   });
 }
 
-// "Valitse kaikki" / "Poista kaikki" -pikanapit LAJI/SUKUPUOLI/KILPAILUTASO/
-// KAUPUNKI-riveille - helpottaa esim. yhden lajin valitsemista ilman että
-// pitää klikata jokaista muuta pois erikseen (käyttäjän toive 2026-09-23).
-// Rakennetaan vain kerran per rivi (kuten AJANKOHTA-rivin date-range) ja
-// siirretään aina rivin loppuun, koska chipit poistetaan ja luodaan
-// uudelleen joka renderFilters()-kutsulla.
-function ensureRowActions(rowEl, onSelectAll, onSelectNone) {
-  if (!rowEl.dataset.actionsBuilt) {
-    const wrap = document.createElement('span');
-    wrap.className = 'row-actions';
-    const allBtn = document.createElement('button');
-    allBtn.type = 'button';
-    allBtn.className = 'row-action-btn';
-    allBtn.textContent = 'Kaikki';
-    allBtn.title = 'Valitse kaikki';
-    allBtn.addEventListener('click', onSelectAll);
-    const noneBtn = document.createElement('button');
-    noneBtn.type = 'button';
-    noneBtn.className = 'row-action-btn';
-    noneBtn.textContent = 'Ei mitään';
-    noneBtn.title = 'Poista kaikki valinnat';
-    noneBtn.addEventListener('click', onSelectNone);
-    wrap.appendChild(allBtn);
-    wrap.appendChild(noneBtn);
-    rowEl.appendChild(wrap);
-    rowEl.dataset.actionsBuilt = '1';
-  } else {
-    rowEl.appendChild(rowEl.querySelector('.row-actions'));
-  }
+// Yksi yhteinen "Kaikki/Ei mitään" -pari koko suodatinvalinnalle (ei enää
+// erillistä paria per rivi - käyttäjän toive 2026-09-23, per-rivi-napit
+// koettiin turhiksi/sekaviksi). Painikkeet ovat meta-linella (ks. HTML) ja
+// vaikuttavat kaikkiin monivalintasuodattimiin kerralla: LAJI, SUKUPUOLI,
+// KILPAILUTASO, KAUPUNKI sekä tarkennetun haun sarjavalinnat
+// (state.categories). AJANKOHTA ei kuulu tähän - se on yksivalintainen eikä
+// looginen osa "valitse/poista kaikki" -toimintoa.
+function selectAllFilters() {
+  const allSports = sortSports(Object.keys(SPORT_META).filter(s => s !== '_default'));
+  allSports.forEach(s => state.sports.add(s));
+  DISPLAY_GENDERS.forEach(g => state.genders.add(g));
+  DISPLAY_COMPETITION_TYPES.forEach(({ id }) => state.competitionTypes.add(id));
+  DISPLAY_CITIES.forEach(c => state.cities.add(c));
+  // Tyhjennetään sarjavalinnat ensin, jotta renderHierarchy()'n lazy-add
+  // täyttää ne kaikki takaisin heti perään - näin myös aiemmin yksitellen
+  // pois togglatut sarjat palautuvat valituiksi ("Kaikki" tarkoittaa
+  // kirjaimellisesti kaikkea).
+  state.categories.clear();
+  renderFilters();
+  renderResults();
+}
+function selectNoFilters() {
+  state.sports.clear();
+  state.genders.clear();
+  state.competitionTypes.clear();
+  state.cities.clear();
+  state.categories.clear();
+  renderFilters();
+  renderResults();
 }
 
 function renderFilters() {
@@ -1269,10 +1272,6 @@ function renderFilters() {
     });
     sportEl.appendChild(btn);
   });
-  ensureRowActions(sportEl,
-    () => { sports.forEach(s => state.sports.add(s)); renderFilters(); renderResults(); },
-    () => { state.sports.clear(); renderFilters(); renderResults(); }
-  );
 
   const genderEl = document.getElementById('gender-filters');
   genderEl.querySelectorAll('.chip').forEach(c => c.remove());
@@ -1288,10 +1287,6 @@ function renderFilters() {
     });
     genderEl.appendChild(btn);
   });
-  ensureRowActions(genderEl,
-    () => { DISPLAY_GENDERS.forEach(g => state.genders.add(g)); renderFilters(); renderResults(); },
-    () => { state.genders.clear(); renderFilters(); renderResults(); }
-  );
 
   const levelEl = document.getElementById('level-filters');
   levelEl.querySelectorAll('.chip').forEach(c => c.remove());
@@ -1307,10 +1302,6 @@ function renderFilters() {
     });
     levelEl.appendChild(btn);
   });
-  ensureRowActions(levelEl,
-    () => { DISPLAY_COMPETITION_TYPES.forEach(({ id }) => state.competitionTypes.add(id)); renderFilters(); renderResults(); },
-    () => { state.competitionTypes.clear(); renderFilters(); renderResults(); }
-  );
 
   const cityEl = document.getElementById('city-filters');
   cityEl.querySelectorAll('.chip').forEach(c => c.remove());
@@ -1325,10 +1316,6 @@ function renderFilters() {
     });
     cityEl.appendChild(btn);
   });
-  ensureRowActions(cityEl,
-    () => { DISPLAY_CITIES.forEach(c => state.cities.add(c)); renderFilters(); renderResults(); },
-    () => { state.cities.clear(); renderFilters(); renderResults(); }
-  );
 
   renderHierarchy();
 
@@ -1531,40 +1518,6 @@ function renderGenderRows(entriesMap, sport, container) {
       });
       seriesList.appendChild(catBtn);
     });
-
-    // "Kaikki/Ei mitään" myös sarjatasolla, ei vain ylätason riveillä
-    // (käyttäjän toive 2026-09-23) - vain jos sarjoja on useampi kuin
-    // yksi, muuten napit olisivat turhat. Koko gender-block rakennetaan
-    // aina uudelleen renderHierarchy()-kutsulla, joten ei tarvita
-    // ensureRowActions()-tyylistä "rakenna vain kerran" -logiikkaa.
-    const seriesKeys = byGender.get(gender).map(({ id }) => `${sport}||${id}`);
-    if (seriesKeys.length > 1) {
-      const actions = document.createElement('span');
-      actions.className = 'row-actions';
-      const allBtn = document.createElement('button');
-      allBtn.type = 'button';
-      allBtn.className = 'row-action-btn';
-      allBtn.textContent = 'Kaikki';
-      allBtn.title = 'Valitse kaikki';
-      allBtn.addEventListener('click', () => {
-        seriesKeys.forEach(k => state.categories.add(k));
-        renderHierarchy();
-        renderResults();
-      });
-      const noneBtn = document.createElement('button');
-      noneBtn.type = 'button';
-      noneBtn.className = 'row-action-btn';
-      noneBtn.textContent = 'Ei mitään';
-      noneBtn.title = 'Poista kaikki valinnat';
-      noneBtn.addEventListener('click', () => {
-        seriesKeys.forEach(k => state.categories.delete(k));
-        renderHierarchy();
-        renderResults();
-      });
-      actions.appendChild(allBtn);
-      actions.appendChild(noneBtn);
-      seriesList.appendChild(actions);
-    }
 
     genderRow.appendChild(seriesList);
     container.appendChild(genderRow);
@@ -1873,6 +1826,8 @@ function showShareUrlFallback(url) {
   box.select();
 }
 
+document.getElementById('select-all-btn').addEventListener('click', selectAllFilters);
+document.getElementById('select-none-btn').addEventListener('click', selectNoFilters);
 document.getElementById('refresh-btn').addEventListener('click', loadAll);
 document.getElementById('share-btn').addEventListener('click', async () => {
   const btn = document.getElementById('share-btn');
