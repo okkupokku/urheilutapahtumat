@@ -6,42 +6,46 @@
 <title>PK-seudun liveurheilu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
   :root {
-    --bg: #F3F5F8;
+    /* Lämmin, editorial-henkinen paletti (2026-09-23, käyttäjän toive -
+       aiempi kylmä sinertävä harmaa + yhtenäinen oranssi jokaisessa
+       suodatinchipissä vaihdettu tähän, ks. CLAUDE.md "Visuaalinen ilme"). */
+    --bg: #F7F5F0;
     --panel: #FFFFFF;
-    --panel-alt: #EDF1F6;
-    --amber: #E8952B;
-    --amber-dim: #C97A16;
-    --amber-ink: #241505;
-    --text: #1B2430;
-    --muted: #67728A;
-    --divider: #DDE3EC;
-    --shadow: 0 10px 26px -16px rgba(23,35,58,0.22);
+    --panel-alt: #F1ECE3;
+    --amber: #C1571A;
+    --amber-soft: #E8952B;
+    --amber-dim: #A3450F;
+    --amber-ink: #FFFDF9;
+    --text: #1B1812;
+    --muted: #6B6459;
+    --divider: #E7E1D6;
+    --shadow: 0 10px 26px -16px rgba(27,24,18,0.22);
     --radius: 10px;
   }
   * { box-sizing: border-box; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
-  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Archivo', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
   body {
     background:
-      radial-gradient(1100px 480px at 15% -10%, rgba(232,149,43,0.07), transparent 60%),
-      radial-gradient(900px 420px at 100% 0%, rgba(47,134,214,0.06), transparent 55%),
+      radial-gradient(1100px 480px at 15% -10%, rgba(193,87,26,0.09), transparent 60%),
+      radial-gradient(900px 420px at 100% 0%, rgba(29,93,160,0.05), transparent 55%),
       var(--bg);
   }
   .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
 
   header.board-header { padding: 2.5rem 1.5rem 1.25rem; max-width: 1040px; margin: 0 auto; }
   .brand { display: flex; align-items: center; gap: 0.65rem; margin: 0 0 0.4rem; }
-  .brand .mark { position: relative; width: 11px; height: 11px; background: var(--amber); display: inline-block; flex-shrink: 0; border-radius: 2px; }
+  .brand .mark { position: relative; width: 13px; height: 13px; background: linear-gradient(135deg, var(--amber-soft), var(--amber)); display: inline-block; flex-shrink: 0; border-radius: 4px; box-shadow: 0 4px 10px -4px rgba(193,87,26,0.55); }
   .brand .mark::after {
-    content: ''; position: absolute; inset: -4px; border: 1px solid var(--amber); border-radius: 5px;
+    content: ''; position: absolute; inset: -4px; border: 1px solid var(--amber); border-radius: 6px;
     opacity: 0.6; animation: ring 2.2s ease-out infinite;
   }
   @keyframes ring { 0% { transform: scale(0.6); opacity: 0.7; } 100% { transform: scale(1.9); opacity: 0; } }
-  h1 { font-size: clamp(1.6rem, 3.4vw, 2.25rem); font-weight: 800; letter-spacing: -0.015em; margin: 0; }
+  h1 { font-family: 'Fraunces', serif; font-size: clamp(1.7rem, 3.6vw, 2.4rem); font-weight: 600; letter-spacing: -0.015em; margin: 0; }
   .subhead { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 62ch; line-height: 1.55; }
 
   .location-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.85rem; }
@@ -81,19 +85,19 @@
   .status-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; white-space: nowrap; }
 
   .refresh-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--text); padding: 0.45rem 0.85rem; border-radius: 999px; font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; cursor: pointer; margin-left: 0.75rem; transition: border-color .15s, background .15s; }
-  .refresh-btn:hover { border-color: var(--amber-dim); background: rgba(232,149,43,0.08); }
+  .refresh-btn:hover { border-color: var(--amber-dim); background: rgba(193,87,26,0.08); }
 
   /* Ei enää position: sticky - suodatinpaneeli (LAJI...AJANKOHTA,
      Tarkennettu haku, tulosrivi) kasvoi liian korkeaksi kun SUKUPUOLI- ja
      KILPAILUTASO-rivit lisättiin, ja pysyvästi kiinnitettynä se vei liikaa
      tilaa otteluiden listalta/kartalta ja teki scrollauksesta töksähtelevää.
      Nyt paneeli vierii normaalisti sivun mukana. */
-  .controls-sticky { background: rgba(243,245,248,0.92); padding-top: 0.75rem; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+  .controls-sticky { background: rgba(247,245,240,0.92); padding-top: 0.75rem; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
 
   .view-tabs { display: flex; gap: 0.45rem; margin-bottom: 0.9rem; }
-  .view-tab { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.5rem 1.1rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .15s; opacity: 0.75; }
+  .view-tab { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.5rem 1.1rem; border-radius: 999px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .15s; opacity: 0.75; }
   .view-tab:hover:not(.active) { border-color: var(--amber-dim); color: var(--text); opacity: 1; }
-  .view-tab.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); opacity: 1; box-shadow: 0 4px 12px -4px rgba(232,149,43,0.55); }
+  .view-tab.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); opacity: 1; box-shadow: 0 4px 12px -4px rgba(193,87,26,0.55); }
 
   .controls { border-top: 1px solid var(--divider); border-bottom: 1px solid var(--divider); padding: 1rem 0; margin-bottom: 0.25rem; display: flex; flex-direction: column; gap: 0.8rem; }
   /* flex-wrap: wrap sen sijaan että suodatinrivi vierisi vaakasuunnassa -
@@ -101,10 +105,24 @@
      näytölle kunnolla eikä ollut sujuvaa (käyttäjän toive 2026-09-21). */
   .control-row { display: flex; flex-wrap: wrap; row-gap: 0.4rem; gap: 0.5rem; align-items: center; }
   .control-row .label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; width: 5.5rem; flex-shrink: 0; }
-  .chip { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'Archivo', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s, opacity .15s; white-space: nowrap; flex-shrink: 0; opacity: 0.6; }
+  .chip { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s, opacity .15s; white-space: nowrap; flex-shrink: 0; opacity: 0.6; }
   .chip:hover { border-color: var(--amber-dim); opacity: 1; color: var(--text); }
   .chip:active { transform: scale(0.96); }
-  .chip.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); font-weight: 700; opacity: 1; box-shadow: 0 3px 10px -4px rgba(232,149,43,0.6); }
+  /* Neutraali "musteen"-värinen valintatila SUKUPUOLI/KILPAILUTASO/KAUPUNKI-
+     riveille ja tarkennetun haun sarjachipeille - ei enää amber kaikkialla
+     (käyttäjän toive 2026-09-23: liikaa samanväristä "melua" kun valintoja
+     on paljon). Ks. myös .chip.chip-sport alempana (LAJI, oma lajiväri) ja
+     #day-filters-poikkeus (AJANKOHTA, säilyttää amberin - aikavalinta
+     sopii luontevasti "live"-tunnusväriin). */
+  .chip.active { background: var(--text); border-color: var(--text); color: var(--bg); font-weight: 600; opacity: 1; }
+  #day-filters .chip.active { background: var(--amber); border-color: var(--amber); color: var(--amber-ink); font-weight: 700; box-shadow: 0 3px 10px -4px rgba(193,87,26,0.55); }
+
+  /* LAJI-chipit kantavat lajin omaa väriä (SPORT_META, asetetaan JS:stä
+     inline-tyylinä koska väri vaihtelee per-chip) - pallo näkyy aina, täyttö
+     vain kun valittu. */
+  .chip.chip-sport { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .chip.chip-sport.active { color: #FFFDF9; font-weight: 600; }
   .row-actions { display: flex; gap: 0.6rem; align-items: center; margin-left: 0.2rem; flex-shrink: 0; }
   .row-action-btn { background: none; border: none; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.02em; text-decoration: underline dotted; text-underline-offset: 2px; cursor: pointer; padding: 0; white-space: nowrap; }
   .row-action-btn:hover { color: var(--amber-dim); }
@@ -145,7 +163,7 @@
     opacity: 1; transition: color .15s, border-color .15s;
   }
   .gender-chip:hover { color: var(--text); background: none; }
-  .gender-chip.active { color: var(--amber-dim); border-bottom-color: var(--amber); }
+  .gender-chip.active { color: var(--text); border-bottom-color: var(--text); }
   .series-list { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
   .chip.category-chip { font-size: 0.78rem; padding: 0.32rem 0.65rem; }
   /* "Ei otteluita" -tila erotettu selvästi "ei valittu" -tilasta: katkoviivareunus
@@ -194,15 +212,21 @@
   .row {
     display: grid; grid-template-columns: 3.6rem 6.6rem 1fr auto; gap: 0.9rem; align-items: center;
     padding: 0.85rem 0.9rem; margin-bottom: 0.45rem; border-radius: var(--radius);
-    background: var(--panel); border: 1px solid var(--divider); border-left: 3px solid var(--muted);
+    background: var(--panel); border: 1px solid var(--divider);
     transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
     animation: fadeInUp .3s ease both;
   }
   .row:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
   .row .time { font-family: 'IBM Plex Mono', monospace; font-size: 0.95rem; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .row .sport-col { display: flex; flex-direction: column; gap: 0.28rem; align-items: flex-start; }
-  .row .sport-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; letter-spacing: 0.03em; padding: 0.22rem 0.45rem; border-radius: 999px; text-align: center; text-transform: uppercase; width: fit-content; font-weight: 700; color: #fff; }
-  .row .gender-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding-left: 0.15rem; }
+  .row .sport-col { display: flex; flex-direction: column; gap: 0.32rem; align-items: flex-start; }
+  /* Ei enää värillistä reunaviivaa koko rivillä eikä emoji-pilleriä (opittu
+     kantapään kautta 2026-09-23 - klassinen "AI-vibe"-kuvio) - lajin
+     tunniste on pieni pyöreä lajivärinen merkki + nimi omalla värillään. */
+  .row .sport-line { display: flex; align-items: center; gap: 0.4rem; }
+  .row .sport-badge { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .row .sport-badge .sport-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .row .sport-name { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.01em; }
+  .row .gender-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding-left: 1.7rem; }
   .row .matchup { font-weight: 600; font-size: 0.98rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; }
   .row .matchup .team { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
   .row .matchup .dash { color: var(--muted); font-weight: 400; }
@@ -229,7 +253,7 @@
   .map-overlay { position: absolute; z-index: 5; background: rgba(255,255,255,0.94); border: 1px solid var(--divider); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.75rem; box-shadow: var(--shadow); }
   .map-legend { bottom: 10px; left: 10px; display: flex; flex-direction: column; gap: 0.3rem; }
   .map-legend .legend-item { display: flex; align-items: center; gap: 0.45rem; color: var(--text); }
-  .legend-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+  .legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
   .map-pick-hint { top: 10px; right: 10px; background: var(--amber); color: var(--amber-ink); font-weight: 700; }
 
   /* HUOM: ei "position" -sääntöä tässä - MapLibre asettaa omasta CSS:stään
@@ -240,7 +264,7 @@
   .map-marker .count-badge { position: absolute; top: -6px; right: -6px; background: var(--text); color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff; }
   .map-marker-user { width: 20px; height: 20px; border-radius: 50%; background: #1D6FBD; border: 3px solid #fff; box-shadow: 0 0 0 3px rgba(29,111,189,0.35), 0 1px 5px rgba(0,0,0,0.35); }
 
-  .maplibregl-popup-content { font-family: 'Archivo', sans-serif; border-radius: 8px; padding: 0.8rem 0.9rem; min-width: 200px; }
+  .maplibregl-popup-content { font-family: 'IBM Plex Sans', sans-serif; border-radius: 8px; padding: 0.8rem 0.9rem; min-width: 200px; }
   .map-popup-venue { font-weight: 700; margin-bottom: 0.1rem; color: var(--text); }
   .map-popup-city { color: var(--muted); font-size: 0.75rem; margin-bottom: 0.5rem; }
   .map-popup-match { padding: 0.4rem 0; border-top: 1px solid var(--divider); font-size: 0.82rem; }
@@ -408,18 +432,30 @@ const REQUEST_DELAY_MS = 150; // pieni tauko peräkkäisten kutsujen välissä p
 // Pääkaupunkiseudun kiinteä oletusnäkymä kartalle - ei muutu hakutulosten mukaan.
 const PK_BOUNDS = [[24.45, 60.03], [25.32, 60.37]]; // [[lounas], [koillinen]]
 
+// Värit syvennetty lämpimämpään, hillitympään sävyyn 2026-09-23 (aiemmat
+// kirkkaat perusvärit suluissa alkuperäisen KNOWN_SERIES/dokumentaation
+// vertailua varten - itse arvot eivät ole kategorioita, joten muutos on
+// puhtaasti visuaalinen). "mono" on lyhyt 2-kirjaiminen tunniste
+// karttamerkkeihin (ei emojia - ks. CLAUDE.md "Visuaalinen ilme").
 const SPORT_META = {
-  'Jalkapallo': { color: '#128363', icon: '⚽' },
-  'Futsal': { color: '#0E8DA6', icon: '🥅' },
-  'Jääkiekko': { color: '#1D6FBD', icon: '🏒' },
-  'Koripallo': { color: '#C94A24', icon: '🏀' },
-  'Käsipallo': { color: '#A8305F', icon: '🤾' },
-  'Lentopallo': { color: '#6142C7', icon: '🏐' },
-  'Salibandy': { color: '#8A6D1B', icon: '🏑' },
-  'Jääpallo': { color: '#2F9E44', icon: '⛸️' },
-  '_default': { color: '#667085', icon: '🏆' },
+  'Jalkapallo': { color: '#146B4E', mono: 'JP' }, // oli #128363
+  'Futsal': { color: '#0C7688', mono: 'FS' }, // oli #0E8DA6
+  'Jääkiekko': { color: '#1D5DA0', mono: 'JK' }, // oli #1D6FBD
+  'Koripallo': { color: '#B8431F', mono: 'KP' }, // oli #C94A24
+  'Käsipallo': { color: '#8E2A50', mono: 'KÄ' }, // oli #A8305F
+  'Lentopallo': { color: '#5636A8', mono: 'LP' }, // oli #6142C7
+  'Salibandy': { color: '#8A6D1B', mono: 'SB' },
+  'Jääpallo': { color: '#1F8A72', mono: 'JÄ' }, // oli #2F9E44
+  '_default': { color: '#6B6459', mono: '?' },
 };
 function sportMeta(sport) { return SPORT_META[sport] || SPORT_META._default; }
+
+// Sport-badgen himmeä täyttö lajin väristä (esim. rgba(20,107,78,0.12)).
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 // Lajien järjestys LAJI-suodattimessa ja tarkennetussa haussa: suositummat
 // ensin (käyttäjän toive), ei aakkosjärjestyksessä. Tuntematon laji (jos
@@ -1205,12 +1241,23 @@ function renderFilters() {
   const sports = sortSports(Object.keys(SPORT_META).filter(s => s !== '_default'));
   sports.forEach(sport => {
     if (!filtersDefaultsApplied && !defaultsToSkip.sports && !state.sports.has(sport)) state.sports.add(sport);
+    const color = sportMeta(sport).color;
     const btn = document.createElement('button');
-    btn.className = 'chip' + (state.sports.has(sport) ? ' active' : '');
-    btn.textContent = `${sportMeta(sport).icon} ${sport}`;
+    btn.className = 'chip chip-sport';
+    btn.innerHTML = `<span class="chip-dot" style="background:${color};"></span>${sport}`;
+    // LAJI-chipin väri on aina kyseisen lajin oma (SPORT_META), ei
+    // yleistä amber-aktiivisuutta - siksi täyttö/reunaväri asetetaan
+    // inline-tyylinä eikä .chip.active-CSS-säännöllä (käyttäjän toive
+    // 2026-09-23, ks. CLAUDE.md "Visuaalinen ilme").
+    const applySportActive = (isActive) => {
+      btn.classList.toggle('active', isActive);
+      btn.style.background = isActive ? color : '';
+      btn.style.borderColor = isActive ? color : hexToRgba(color, 0.35);
+    };
+    applySportActive(state.sports.has(sport));
     btn.addEventListener('click', () => {
-      if (state.sports.has(sport)) { state.sports.delete(sport); btn.classList.remove('active'); }
-      else { state.sports.add(sport); btn.classList.add('active'); }
+      if (state.sports.has(sport)) { state.sports.delete(sport); applySportActive(false); }
+      else { state.sports.add(sport); applySportActive(true); }
       renderHierarchy();
       renderResults();
     });
@@ -1375,7 +1422,7 @@ function renderHierarchy() {
     block.className = 'sport-block';
     const title = document.createElement('div');
     title.className = 'sport-block-title';
-    title.textContent = `${sportMeta(sport).icon} ${sport}`;
+    title.innerHTML = `<span class="chip-dot" style="background:${sportMeta(sport).color};"></span>${sport}`;
     block.appendChild(title);
 
     // Yhdistetään tunnetut (konfiguroidut) sarjat ja mahdolliset datassa
@@ -1544,7 +1591,6 @@ function renderBoard(filtered) {
       const dist = showDistance ? distanceToRef(m) : null;
       const row = document.createElement('div');
       row.className = 'row';
-      row.style.borderLeftColor = meta.color;
       const categoryHtml = m.matchUrl
         ? `<a class="category-link" href="${m.matchUrl}" target="_blank" rel="noopener noreferrer">${m.category} ↗</a>`
         : `<span class="category">${m.category}</span>`;
@@ -1555,7 +1601,10 @@ function renderBoard(filtered) {
       row.innerHTML = `
         <div class="time mono">${m.time || '–'}</div>
         <div class="sport-col">
-          <div class="sport-tag" style="background:${meta.color};">${meta.icon} ${m.sport}</div>
+          <div class="sport-line">
+            <span class="sport-badge" style="background:${hexToRgba(meta.color, 0.13)};"><span class="sport-dot" style="background:${meta.color};"></span></span>
+            <span class="sport-name" style="color:${meta.color};">${m.sport}</span>
+          </div>
           <div class="gender-tag">${m.genderGroup || ''}</div>
         </div>
         <div>
@@ -1584,7 +1633,7 @@ function renderLegend() {
     .filter(([key]) => key !== '_default')
     .map(([sport, meta]) => `
       <div class="legend-item">
-        <span class="legend-dot" style="background:${meta.color};">${meta.icon}</span>
+        <span class="legend-dot" style="background:${meta.color};"></span>
         <span>${sport}</span>
       </div>
     `).join('');
@@ -1634,8 +1683,11 @@ function renderMap(filtered) {
     el.style.width = size + 'px';
     el.style.height = size + 'px';
     el.style.background = meta.color;
-    el.style.fontSize = Math.round(size * 0.5) + 'px';
-    el.textContent = meta.icon;
+    el.style.fontSize = Math.round(size * 0.3) + 'px';
+    el.style.fontFamily = "'IBM Plex Mono', monospace";
+    el.style.fontWeight = '700';
+    el.style.letterSpacing = '-0.02em';
+    el.textContent = meta.mono;
     if (g.matches.length > 1) {
       const badge = document.createElement('span');
       badge.className = 'count-badge';
@@ -1649,7 +1701,7 @@ function renderMap(filtered) {
         const dist = distanceToRef(m);
         return `
         <div class="map-popup-match">
-          <div class="row1"><span class="map-popup-time mono">${formatShortDate(m.date)} ${m.time || ''}</span><span>${sportMeta(m.sport).icon} ${m.teamA} – ${m.teamB}</span></div>
+          <div class="row1"><span class="map-popup-time mono">${formatShortDate(m.date)} ${m.time || ''}</span><span>${m.teamA} – ${m.teamB}</span></div>
           <div class="map-popup-meta">${m.sport} · ${m.genderGroup || ''} · ${m.category}</div>
           ${dist !== null ? `<div class="map-popup-dist">${formatDistance(dist)} sijainnistasi</div>` : ''}
         </div>

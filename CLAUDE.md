@@ -21,6 +21,62 @@ ole mukana ("Ei vielä mukana" -kortit, `PLACEHOLDER_SPORTS`
 (`#placeholders-doc`) eivätkä enää omana lohkonaan etusivulla (2026-09-21,
 käyttäjän toive - vei liikaa tilaa pääsivulta).
 
+## Visuaalinen ilme
+
+(2026-09-23, käyttäjän toive - halusi visuaalisesti vaikuttavamman sivun
+mutta helppokäyttöisyys ja vaalea pohja säilyttäen, ei "vibekoodatun"
+näköinen.) Lämmin editorial-henkinen paletti kylmän harmaan + yhtenäisen
+oranssin sijaan. Suunnittelupäätökset:
+
+- **Typografia**: `Fraunces` (serif) isoihin otsikoihin (`h1`), `IBM Plex
+  Sans` kaikkeen muuhun käyttöliittymätekstiin (korvasi `Archivo`:n),
+  `IBM Plex Mono` säilyy datalle/kellonajoille. Fontit ladataan
+  [index.html](index.html):n `<head>`:stä yhdellä Google Fonts -linkillä.
+- **Värit** (`:root`-muuttujat [index.html](index.html):ssä): lämmin
+  norsunluu-pohja `--bg: #F7F5F0` (oli kylmä `#F3F5F8`), musteenmusta
+  teksti `--text: #1B1812`, ember-korostusväri `--amber: #C1571A`
+  (tummempi/kypsempi kuin aiempi kirkas `#E8952B`, joka jäi
+  `--amber-soft`:ksi tunnusmerkin liukuväriin). **Ember on nyt varattu
+  harvoihin avaintoimintoihin** (TÄNÄÄN-badge, AJANKOHTA-suodatin,
+  "Jaa valinta" -nappi, linkit, Lista/Kartta-välilehdet) - ei enää
+  jokaisen suodatinchipin täyttönä (ks. seuraava kohta).
+- **Suodatinchippien värilogiikka eriytetty ryhmittäin** (aiemmin kaikki
+  `.chip.active` oli aina amber, mikä näytti sekavalta kun valintoja on
+  kymmeniä):
+  - **LAJI**: jokainen chip kantaa oman lajinsa väriä (`SPORT_META.color`,
+    asetetaan inline-tyylinä JS:stä koska väri vaihtelee per-chip - ks.
+    `.chip.chip-sport` ja `applySportActive()` `renderFilters()`:ssä).
+    Ei-valittuna näkyy pieni väripallo (`.chip-dot`) + ohut väritetty
+    reunaviiva (`hexToRgba()`-apufunktiolla laskettu 35% läpinäkyvyys).
+  - **SUKUPUOLI/KILPAILUTASO/KAUPUNKI** ja tarkennetun haun sarjachipit:
+    neutraali "muste"-täyttö (`.chip.active { background: var(--text) }`)
+    amberin sijaan.
+  - **AJANKOHTA** on ainoa poikkeus joka säilytti amberin
+    (`#day-filters .chip.active`) - aikavalinta sopii luontevasti "live"-
+    tunnusväriin, ja rivi on jo visuaalisesti erillinen (yksivalintainen).
+  - Lajien värit itsessään syvennettiin hillitymmiksi (esim. jääkiekko
+    `#1D6FBD` &#8594; `#1D5DA0`) - ks. `SPORT_META`:n kommentit
+    [index.html](index.html):ssä alkuperäisistä arvoista.
+- **Ei enää emojia lajien tunnisteena** (ottelurivin lajimerkki, kartan
+  selite, karttamerkit, tarkennetun haun lajiotsikot) - korvattu
+  väripallolla + tekstillä, karttamerkeissä 2-kirjaimisella
+  `SPORT_META.mono`-koodilla (esim. jääkiekko `JK`). Perustelu: emoji
+  lajitunnisteena on tyypillinen "AI-vibe-koodattu" -kuvio, jota
+  käyttäjä halusi nimenomaan välttää. Muut toiminnalliset emojit (📍🖱️
+  📋🗺️📅ℹ️🚧) säilytetty ennallaan - kyse oli nimenomaan lajitunnisteista.
+- **Ei enää värillistä reunaviivaa ottelurivin vasemmassa laidassa**
+  (`.row { border-left: 3px solid ... }` poistettu) - toinen tyypillinen
+  "AI-vibe"-kuvio. Lajitunniste on nyt pieni pyöreä lajivärinen
+  merkki (`.sport-badge`/`.sport-dot`) rivin sisällä, ei koko rivin
+  reunaviiva.
+- Kokeiltiin ensin näyttää suunnitelma erillisenä Artifact-esikatseluna
+  (sekä "Design"-kanvas-tyyppinä että kevyenä staattisena HTML-sivuna)
+  ennen oikeaan koodiin koskemista, mutta linkit eivät ladanneet
+  käyttäjän selaimessa kummallakaan kerralla (todennäköisesti
+  Artifact-esikatselun tekninen ongelma, ei sisällön - staattinenkin
+  versio epäonnistui). Käyttäjä valtuutti silti toteuttamaan muutokset
+  suoraan oikeaan sivuun kuvauksen perusteella.
+
 ## Kirjoitustyyli
 
 **Ei koskaan em dashia (—, U+2014)** - ei käyttöliittymätekstissä, ei
