@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-26T18:53:04.907Z",
+  "updated": "2026-09-26T22:17:33.111Z",
   "source": "mestis.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
     {
@@ -17,8 +17,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704118/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/hermes.vc0382e5a.png"
     },
     {
       "date": "2026-10-15",
@@ -35,8 +35,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704173/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/keupa.vfa36865d.png"
     },
     {
       "date": "2026-10-17",
@@ -53,8 +53,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704125/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/kettera.v7d3a6faa.png"
     },
     {
       "date": "2026-10-24",
@@ -71,8 +71,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704214/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/tuto.v00912d18.png"
     },
     {
       "date": "2026-10-30",
@@ -89,8 +89,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704204/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/roki_new.v364bd5ec.png"
     },
     {
       "date": "2026-11-13",
@@ -107,8 +107,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704085/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/ipk.va9ad0be6.png"
     },
     {
       "date": "2026-11-21",
@@ -125,8 +125,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704190/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/hermes.vc0382e5a.png"
     },
     {
       "date": "2026-12-02",
@@ -143,8 +143,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704245/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/keupa.vfa36865d.png"
     },
     {
       "date": "2026-12-05",
@@ -161,8 +161,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704235/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-pojat.v2e6af7bf.png"
     },
     {
       "date": "2026-12-18",
@@ -179,8 +179,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704186/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/pyry.v43fa5859.png"
     },
     {
       "date": "2026-12-19",
@@ -197,8 +197,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704197/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/kettera.v7d3a6faa.png"
     },
     {
       "date": "2026-12-30",
@@ -215,8 +215,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704286/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/tuto.v00912d18.png"
     },
     {
       "date": "2027-01-06",
@@ -233,8 +233,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704229/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/ipk.va9ad0be6.png"
     },
     {
       "date": "2027-01-09",
@@ -251,8 +251,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704132/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/roki_new.v364bd5ec.png"
     },
     {
       "date": "2027-01-21",
@@ -269,8 +269,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704101/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/keupa.vfa36865d.png"
     },
     {
       "date": "2027-01-23",
@@ -287,8 +287,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704114/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/pyry.v43fa5859.png"
     },
     {
       "date": "2027-01-27",
@@ -305,8 +305,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704157/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/ipk.va9ad0be6.png"
     },
     {
       "date": "2027-01-29",
@@ -323,8 +323,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704262/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/hermes.vc0382e5a.png"
     },
     {
       "date": "2027-02-11",
@@ -341,8 +341,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704091/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-pojat.v2e6af7bf.png"
     },
     {
       "date": "2027-02-18",
@@ -359,8 +359,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704269/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/kettera.v7d3a6faa.png"
     },
     {
       "date": "2027-03-05",
@@ -377,8 +377,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704258/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/pyry.v43fa5859.png"
     },
     {
       "date": "2027-03-06",
@@ -395,8 +395,8 @@
       "lat": 60.271,
       "lon": 24.836,
       "matchUrl": "https://mestis.fi/fi/ottelut/2026-2027/runkosarja/2704276/",
-      "crestA": null,
-      "crestB": null
+      "crestA": "https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png",
+      "crestB": "https://mestis.fi/static/liiga/common/img/team-logos/roki_new.v364bd5ec.png"
     }
   ]
 }
