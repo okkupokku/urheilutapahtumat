@@ -105,6 +105,21 @@
      näytölle kunnolla eikä ollut sujuvaa (käyttäjän toive 2026-09-21). */
   .control-row { display: flex; flex-wrap: wrap; row-gap: 0.4rem; gap: 0.5rem; align-items: center; }
   .control-row .label { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; width: 5.5rem; flex-shrink: 0; }
+  /* CSS Grid auto-fill+1fr sen sijaan että chipit vain flex-wrappaisivat -
+     jos rivi jakautuu kahdelle riville, viimeiselle riville jäävä
+     yksinäinen chippi (esim. Jääpallo LAJI-rivin viimeisenä) venyy
+     täyttämään koko leveyden sen sijaan että jäisi näyttämään "unohdetulta"
+     vasempaan laitaan (käyttäjän palaute 2026-09-27). flex: 1 1 240px
+     antaa koko gridin silti wrapata labelin alle omalle rivilleen
+     kapealla näytöllä, kuten pelkkä chippi-lista teki ennenkin.
+     HUOM: käytössä VAIN LAJI-rivillä (#sport-filters) - minmax(140px) on
+     mitoitettu lajichippien pituuteen (ikoni + pisin nimi, esim.
+     "Lentopallo"). SUKUPUOLI/KILPAILUTASO/KAUPUNKI-riveillä on paljon
+     lyhyempiä JA paljon pidempiä ("Eurooppalaiset seurasarjat") tekstejä
+     samalla rivillä - kiinteä sarakeleveys leikkaisi pisimmät, joten ne
+     pysyvät tavallisessa flex-wrapissa. */
+  .chip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; flex: 1 1 240px; }
+  .mini-actions { display: inline-flex; gap: 0.35rem; flex-shrink: 0; }
   .chip { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s, opacity .15s; white-space: nowrap; flex-shrink: 0; opacity: 0.6; }
   .chip:hover { border-color: var(--amber-dim); opacity: 1; color: var(--text); }
   .chip:active { transform: scale(0.96); }
@@ -122,10 +137,13 @@
      valittu, emoji + nimi näkyy aina. */
   .chip.chip-sport.active { color: #FFFDF9; font-weight: 600; }
 
-  /* Yksi yhteinen "Kaikki/Ei mitään" -pari koko suodatinvalinnalle
-     (meta-line, ei enää per-rivi - käyttäjän toive 2026-09-23: per-rivi-
-     napit koettiin turhiksi/sekaviksi kun niitä oli monta erillistä). */
-  .global-actions { display: inline-flex; gap: 0.4rem; margin-left: 0.75rem; }
+  /* "Kaikki/Ei mitään" -pikanapit: pieni pari joka suodatinkategorialle
+     erikseen (.mini-actions, LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI-rivin
+     lopussa) SEKÄ yksi kaiken kattava pari omalla rivillään heti
+     suodatinrivien perässä (#global-actions-row, ks. HTML) - ei enää
+     kaukana meta-linella Tarkennetun haun alapuolella (käyttäjän palaute
+     2026-09-27: pitäisi olla "valintojen vieressä"). Molemmat käyttävät
+     samaa pientä pilleriä, .row-action-btn. */
   .row-action-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); font-family: 'IBM Plex Sans', sans-serif; font-size: 0.72rem; font-weight: 500; border-radius: 999px; padding: 0.28rem 0.65rem; cursor: pointer; white-space: nowrap; transition: border-color .15s, color .15s; }
   .row-action-btn:hover { border-color: var(--amber-dim); color: var(--text); }
 
@@ -292,9 +310,20 @@
     header.board-header, main, footer { padding-left: 1rem; padding-right: 1rem; }
     .row { grid-template-columns: 3rem 1fr; grid-template-rows: auto auto; }
     .row .sport-col { grid-row: 1; grid-column: 2; justify-self: start; }
-    .row .matchup, .row .details { grid-column: 2; }
+    /* HUOM (2026-09-27, sudenkuoppa): tämä sääntö kohdisti aiemmin
+       `.matchup`/`.details`:iin, mutta ne ovat pelkkiä JÄLKELÄISIÄ eivätkä
+       CSS Gridin suoria lapsia (.row on grid, ne ovat kääre-divin sisällä)
+       - grid-column/-row EI vaikuta mihinkään sellaiseen elementtiin joka
+       ei ole gridin oma suora lapsi, joten sääntö oli täysin tehoton.
+       Todellisuudessa selain sijoitti kääre-divin (nyt .match-info)
+       auto-placementilla kapeaan 3rem-sarakkeeseen (rivi 2, sarake 1),
+       mikä näkyi pitkän sarjanimen (esim. "Briotech Kansallinen Liiga")
+       rikkoutumisena 3 riville vaikka vieressä oli tilaa. Korjaus:
+       kohdista suoraan .match-info-kääreeseen. */
+    .row .match-info { grid-row: 2; grid-column: 2; }
     .row .venue-col { grid-column: 1 / -1; text-align: left; margin-top: 0.4rem; }
     .row .venue-col .city { display: inline; }
+    .row .venue-col .city::before { content: '·'; margin: 0 0.35rem; color: var(--muted); }
     .row .venue-col .distance { display: inline; margin-left: 0.4rem; }
     .status-row { grid-template-columns: 1fr; row-gap: 0.2rem; }
     .map-el { height: 380px; }
@@ -328,6 +357,11 @@
       <div class="control-row" id="level-filters"><span class="label">KILPAILUTASO</span></div>
       <div class="control-row" id="city-filters"><span class="label">KAUPUNKI</span></div>
       <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
+      <div class="control-row" id="global-actions-row">
+        <span class="label">KAIKKI</span>
+        <button class="row-action-btn" id="select-all-btn" type="button" title="Valitse kaikki kaikista kategorioista">Valitse kaikki</button>
+        <button class="row-action-btn" id="select-none-btn" type="button" title="Poista kaikki valinnat kaikista kategorioista">Poista kaikki</button>
+      </div>
     </div>
 
     <details class="advanced-panel" id="advanced-panel">
@@ -353,10 +387,6 @@
       <span id="result-count">Ladataan datalähteitä…</span><span id="loading-spinner" class="loading-spinner" hidden></span><span id="loading-progress" class="loading-progress" hidden></span>
       <span>
         <span id="updated-time"></span>
-        <span class="global-actions">
-          <button class="row-action-btn" id="select-all-btn" type="button" title="Valitse kaikki">Kaikki</button>
-          <button class="row-action-btn" id="select-none-btn" type="button" title="Poista kaikki valinnat">Ei mitään</button>
-        </span>
         <button class="refresh-btn" id="share-btn" type="button" disabled>🔗 Jaa valinta</button>
         <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
       </span>
@@ -1261,10 +1291,41 @@ function selectNoFilters() {
   renderResults();
 }
 
+// Pieni "Kaikki/Ei mitään" -pari yhdelle suodatinkategorialle (käyttäjän
+// toive 2026-09-27: pienesti vaihtoehtoina joka kategoriassa, EI vain
+// yhteisenä kaikille). Rakennetaan aina uudelleen joka renderFilters()-
+// kutsulla samaan tapaan kuin itse chipit - ei tarvita erillistä
+// "rakenna vain kerran" -logiikkaa.
+function buildMiniActions(onAll, onNone) {
+  const wrap = document.createElement('span');
+  wrap.className = 'mini-actions';
+  const allBtn = document.createElement('button');
+  allBtn.type = 'button';
+  allBtn.className = 'row-action-btn';
+  allBtn.textContent = 'Kaikki';
+  allBtn.title = 'Valitse kaikki tästä kategoriasta';
+  allBtn.addEventListener('click', onAll);
+  const noneBtn = document.createElement('button');
+  noneBtn.type = 'button';
+  noneBtn.className = 'row-action-btn';
+  noneBtn.textContent = 'Ei mitään';
+  noneBtn.title = 'Poista kaikki valinnat tästä kategoriasta';
+  noneBtn.addEventListener('click', onNone);
+  wrap.appendChild(allBtn);
+  wrap.appendChild(noneBtn);
+  return wrap;
+}
+
 function renderFilters() {
   const sportEl = document.getElementById('sport-filters');
-  sportEl.querySelectorAll('.chip').forEach(c => c.remove());
+  sportEl.querySelectorAll('.chip-grid, .mini-actions').forEach(c => c.remove());
   const sports = sortSports(Object.keys(SPORT_META).filter(s => s !== '_default'));
+  // CSS Grid -kääre (.chip-grid) tasapainottaa rivin jos LAJI-chipit
+  // jakautuvat kahdelle riville - muuten viimeiselle riville jäävä
+  // yksinäinen chippi (esim. Jääpallo) näytti "unohdetulta" (käyttäjän
+  // palaute 2026-09-27). Ks. .chip-grid:n kommentti CSS:ssä.
+  const sportGrid = document.createElement('div');
+  sportGrid.className = 'chip-grid';
   sports.forEach(sport => {
     if (!filtersDefaultsApplied && !defaultsToSkip.sports && !state.sports.has(sport)) state.sports.add(sport);
     const color = sportMeta(sport).color;
@@ -1287,11 +1348,16 @@ function renderFilters() {
       renderHierarchy();
       renderResults();
     });
-    sportEl.appendChild(btn);
+    sportGrid.appendChild(btn);
   });
+  sportEl.appendChild(sportGrid);
+  sportEl.appendChild(buildMiniActions(
+    () => { sports.forEach(s => state.sports.add(s)); renderFilters(); renderResults(); },
+    () => { state.sports.clear(); renderFilters(); renderResults(); }
+  ));
 
   const genderEl = document.getElementById('gender-filters');
-  genderEl.querySelectorAll('.chip').forEach(c => c.remove());
+  genderEl.querySelectorAll('.chip, .mini-actions').forEach(c => c.remove());
   DISPLAY_GENDERS.forEach(gender => {
     if (!filtersDefaultsApplied && !defaultsToSkip.genders && !state.genders.has(gender)) state.genders.add(gender);
     const btn = document.createElement('button');
@@ -1304,9 +1370,13 @@ function renderFilters() {
     });
     genderEl.appendChild(btn);
   });
+  genderEl.appendChild(buildMiniActions(
+    () => { DISPLAY_GENDERS.forEach(g => state.genders.add(g)); renderFilters(); renderResults(); },
+    () => { state.genders.clear(); renderFilters(); renderResults(); }
+  ));
 
   const levelEl = document.getElementById('level-filters');
-  levelEl.querySelectorAll('.chip').forEach(c => c.remove());
+  levelEl.querySelectorAll('.chip, .mini-actions').forEach(c => c.remove());
   DISPLAY_COMPETITION_TYPES.forEach(({ id, label }) => {
     if (!filtersDefaultsApplied && !defaultsToSkip.competitionTypes && !state.competitionTypes.has(id)) state.competitionTypes.add(id);
     const btn = document.createElement('button');
@@ -1319,9 +1389,13 @@ function renderFilters() {
     });
     levelEl.appendChild(btn);
   });
+  levelEl.appendChild(buildMiniActions(
+    () => { DISPLAY_COMPETITION_TYPES.forEach(({ id }) => state.competitionTypes.add(id)); renderFilters(); renderResults(); },
+    () => { state.competitionTypes.clear(); renderFilters(); renderResults(); }
+  ));
 
   const cityEl = document.getElementById('city-filters');
-  cityEl.querySelectorAll('.chip').forEach(c => c.remove());
+  cityEl.querySelectorAll('.chip, .mini-actions').forEach(c => c.remove());
   DISPLAY_CITIES.forEach(city => {
     const btn = document.createElement('button');
     btn.className = 'chip' + (state.cities.has(city) ? ' active' : '');
@@ -1333,6 +1407,10 @@ function renderFilters() {
     });
     cityEl.appendChild(btn);
   });
+  cityEl.appendChild(buildMiniActions(
+    () => { DISPLAY_CITIES.forEach(c => state.cities.add(c)); renderFilters(); renderResults(); },
+    () => { state.cities.clear(); renderFilters(); renderResults(); }
+  ));
 
   renderHierarchy();
 
@@ -1622,7 +1700,7 @@ function renderBoard(filtered) {
           </div>
           <div class="gender-tag">${m.genderGroup || ''}</div>
         </div>
-        <div>
+        <div class="match-info">
           <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
           <div class="details">${categoryHtml}${priceHtml}</div>
         </div>

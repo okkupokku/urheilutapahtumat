@@ -70,22 +70,17 @@ oranssin sijaan. Suunnittelupäätökset:
   (`.row { border-left: 3px solid ... }` poistettu, tämä muutos SÄILYI
   vaikka emoji palautettiin) - lajitunniste on pieni pyöreä lajivärinen
   emoji-merkki (`.sport-badge`) rivin sisällä, ei koko rivin reunaviiva.
-- **"Kaikki / Ei mitään" -pikanapit ovat yksi yhteinen pari koko sivulle**,
-  ei enää per-rivi (2026-09-23, käyttäjän toive - per-rivi-napit
-  kokeiltiin ensin sekä control-row-tasolla että tarkennetun haun
-  sarjatasolla, mutta käyttäjä koki niin monta erillistä paria
-  sekavaksi/ei-hyvän-näköiseksi). Napit (`#select-all-btn`/
-  `#select-none-btn`) ovat meta-linella [index.html](index.html):ssä,
-  `.row-action-btn`-tyylillä (pieni pilleri). `selectAllFilters()`/
-  `selectNoFilters()` täyttävät/tyhjentävät kerralla kaikki neljä
-  monivalintasuodatinta (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI) sekä
-  tarkennetun haun sarjavalinnat (`state.categories`) - AJANKOHTA ei
-  kuulu tähän, koska se on yksivalintainen eikä looginen osa
-  "valitse/poista kaikki" -toimintoa. `selectAllFilters()` tyhjentää
-  `state.categories`:n ENSIN ja luottaa `renderHierarchy()`:n lazy-
-  addiin täyttämään sen takaisin - näin myös aiemmin yksitellen pois
-  togglatut yksittäiset sarjat palautuvat mukaan ("Kaikki" tarkoittaa
-  kirjaimellisesti kaikkea, ei vain rivitason oletusta).
+- **"Kaikki / Ei mitään" -pikanapit: iteroitu useaan kertaan** (per-rivi
+  → yksi yhteinen pari → lopulta MOLEMMAT yhdessä, ks. tarkka nykytila
+  ja sijainti "Käyttöliittymän suodattimet"-osiosta alempana - älä luota
+  tähän kohtaan yksityiskohdista, tämä on vain historiaa). Mekaniikka
+  joka on pysynyt samana koko ajan: `selectAllFilters()`/
+  `selectNoFilters()` täyttävät/tyhjentävät LAJI/SUKUPUOLI/KILPAILUTASO/
+  KAUPUNKI + tarkennetun haun sarjavalinnat (`state.categories`) kerralla
+  - AJANKOHTA ei koskaan kuulu tähän (yksivalintainen). `selectAllFilters()`
+  tyhjentää `state.categories`:n ENSIN ja luottaa `renderHierarchy()`:n
+  lazy-addiin täyttämään sen takaisin - näin myös yksitellen pois
+  togglatut yksittäiset sarjat palautuvat mukaan.
 - Kokeiltiin ensin näyttää suunnitelma erillisenä Artifact-esikatseluna
   (sekä "Design"-kanvas-tyyppinä että kevyenä staattisena HTML-sivuna)
   ennen oikeaan koodiin koskemista, mutta linkit eivät ladanneet
@@ -128,22 +123,38 @@ jälkeen kirjoitettu teksti noudattaa tätä.
   valittu (2026-09-21, käyttäjän toive). `showPicker()` vaatii tuoreen
   käyttäjätapahtuman eikä kaikki selaimet tue sitä - epäonnistuminen
   ohitetaan hiljaa (`try/catch`), käyttäjä voi silti avata kentän itse.
-- **"Valitse kaikki" / "Poista kaikki" -pikanapit** LAJI/SUKUPUOLI/
-  KILPAILUTASO/KAUPUNKI-riveillä (2026-09-23, käyttäjän toive - helpottaa
-  esim. yhden lajin valitsemista ilman että pitää klikata jokaista muuta
-  pois erikseen). `ensureRowActions(rowEl, onSelectAll, onSelectNone)`
-  [index.html](index.html):ssä rakentaa napit vain kerran per rivi
-  (`dataset.actionsBuilt`-lippu, sama kuvio kuin AJANKOHTA-rivin date-
-  range-kentillä) ja siirtää ne aina rivin loppuun uudelleenrenderöinnin
-  yhteydessä, koska chipit poistetaan ja luodaan uudelleen joka
-  `renderFilters()`-kutsulla. **HUOM:** nappien klikkauskuuntelijat
-  liitetään vain ensimmäisellä `renderFilters()`-kutsulla eivätkä
-  päivity myöhemmin - tämä on turvallista koska ne sulkeutuvat vain
-  kiinteiden listojen ympärille (`sports`/`DISPLAY_GENDERS`/
-  `DISPLAY_COMPETITION_TYPES`/`DISPLAY_CITIES`, eivät koskaan muutu ajon
-  aikana) ja suoraan `state`-olioon (ei kopiota), joten ne toimivat aina
-  ajantasaisen tilan päällä. AJANKOHTA on yksivalintainen (chip-chip
-  toggle, ei Set) eikä siksi tarvitse/saa vastaavia nappeja.
+- **"Kaikki" / "Ei mitään" -pikanapit ovat KAKSITASOISET** (kokeiltiin
+  ensin vain per-rivi, sitten vain yhtenä yhteisenä parina meta-linella -
+  kumpikaan ei riittänyt, käyttäjä halusi lopulta molemmat 2026-09-27):
+  - **Pieni pari joka kategoriassa erikseen** (LAJI/SUKUPUOLI/
+    KILPAILUTASO/KAUPUNKI-rivin lopussa, `.mini-actions`/`.row-action-btn`
+    [index.html](index.html):ssä) - vaikuttaa vain siihen yhteen
+    kategoriaan. `buildMiniActions(onAll, onNone)`-apufunktio rakentaa
+    parin, kutsutaan jokaisesta neljästä rivistä `renderFilters()`:ssä.
+    Rakennetaan aina uudelleen joka renderFilters()-kutsulla (ei
+    `dataset`-lippu-kikkaa - koko rivi rakennetaan joka tapauksessa
+    uusiksi, joten erillistä "rakenna vain kerran" -logiikkaa ei tarvita,
+    toisin kuin AJANKOHTA-rivin date-range-kentillä).
+  - **Yksi kaiken kattava pari omalla rivillään** heti suodatinrivien
+    perässä (`#global-actions-row`, `#select-all-btn`/`#select-none-btn`,
+    `selectAllFilters()`/`selectNoFilters()`) - täyttää/tyhjentää
+    kerralla LAJI+SUKUPUOLI+KILPAILUTASO+KAUPUNKI+tarkennetun haun
+    sarjavalinnat. Sijaitsee **suodatinrivien vieressä**, ei enää meta-
+    linella Tarkennetun haun alapuolella (käyttäjän palaute 2026-09-27:
+    "pitäisi olla valintojen vieressä").
+  - AJANKOHTA on yksivalintainen (chip-toggle, ei Set) eikä siksi
+    kuulu kumpaankaan - ei mini-actionsia eikä vaikuta globaaliin pariin.
+- **LAJI-rivi käyttää CSS Gridiä (`.chip-grid`), ei pelkkää flex-wrapia**
+  (2026-09-27, käyttäjän palaute - Jääpallo jäi ainoaksi chipiksi
+  viimeiselle riville ja näytti "unohdetulta"). `repeat(auto-fill,
+  minmax(140px, 1fr))` venyttää viimeisen rivin chipit täyttämään koko
+  leveyden tasaisesti sen sijaan että yksinäinen chippi jäisi pieneksi
+  vasempaan laitaan. **HUOM:** tämä on käytössä VAIN LAJI-rivillä -
+  minmax(140px) on mitoitettu lajichippien pituuteen (ikoni + pisin
+  nimi). SUKUPUOLI/KILPAILUTASO/KAUPUNKI-riveillä on sekä hyvin lyhyitä
+  että hyvin pitkiä ("Eurooppalaiset seurasarjat") tekstejä samalla
+  rivillä - kiinteä sarakeleveys leikkaisi pisimmät, joten ne pysyvät
+  tavallisessa flex-wrapissa eivätkä käytä `.chip-grid`:iä.
 
 ## Jaettava URL (suodatinvalinnan jakaminen)
 
@@ -570,6 +581,20 @@ infrarajoitukset".
    webview-/automaatioympäristöissä toisin kuin tavallisessa selaimessa -
    käytä sen sijaan tavallista DOM-elementtiä (esim. valmiiksi valittu
    `<input readonly>`, ks. `showShareUrlFallback()` index.html:ssä).
+8. **`grid-column`/`grid-row` ei tee mitään jälkeläiselle joka ei ole
+   CSS Gridin SUORA lapsi** (2026-09-27, löytyi kun käyttäjä raportoi
+   pitkän sarjanimen, esim. "Briotech Kansallinen Liiga", rikkoutuvan
+   kolmelle riville mobiilissa vaikka vieressä oli tilaa). Mobiilin
+   media queryssä oli sääntö `.row .matchup, .row .details { grid-column:
+   2; }`, mutta `.matchup`/`.details` ovat kääre-divin SISÄLLÄ - `.row`
+   on grid, mutta suora lapsi on kääre, ei nuo kaksi. Sääntö oli siis
+   täysin tehoton, ja selain sijoitti kääre-divin auto-placementilla
+   väärään (kapeaan) sarakkeeseen. Korjaus: anna kääre-divlle oma luokka
+   (`.match-info`, ks. `renderBoard()`) ja kohdista CSS suoraan siihen.
+   **Tarkista aina, onko grid-column/-row-säännön kohde oikeasti gridin
+   suora lapsi** - jos ei, sääntö ei riko mitään näkyvästi virheenä, se
+   vain hiljaa ei tee mitään, mikä tekee tästä erityisen vaikean
+   huomata koodikatselmoinnissa.
 
 ## Ylläpito
 
