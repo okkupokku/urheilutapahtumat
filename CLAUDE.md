@@ -221,6 +221,32 @@ otteluohjelman sarjan nimeen (näkyy listassa "Sarja ↗" -linkkinä,
     [scripts/fetch-salibandy.js](scripts/fetch-salibandy.js):n
     `slugify()`.
 
+## Pääsylippujen hinta-arvio
+
+(2026-09-26, käyttäjän toive: "Onko mahdollista saada otteluiden
+pääsylippujen hinta-arviota?" - vastattiin että ottelukohtainen tarkka
+hinta ei ole mahdollinen ilman scrapingia jokaiselta lippukanavalta
+erikseen koska liput myydään kymmenien eri kanavien kautta
+seurasta/liitosta riippuen (Lippupiste, Ticketmaster, NoTicket, seurojen
+omat kaupat) - käyttäjä valitsi kevyemmän vaihtoehdon: **"Karkea
+hinta-arvio riittänee".**
+
+Toteutus: `KNOWN_SERIES`:n jokainen (ei-`PH-`-placeholder) sarja voi
+kantaa valinnaisen `priceHint`-kentän (esim. `'15-30€'`) - **käsin
+arvioitu, ei fetch:attu mistään live-lähteestä eikä ottelukohtainen**.
+`priceHintOf(m)` [index.html](index.html):ssä hakee sen `categoryId`:n
+perusteella (sama kuvio kuin `competitionTypeOf()`). Näkyy sekä
+listanäkymän ottelurivillä ("🎫 n. 15-30€" `.details`-rivillä,
+`title`-attribuutissa selitys "karkea, ei ottelukohtainen") että
+karttapopupissa `.map-popup-meta`-rivin lopussa. Selitetty myös "Tietoa
+tästä sivustosta" -paneelin "Tunnetut rajoitukset" -listassa, ettei
+käyttäjä luule sitä tarkaksi/reaaliaikaiseksi hinnaksi.
+
+**Jos hinnat vanhenevat tai uusia sarjoja lisätään:** päivitä
+`priceHint`-arvot suoraan `KNOWN_SERIES`:iin - ei erillistä
+datalähdettä/skriptiä ylläpidettäväksi, koska nämä ovat tarkoituksella
+karkeita käsin kirjoitettuja arvioita eivätkä oikeaa dataa.
+
 ## Kartta ja Google Maps -linkit
 
 (2026-09-21, käyttäjän toive) Jokaisen ottelun `googleMapsUrl(m)`
@@ -584,6 +610,22 @@ infrarajoitukset".
   ei enää datanhaun rajoitinta - älä sekoita näitä jos muokkaat sitä.
 
 ## Ideoita jatkoa varten
+
+- **KESKEN (2026-09-26):** Käyttäjä ehdotti kokonaan uutta välilehteä/
+  näkymää, joka näyttäisi KAIKKI Suomen maajoukkueiden aikuistason
+  ottelut (miehet+naiset) kaikista nykyisistä lajeista, MYÖS ulkomailla
+  pelattavat (ei siis PK-aluerajausta) - plus linkit siihen mistä
+  ottelut näkyvät striiminä. Nykyinen sivu pysyisi ennallaan, tämä olisi
+  lisäys. Esitin käyttäjälle kaksi kysymystä (miten edetä lajeilla joilta
+  puuttuu avoin maajoukkuedata: jääkiekko/salibandy/jääpallo/futsal -
+  näistä jääkiekolle ja salibandylle avointa lähdettä on jo aiemmin
+  yritetty löytää onnistumatta; sekä miten toteuttaa striimauslinkit kun
+  ei ole yhtä API:a) - **käyttäjä ohitti molemmat kysymykset ("wait for
+  next instruction") ja vaihtoi aiheeseen**, joten tämä on yhä auki eikä
+  hylätty. Jalkapallo/koripallo/käsipallo/lentopallo maajoukkueille ON jo
+  oikeaa dataa olemassa (vain PK-suodatettuna nyt) - niiden näyttäminen
+  maailmanlaajuisesti olisi vain suodattimen poisto. Jos käyttäjä ottaa
+  tämän uudelleen esille, jatka siitä eikä ala alusta.
 
 - ~~Salibandyn ottelusivulinkki~~ - löydetty ja korjattu 2026-09-21
   (rakennetaan slugeista, ks. "Ottelusivujen linkit" yllä).

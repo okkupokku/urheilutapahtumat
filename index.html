@@ -236,6 +236,7 @@
   .row .details .category { color: var(--amber-dim); }
   .row .details .category-link { color: var(--amber-dim); text-decoration: none; border-bottom: 1px dotted var(--amber-dim); }
   .row .details .category-link:hover { color: var(--text); border-bottom-color: var(--text); }
+  .row .details .price-hint { color: var(--muted); cursor: help; }
   .row .venue-col { text-align: right; font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
   .row .venue-col .city { display: block; color: var(--text); font-weight: 500; font-size: 0.85rem; }
   .row .venue-col .distance { display: block; color: var(--amber-dim); font-size: 0.72rem; font-weight: 600; margin-top: 0.15rem; }
@@ -402,6 +403,7 @@
         <li>Mestis/Auroraliiga, amerikkalainen jalkapallo sekä jääkiekon ja salibandyn maajoukkueet eivät vielä ole mukana - syyt löytyvät "Ei vielä mukana" -osiosta.</li>
         <li>Osa lajiliittojen rajapinnoista saattaa satunnaisesti estää suoran selainkutsun (CORS) - näkyy yllä "Datalähteiden tila" -paneelissa, sivu ei kaadu.</li>
         <li>Kaikki näytetyt sarjat on käsin valittu - pääasiassa ylimmät sarjatasot, muutamalla lajilla mukana myös yksi alempi taso (esim. jalkapallon Ykkösliiga, jääkiekon Mestis). Nuorisosarjat on kuitenkin jätetty pois selkeyden vuoksi.</li>
+        <li>Ottelurivin "🎫 n. X€" on karkea, käsin arvioitu lipunhinta-alue sarjatasolla - ei ottelukohtainen eikä reaaliaikainen tarkka hinta. Tarkat hinnat ja lippujen osto tapahtuu aina kunkin seuran/liiton omasta lippukanavasta.</li>
       </ul>
 
       <h4>Ei vielä mukana</h4>
@@ -497,19 +499,26 @@ function sortSports(sports) {
 // Normihaun KILPAILUTASO-suodatin (ks. competitionTypeOf()) yhdistää tämän
 // ja "group"-kentän ('eurooppa'/'maajoukkue') neljäksi valinnaksi: Pääsarja,
 // Alemmat sarjat, Eurooppalaiset seurasarjat, Maajoukkueiden ottelut.
+// "priceHint" on karkea, käsin arvioitu lipunhinta-alue per sarja (ei
+// otteluakohtainen, ei fetch:attu mistään live-lähteestä - täsmällistä
+// hintaa ei ole saatavilla yhdeltä API:lta koska liput myydään kymmenien
+// eri kanavien kautta seurasta/liitosta riippuen, ks. CLAUDE.md
+// "Pääsylippujen hinta-arvio"). Käyttäjän toive 2026-09-26 - "karkea
+// hinta-arvio riittänee". Puuttuu tarkoituksella `PH-`-paikanvaraajilta
+// (ei oikeaa dataa, arvio olisi merkityksetön).
 const KNOWN_SERIES = {
   'Jalkapallo': [
-    { id: 'VL', gender: 'Miehet', name: 'Veikkausliiga', level: 'paasarja' },
-    { id: 'M1L', gender: 'Miehet', name: 'Ykkösliiga', level: 'alempi' },
-    { id: 'NL', gender: 'Naiset', name: 'Kansallinen Liiga', level: 'paasarja' },
-    { id: 'UNL', gender: 'Miehet', name: 'UEFA Nations League Huuhkajat', group: 'maajoukkue' },
-    { id: 'WCQ', gender: 'Miehet', name: 'MM-karsinnat Huuhkajat', group: 'maajoukkue' },
-    { id: 'ECQ', gender: 'Miehet', name: 'EM-karsinnat Huuhkajat', group: 'maajoukkue' },
-    { id: 'Miehet-A', gender: 'Miehet', name: 'A-maaottelut Huuhkajat', group: 'maajoukkue' },
-    { id: 'WUNL', gender: 'Naiset', name: 'UEFA Nations League Helmarit', group: 'maajoukkue' },
-    { id: 'WWCQ', gender: 'Naiset', name: 'MM-karsinnat Helmarit', group: 'maajoukkue' },
-    { id: 'WECQ', gender: 'Naiset', name: 'EM-karsinnat Helmarit', group: 'maajoukkue' },
-    { id: 'Naiset-A', gender: 'Naiset', name: 'A-maaottelut Helmarit', group: 'maajoukkue' },
+    { id: 'VL', gender: 'Miehet', name: 'Veikkausliiga', level: 'paasarja', priceHint: '15-30€' },
+    { id: 'M1L', gender: 'Miehet', name: 'Ykkösliiga', level: 'alempi', priceHint: '10-18€' },
+    { id: 'NL', gender: 'Naiset', name: 'Kansallinen Liiga', level: 'paasarja', priceHint: '10-15€' },
+    { id: 'UNL', gender: 'Miehet', name: 'UEFA Nations League Huuhkajat', group: 'maajoukkue', priceHint: '25-60€' },
+    { id: 'WCQ', gender: 'Miehet', name: 'MM-karsinnat Huuhkajat', group: 'maajoukkue', priceHint: '25-60€' },
+    { id: 'ECQ', gender: 'Miehet', name: 'EM-karsinnat Huuhkajat', group: 'maajoukkue', priceHint: '25-60€' },
+    { id: 'Miehet-A', gender: 'Miehet', name: 'A-maaottelut Huuhkajat', group: 'maajoukkue', priceHint: '20-45€' },
+    { id: 'WUNL', gender: 'Naiset', name: 'UEFA Nations League Helmarit', group: 'maajoukkue', priceHint: '15-30€' },
+    { id: 'WWCQ', gender: 'Naiset', name: 'MM-karsinnat Helmarit', group: 'maajoukkue', priceHint: '15-30€' },
+    { id: 'WECQ', gender: 'Naiset', name: 'EM-karsinnat Helmarit', group: 'maajoukkue', priceHint: '15-30€' },
+    { id: 'Naiset-A', gender: 'Naiset', name: 'A-maaottelut Helmarit', group: 'maajoukkue', priceHint: '10-20€' },
     // UEFA:n seuracupit (Mestarien liiga, Eurooppa-liiga, Konferenssiliiga,
     // niiden karsinnat) eivät ole Palloliiton getCategories-rekisterissä -
     // UEFA järjestää ne itse eikä niitä ole TorneoPal-alustalla. Ei tiedossa
@@ -518,13 +527,13 @@ const KNOWN_SERIES = {
     { id: 'PH-EUR-N', gender: 'Naiset', name: 'UEFA-seuracupit', group: 'eurooppa' },
   ],
   'Futsal': [
-    { id: 'FML', gender: 'Miehet', name: 'Miesten Futsal-Liiga', level: 'paasarja' },
-    { id: 'FNL', gender: 'Naiset', name: 'Naisten Futsal-Liiga', level: 'paasarja' },
+    { id: 'FML', gender: 'Miehet', name: 'Miesten Futsal-Liiga', level: 'paasarja', priceHint: '5-10€' },
+    { id: 'FNL', gender: 'Naiset', name: 'Naisten Futsal-Liiga', level: 'paasarja', priceHint: '5-10€' },
     { id: 'PH-EUR-M', gender: 'Miehet', name: 'UEFA Futsal Champions League', group: 'eurooppa' },
   ],
   'Jääkiekko': [
-    { id: 'Liiga', gender: 'Miehet', name: 'Liiga', level: 'paasarja' },
-    { id: 'Mestis', gender: 'Miehet', name: 'Mestis', level: 'alempi' },
+    { id: 'Liiga', gender: 'Miehet', name: 'Liiga', level: 'paasarja', priceHint: '20-55€' },
+    { id: 'Mestis', gender: 'Miehet', name: 'Mestis', level: 'alempi', priceHint: '12-22€' },
     { id: 'PH-MM-M', gender: 'Miehet', name: 'MM-kisat', group: 'maajoukkue' },
     { id: 'PH-EHT-M', gender: 'Miehet', name: 'Euro Hockey Tour', group: 'maajoukkue' },
     { id: 'PH-MM-N', gender: 'Naiset', name: 'MM-kisat', group: 'maajoukkue' },
@@ -534,55 +543,55 @@ const KNOWN_SERIES = {
     { id: 'PH-CHL-M', gender: 'Miehet', name: 'Champions Hockey League', group: 'eurooppa' },
   ],
   'Koripallo': [
-    { id: '4', gender: 'Miehet', name: 'Korisliiga', level: 'paasarja' },
-    { id: '1', gender: 'Naiset', name: 'Naisten Korisliiga', level: 'paasarja' },
-    { id: '15', gender: 'Miehet', name: 'Suomen cup', level: 'paasarja' },
-    { id: '44116', gender: 'Miehet', name: 'Maajoukkue-ottelut', group: 'maajoukkue' },
-    { id: '45052', gender: 'Naiset', name: 'Maajoukkue-ottelut', group: 'maajoukkue' },
+    { id: '4', gender: 'Miehet', name: 'Korisliiga', level: 'paasarja', priceHint: '12-20€' },
+    { id: '1', gender: 'Naiset', name: 'Naisten Korisliiga', level: 'paasarja', priceHint: '8-15€' },
+    { id: '15', gender: 'Miehet', name: 'Suomen cup', level: 'paasarja', priceHint: '10-15€' },
+    { id: '44116', gender: 'Miehet', name: 'Maajoukkue-ottelut', group: 'maajoukkue', priceHint: '10-20€' },
+    { id: '45052', gender: 'Naiset', name: 'Maajoukkue-ottelut', group: 'maajoukkue', priceHint: '10-20€' },
     // Ei löytynyt Koripalloliiton getCategories-rekisteristä (esim. FIBA
     // Europe Cup / Basketball Champions League) - paikanvaraaja.
     { id: 'PH-EUR-M', gender: 'Miehet', name: 'FIBA-seuracupit', group: 'eurooppa' },
   ],
   'Käsipallo': [
-    { id: 'SM-liiga', gender: 'Miehet', name: 'Aktialiiga', level: 'paasarja' },
-    { id: 'NSM', gender: 'Naiset', name: 'Aktialiiga', level: 'paasarja' },
-    { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup', level: 'paasarja' },
-    { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup', level: 'paasarja' },
+    { id: 'SM-liiga', gender: 'Miehet', name: 'Aktialiiga', level: 'paasarja', priceHint: '8-15€' },
+    { id: 'NSM', gender: 'Naiset', name: 'Aktialiiga', level: 'paasarja', priceHint: '8-15€' },
+    { id: 'MSC', gender: 'Miehet', name: 'Suomen Cup', level: 'paasarja', priceHint: '8-12€' },
+    { id: 'NSC', gender: 'Naiset', name: 'Suomen Cup', level: 'paasarja', priceHint: '8-12€' },
     // Käsipalloliiton rajapinnan "Maa"-kategoria jaetaan sukupuolen mukaan
     // kahdeksi id:ksi (Maa-M/Maa-N) fixKasipalloMaajoukkue()-funktiossa
     // (ks. SOURCES), koska rajapinnan oma category_group_name on kaikilla
     // näillä otteluilla kirjaimellisesti aina "Maajoukkueet".
-    { id: 'Maa-M', gender: 'Miehet', name: 'Maajoukkueet', group: 'maajoukkue' },
-    { id: 'Maa-N', gender: 'Naiset', name: 'Maajoukkueet', group: 'maajoukkue' },
-    { id: 'EC_M', gender: 'Miehet', name: 'EHF European Cup', group: 'eurooppa' },
+    { id: 'Maa-M', gender: 'Miehet', name: 'Maajoukkueet', group: 'maajoukkue', priceHint: '10-20€' },
+    { id: 'Maa-N', gender: 'Naiset', name: 'Maajoukkueet', group: 'maajoukkue', priceHint: '10-20€' },
+    { id: 'EC_M', gender: 'Miehet', name: 'EHF European Cup', group: 'eurooppa', priceHint: '10-18€' },
     { id: 'PH-EUR-N', gender: 'Naiset', name: 'EHF-seuracupit', group: 'eurooppa' },
   ],
   'Lentopallo': [
-    { id: 'ML', gender: 'Miehet', name: 'Mestaruusliiga', level: 'paasarja' },
-    { id: 'NL', gender: 'Naiset', name: 'Mestaruusliiga', level: 'paasarja' },
-    { id: 'EM', gender: 'Miehet', name: 'EM-kisat', group: 'maajoukkue' },
-    { id: 'EM-Karsinta', gender: 'Miehet', name: 'EM-karsinta', group: 'maajoukkue' },
-    { id: 'GLM', gender: 'Miehet', name: 'Kultainen liiga', group: 'maajoukkue' },
-    { id: 'ELM', gender: 'Miehet', name: 'Euroopan liiga', group: 'maajoukkue' },
-    { id: 'Maaottelu', gender: 'Miehet', name: 'Harjoitusmaaottelut', group: 'maajoukkue' },
-    { id: 'EL', gender: 'Naiset', name: 'Euroopan liiga', group: 'maajoukkue' },
-    { id: 'Harj', gender: 'Naiset', name: 'Harjoitusmaaottelut', group: 'maajoukkue' },
-    { id: 'CLM', gender: 'Miehet', name: 'Mestareiden liiga', group: 'eurooppa' },
-    { id: 'CHL', gender: 'Miehet', name: 'Challenge liiga', group: 'eurooppa' },
-    { id: 'CEVC', gender: 'Miehet', name: 'CEV Cup', group: 'eurooppa' },
-    { id: 'CEVcup', gender: 'Naiset', name: 'CEV Cup', group: 'eurooppa' },
-    { id: 'CHLW', gender: 'Naiset', name: 'Challenge liiga', group: 'eurooppa' },
+    { id: 'ML', gender: 'Miehet', name: 'Mestaruusliiga', level: 'paasarja', priceHint: '10-20€' },
+    { id: 'NL', gender: 'Naiset', name: 'Mestaruusliiga', level: 'paasarja', priceHint: '10-20€' },
+    { id: 'EM', gender: 'Miehet', name: 'EM-kisat', group: 'maajoukkue', priceHint: '10-25€' },
+    { id: 'EM-Karsinta', gender: 'Miehet', name: 'EM-karsinta', group: 'maajoukkue', priceHint: '10-25€' },
+    { id: 'GLM', gender: 'Miehet', name: 'Kultainen liiga', group: 'maajoukkue', priceHint: '10-25€' },
+    { id: 'ELM', gender: 'Miehet', name: 'Euroopan liiga', group: 'maajoukkue', priceHint: '10-25€' },
+    { id: 'Maaottelu', gender: 'Miehet', name: 'Harjoitusmaaottelut', group: 'maajoukkue', priceHint: '8-15€' },
+    { id: 'EL', gender: 'Naiset', name: 'Euroopan liiga', group: 'maajoukkue', priceHint: '10-25€' },
+    { id: 'Harj', gender: 'Naiset', name: 'Harjoitusmaaottelut', group: 'maajoukkue', priceHint: '8-15€' },
+    { id: 'CLM', gender: 'Miehet', name: 'Mestareiden liiga', group: 'eurooppa', priceHint: '10-20€' },
+    { id: 'CHL', gender: 'Miehet', name: 'Challenge liiga', group: 'eurooppa', priceHint: '10-20€' },
+    { id: 'CEVC', gender: 'Miehet', name: 'CEV Cup', group: 'eurooppa', priceHint: '10-20€' },
+    { id: 'CEVcup', gender: 'Naiset', name: 'CEV Cup', group: 'eurooppa', priceHint: '10-20€' },
+    { id: 'CHLW', gender: 'Naiset', name: 'Challenge liiga', group: 'eurooppa', priceHint: '10-20€' },
   ],
   'Salibandy': [
-    { id: 'FLM', gender: 'Miehet', name: 'F-liiga', level: 'paasarja' },
-    { id: 'FLN', gender: 'Naiset', name: 'F-liiga', level: 'paasarja' },
+    { id: 'FLM', gender: 'Miehet', name: 'F-liiga', level: 'paasarja', priceHint: '10-18€' },
+    { id: 'FLN', gender: 'Naiset', name: 'F-liiga', level: 'paasarja', priceHint: '10-18€' },
     { id: 'PH-MM-M', gender: 'Miehet', name: 'MM-kisat', group: 'maajoukkue' },
     { id: 'PH-EFT-M', gender: 'Miehet', name: 'Euro Floorball Tour', group: 'maajoukkue' },
     { id: 'PH-MM-N', gender: 'Naiset', name: 'MM-kisat', group: 'maajoukkue' },
     { id: 'PH-EUR-M', gender: 'Miehet', name: 'Champions Cup', group: 'eurooppa' },
   ],
   'Jääpallo': [
-    { id: 'MBL', gender: 'Miehet', name: 'Bandyliiga', level: 'paasarja' },
+    { id: 'MBL', gender: 'Miehet', name: 'Bandyliiga', level: 'paasarja', priceHint: '8-15€' },
     // Vestan (Divari) otteluita ei ole vielä nähty livenä - oikea
     // categoryId varmistuu vasta kun ensimmäinen ottelu ilmestyy datassa
     // (ks. scripts/fetch-jaapallo.js, joka ei rajaa sarjoja etukäteen).
@@ -598,6 +607,14 @@ function competitionTypeOf(m) {
   if (!entry) return null;
   if (entry.group === 'eurooppa' || entry.group === 'maajoukkue') return entry.group;
   return entry.level || null;
+}
+
+// Karkea lipunhinta-arvio KNOWN_SERIES:n priceHint-kentästä, ks. sen
+// yläpuolinen kommentti - palauttaa null jos sarjaa ei tunneta tai
+// hinta-arviota ei ole vielä lisätty (esim. PH-paikanvaraajat).
+function priceHintOf(m) {
+  const entry = (KNOWN_SERIES[m.sport] || []).find(s => s.id === m.categoryId);
+  return (entry && entry.priceHint) || null;
 }
 
 function todayISO(offsetDays = 0) {
@@ -1588,6 +1605,10 @@ function renderBoard(filtered) {
       const categoryHtml = m.matchUrl
         ? `<a class="category-link" href="${m.matchUrl}" target="_blank" rel="noopener noreferrer">${m.category} ↗</a>`
         : `<span class="category">${m.category}</span>`;
+      const priceHint = priceHintOf(m);
+      const priceHtml = priceHint
+        ? ` · <span class="price-hint" title="Karkea hinta-arvio sarjatasolla, ei ottelukohtainen tarkka lippujen hinta">🎫 n. ${priceHint}</span>`
+        : '';
       const gmapsUrl = googleMapsUrl(m);
       const venueHtml = gmapsUrl
         ? `<a class="venue-link" href="${gmapsUrl}" target="_blank" rel="noopener noreferrer">${m.venue || 'Kartalla'} ↗</a>`
@@ -1603,7 +1624,7 @@ function renderBoard(filtered) {
         </div>
         <div>
           <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
-          <div class="details">${categoryHtml}</div>
+          <div class="details">${categoryHtml}${priceHtml}</div>
         </div>
         <div class="venue-col">${venueHtml}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${formatDistance(dist)}</span>` : ''}</div>
       `;
@@ -1690,10 +1711,11 @@ function renderMap(filtered) {
       .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
       .map(m => {
         const dist = distanceToRef(m);
+        const priceHint = priceHintOf(m);
         return `
         <div class="map-popup-match">
           <div class="row1"><span class="map-popup-time mono">${formatShortDate(m.date)} ${m.time || ''}</span><span>${m.teamA} – ${m.teamB}</span></div>
-          <div class="map-popup-meta">${m.sport} · ${m.genderGroup || ''} · ${m.category}</div>
+          <div class="map-popup-meta">${m.sport} · ${m.genderGroup || ''} · ${m.category}${priceHint ? ` · 🎫 n. ${priceHint}` : ''}</div>
           ${dist !== null ? `<div class="map-popup-dist">${formatDistance(dist)} sijainnistasi</div>` : ''}
         </div>
       `; }).join('');
