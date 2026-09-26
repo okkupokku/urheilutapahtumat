@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-25T22:59:12.565Z",
+  "updated": "2026-09-26T02:38:27.533Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -543,23 +543,6 @@
       "lat": 60.1875,
       "lon": 24.8296,
       "matchUrl": "https://fliiga.com/ottelut/miehet/indians-hawks-12-3-2027/",
-      "crestA": null,
-      "crestB": null
-    },
-    {
-      "date": "2026-09-25",
-      "time": "19:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "EräViikingit",
-      "teamB": "Hawks",
-      "venue": "Mosahalli kenttä 1",
-      "city": "Vantaa",
-      "lat": 60.2707,
-      "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-hawks-25-9-2026/",
       "crestA": null,
       "crestB": null
     },
