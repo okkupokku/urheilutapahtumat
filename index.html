@@ -119,7 +119,6 @@
      samalla rivillä - kiinteä sarakeleveys leikkaisi pisimmät, joten ne
      pysyvät tavallisessa flex-wrapissa. */
   .chip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; flex: 1 1 240px; }
-  .mini-actions { display: inline-flex; gap: 0.35rem; flex-shrink: 0; }
   .chip { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s, opacity .15s; white-space: nowrap; flex-shrink: 0; opacity: 0.6; }
   .chip:hover { border-color: var(--amber-dim); opacity: 1; color: var(--text); }
   .chip:active { transform: scale(0.96); }
@@ -137,15 +136,17 @@
      valittu, emoji + nimi näkyy aina. */
   .chip.chip-sport.active { color: #FFFDF9; font-weight: 600; }
 
-  /* "Kaikki/Ei mitään" -pikanapit: pieni pari joka suodatinkategorialle
-     erikseen (.mini-actions, LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI-rivin
-     lopussa) SEKÄ yksi kaiken kattava pari omalla rivillään heti
-     suodatinrivien perässä (#global-actions-row, ks. HTML) - ei enää
-     kaukana meta-linella Tarkennetun haun alapuolella (käyttäjän palaute
-     2026-09-27: pitäisi olla "valintojen vieressä"). Molemmat käyttävät
-     samaa pientä pilleriä, .row-action-btn. */
-  .row-action-btn { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); font-family: 'IBM Plex Sans', sans-serif; font-size: 0.72rem; font-weight: 500; border-radius: 999px; padding: 0.28rem 0.65rem; cursor: pointer; white-space: nowrap; transition: border-color .15s, color .15s; }
-  .row-action-btn:hover { border-color: var(--amber-dim); color: var(--text); }
+  /* "Valitse/poista kaikki" -toiminto on nyt tavallinen valintaruutu, ei
+     nappi/pilleri (käyttäjän toive 2026-09-27: "en halua sen ympärille
+     soikiota, vaan sen pitäisi olla erilainen kuin itse valinnat").
+     Kolmitilainen: rastitettu = kaikki valittu, tyhjä = ei mitään
+     valittu, "indeterminate" (vaakaviiva) = osa valittu. Sijaitsee
+     LABELIN JÄLKEEN mutta ITSE VALINTOJEN (chip-grid/chippien) VASEMMALLA
+     puolella joka kategoriassa (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI)
+     SEKÄ omana "KAIKKI"-rivinään heti suodatinrivien perässä
+     (#global-actions-row) - vaikuttaa kaikkiin kategorioihin kerralla. */
+  .select-all-toggle { display: inline-flex; align-items: center; flex-shrink: 0; cursor: pointer; }
+  .select-all-toggle input[type=checkbox] { width: 16px; height: 16px; margin: 0; accent-color: var(--text); cursor: pointer; }
 
   .date-range { display: none; align-items: center; gap: 0.4rem; margin-left: 0.2rem; flex-shrink: 0; }
   .date-range.active { display: inline-flex; }
@@ -359,8 +360,6 @@
       <div class="control-row" id="day-filters"><span class="label">AJANKOHTA</span></div>
       <div class="control-row" id="global-actions-row">
         <span class="label">KAIKKI</span>
-        <button class="row-action-btn" id="select-all-btn" type="button" title="Valitse kaikki kaikista kategorioista">Valitse kaikki</button>
-        <button class="row-action-btn" id="select-none-btn" type="button" title="Poista kaikki valinnat kaikista kategorioista">Poista kaikki</button>
       </div>
     </div>
 
@@ -1182,6 +1181,7 @@ function setGenderActive(gender, isActive) {
   if (isActive) state.genders.add(gender); else state.genders.delete(gender);
   document.querySelectorAll(`[data-gender="${CSS.escape(gender)}"]`)
     .forEach(c => c.classList.toggle('active', isActive));
+  syncSelectAllCheckboxes();
 }
 
 function addDays(dateStr, n) {
@@ -1291,35 +1291,71 @@ function selectNoFilters() {
   renderResults();
 }
 
-// Pieni "Kaikki/Ei mitään" -pari yhdelle suodatinkategorialle (käyttäjän
-// toive 2026-09-27: pienesti vaihtoehtoina joka kategoriassa, EI vain
-// yhteisenä kaikille). Rakennetaan aina uudelleen joka renderFilters()-
-// kutsulla samaan tapaan kuin itse chipit - ei tarvita erillistä
-// "rakenna vain kerran" -logiikkaa.
-function buildMiniActions(onAll, onNone) {
-  const wrap = document.createElement('span');
-  wrap.className = 'mini-actions';
-  const allBtn = document.createElement('button');
-  allBtn.type = 'button';
-  allBtn.className = 'row-action-btn';
-  allBtn.textContent = 'Kaikki';
-  allBtn.title = 'Valitse kaikki tästä kategoriasta';
-  allBtn.addEventListener('click', onAll);
-  const noneBtn = document.createElement('button');
-  noneBtn.type = 'button';
-  noneBtn.className = 'row-action-btn';
-  noneBtn.textContent = 'Ei mitään';
-  noneBtn.title = 'Poista kaikki valinnat tästä kategoriasta';
-  noneBtn.addEventListener('click', onNone);
-  wrap.appendChild(allBtn);
-  wrap.appendChild(noneBtn);
-  return wrap;
+// "Valitse/poista kaikki" -valintaruutu yhdelle suodatinkategorialle
+// (käyttäjän toive 2026-09-27: ei nappia/pilleriä, vaan jotain erilaista
+// kuin itse valinnat - checkbox). Kolmitilainen: rastitettu = kaikki
+// valittu, tyhjä = ei mitään, "indeterminate" = osa valittu. Sijoitetaan
+// AINA labelin jälkeen mutta ITSE valintojen (chipit/chip-grid) eteen eli
+// vasemmalle puolelle. `id` annetaan jotta syncSelectAllCheckboxes() löytää
+// sen jälkikäteen kun yksittäistä chippiä klikataan (ks. alempana).
+function buildSelectAllCheckbox(id, ariaLabel, onToggle) {
+  const label = document.createElement('label');
+  label.className = 'select-all-toggle';
+  label.title = ariaLabel;
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.id = id;
+  input.setAttribute('aria-label', ariaLabel);
+  input.addEventListener('change', () => onToggle(input.checked));
+  label.appendChild(input);
+  return label;
+}
+
+function setCheckboxTriStateRaw(id, checked, indeterminate) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.checked = checked;
+  el.indeterminate = indeterminate;
+}
+
+function setCheckboxTriState(id, fullList, selectedSet) {
+  const allSel = fullList.every(item => selectedSet.has(item));
+  const noneSel = fullList.every(item => !selectedSet.has(item));
+  setCheckboxTriStateRaw(id, allSel, !allSel && !noneSel);
+}
+
+// Päivittää KAIKKIEN viiden valintaruudun (neljä kategoriaa + yksi
+// kaikenkattava) rastitus/indeterminate-tilan nykyisen state:n mukaan.
+// Kutsutaan sekä täyden renderFilters()-uudelleenpiirron jälkeen että
+// KEVYESTI jokaisen yksittäisen chipin klikkauksen jälkeen (chippien omat
+// klikkauskäsittelijät eivät kutsu renderFilters():ää suorituskykysyistä,
+// joten valintaruudut päivitetään erikseen sen sijaan että koko rivi
+// piirrettäisiin uusiksi jokaisesta yksittäisestä klikkauksesta).
+function syncSelectAllCheckboxes() {
+  const allSports = sortSports(Object.keys(SPORT_META).filter(s => s !== '_default'));
+  const allLevels = DISPLAY_COMPETITION_TYPES.map(t => t.id);
+  setCheckboxTriState('sport-select-all', allSports, state.sports);
+  setCheckboxTriState('gender-select-all', DISPLAY_GENDERS, state.genders);
+  setCheckboxTriState('level-select-all', allLevels, state.competitionTypes);
+  setCheckboxTriState('city-select-all', DISPLAY_CITIES, state.cities);
+  const allSelected = allSports.every(s => state.sports.has(s))
+    && DISPLAY_GENDERS.every(g => state.genders.has(g))
+    && allLevels.every(id => state.competitionTypes.has(id))
+    && DISPLAY_CITIES.every(c => state.cities.has(c));
+  const noneSelected = state.sports.size === 0 && state.genders.size === 0
+    && state.competitionTypes.size === 0 && state.cities.size === 0;
+  setCheckboxTriStateRaw('global-select-all', allSelected, !allSelected && !noneSelected);
 }
 
 function renderFilters() {
   const sportEl = document.getElementById('sport-filters');
-  sportEl.querySelectorAll('.chip-grid, .mini-actions').forEach(c => c.remove());
+  sportEl.querySelectorAll('.chip-grid, .select-all-toggle').forEach(c => c.remove());
   const sports = sortSports(Object.keys(SPORT_META).filter(s => s !== '_default'));
+  sportEl.appendChild(buildSelectAllCheckbox('sport-select-all', 'Valitse tai poista kaikki lajit', (checked) => {
+    if (checked) sports.forEach(s => state.sports.add(s)); else state.sports.clear();
+    renderFilters();
+    renderResults();
+  }));
   // CSS Grid -kääre (.chip-grid) tasapainottaa rivin jos LAJI-chipit
   // jakautuvat kahdelle riville - muuten viimeiselle riville jäävä
   // yksinäinen chippi (esim. Jääpallo) näytti "unohdetulta" (käyttäjän
@@ -1345,19 +1381,21 @@ function renderFilters() {
     btn.addEventListener('click', () => {
       if (state.sports.has(sport)) { state.sports.delete(sport); applySportActive(false); }
       else { state.sports.add(sport); applySportActive(true); }
+      syncSelectAllCheckboxes();
       renderHierarchy();
       renderResults();
     });
     sportGrid.appendChild(btn);
   });
   sportEl.appendChild(sportGrid);
-  sportEl.appendChild(buildMiniActions(
-    () => { sports.forEach(s => state.sports.add(s)); renderFilters(); renderResults(); },
-    () => { state.sports.clear(); renderFilters(); renderResults(); }
-  ));
 
   const genderEl = document.getElementById('gender-filters');
-  genderEl.querySelectorAll('.chip, .mini-actions').forEach(c => c.remove());
+  genderEl.querySelectorAll('.chip, .select-all-toggle').forEach(c => c.remove());
+  genderEl.appendChild(buildSelectAllCheckbox('gender-select-all', 'Valitse tai poista kaikki sukupuolet', (checked) => {
+    if (checked) DISPLAY_GENDERS.forEach(g => state.genders.add(g)); else state.genders.clear();
+    renderFilters();
+    renderResults();
+  }));
   DISPLAY_GENDERS.forEach(gender => {
     if (!filtersDefaultsApplied && !defaultsToSkip.genders && !state.genders.has(gender)) state.genders.add(gender);
     const btn = document.createElement('button');
@@ -1370,13 +1408,14 @@ function renderFilters() {
     });
     genderEl.appendChild(btn);
   });
-  genderEl.appendChild(buildMiniActions(
-    () => { DISPLAY_GENDERS.forEach(g => state.genders.add(g)); renderFilters(); renderResults(); },
-    () => { state.genders.clear(); renderFilters(); renderResults(); }
-  ));
 
   const levelEl = document.getElementById('level-filters');
-  levelEl.querySelectorAll('.chip, .mini-actions').forEach(c => c.remove());
+  levelEl.querySelectorAll('.chip, .select-all-toggle').forEach(c => c.remove());
+  levelEl.appendChild(buildSelectAllCheckbox('level-select-all', 'Valitse tai poista kaikki kilpailutasot', (checked) => {
+    if (checked) DISPLAY_COMPETITION_TYPES.forEach(({ id }) => state.competitionTypes.add(id)); else state.competitionTypes.clear();
+    renderFilters();
+    renderResults();
+  }));
   DISPLAY_COMPETITION_TYPES.forEach(({ id, label }) => {
     if (!filtersDefaultsApplied && !defaultsToSkip.competitionTypes && !state.competitionTypes.has(id)) state.competitionTypes.add(id);
     const btn = document.createElement('button');
@@ -1385,17 +1424,19 @@ function renderFilters() {
     btn.addEventListener('click', () => {
       if (state.competitionTypes.has(id)) { state.competitionTypes.delete(id); btn.classList.remove('active'); }
       else { state.competitionTypes.add(id); btn.classList.add('active'); }
+      syncSelectAllCheckboxes();
       renderResults();
     });
     levelEl.appendChild(btn);
   });
-  levelEl.appendChild(buildMiniActions(
-    () => { DISPLAY_COMPETITION_TYPES.forEach(({ id }) => state.competitionTypes.add(id)); renderFilters(); renderResults(); },
-    () => { state.competitionTypes.clear(); renderFilters(); renderResults(); }
-  ));
 
   const cityEl = document.getElementById('city-filters');
-  cityEl.querySelectorAll('.chip, .mini-actions').forEach(c => c.remove());
+  cityEl.querySelectorAll('.chip, .select-all-toggle').forEach(c => c.remove());
+  cityEl.appendChild(buildSelectAllCheckbox('city-select-all', 'Valitse tai poista kaikki kaupungit', (checked) => {
+    if (checked) DISPLAY_CITIES.forEach(c => state.cities.add(c)); else state.cities.clear();
+    renderFilters();
+    renderResults();
+  }));
   DISPLAY_CITIES.forEach(city => {
     const btn = document.createElement('button');
     btn.className = 'chip' + (state.cities.has(city) ? ' active' : '');
@@ -1403,15 +1444,20 @@ function renderFilters() {
     btn.addEventListener('click', () => {
       if (state.cities.has(city)) { state.cities.delete(city); btn.classList.remove('active'); }
       else { state.cities.add(city); btn.classList.add('active'); }
+      syncSelectAllCheckboxes();
       renderResults();
     });
     cityEl.appendChild(btn);
   });
-  cityEl.appendChild(buildMiniActions(
-    () => { DISPLAY_CITIES.forEach(c => state.cities.add(c)); renderFilters(); renderResults(); },
-    () => { state.cities.clear(); renderFilters(); renderResults(); }
-  ));
 
+  const globalActionsEl = document.getElementById('global-actions-row');
+  if (!globalActionsEl.querySelector('.select-all-toggle')) {
+    globalActionsEl.appendChild(buildSelectAllCheckbox('global-select-all', 'Valitse tai poista kaikki valinnat', (checked) => {
+      if (checked) selectAllFilters(); else selectNoFilters();
+    }));
+  }
+
+  syncSelectAllCheckboxes();
   renderHierarchy();
 
   const dayEl = document.getElementById('day-filters');
@@ -1926,8 +1972,6 @@ function showShareUrlFallback(url) {
   box.select();
 }
 
-document.getElementById('select-all-btn').addEventListener('click', selectAllFilters);
-document.getElementById('select-none-btn').addEventListener('click', selectNoFilters);
 document.getElementById('refresh-btn').addEventListener('click', loadAll);
 document.getElementById('share-btn').addEventListener('click', async () => {
   const btn = document.getElementById('share-btn');

@@ -123,27 +123,43 @@ jälkeen kirjoitettu teksti noudattaa tätä.
   valittu (2026-09-21, käyttäjän toive). `showPicker()` vaatii tuoreen
   käyttäjätapahtuman eikä kaikki selaimet tue sitä - epäonnistuminen
   ohitetaan hiljaa (`try/catch`), käyttäjä voi silti avata kentän itse.
-- **"Kaikki" / "Ei mitään" -pikanapit ovat KAKSITASOISET** (kokeiltiin
-  ensin vain per-rivi, sitten vain yhtenä yhteisenä parina meta-linella -
-  kumpikaan ei riittänyt, käyttäjä halusi lopulta molemmat 2026-09-27):
-  - **Pieni pari joka kategoriassa erikseen** (LAJI/SUKUPUOLI/
-    KILPAILUTASO/KAUPUNKI-rivin lopussa, `.mini-actions`/`.row-action-btn`
-    [index.html](index.html):ssä) - vaikuttaa vain siihen yhteen
-    kategoriaan. `buildMiniActions(onAll, onNone)`-apufunktio rakentaa
-    parin, kutsutaan jokaisesta neljästä rivistä `renderFilters()`:ssä.
-    Rakennetaan aina uudelleen joka renderFilters()-kutsulla (ei
-    `dataset`-lippu-kikkaa - koko rivi rakennetaan joka tapauksessa
-    uusiksi, joten erillistä "rakenna vain kerran" -logiikkaa ei tarvita,
-    toisin kuin AJANKOHTA-rivin date-range-kentillä).
-  - **Yksi kaiken kattava pari omalla rivillään** heti suodatinrivien
-    perässä (`#global-actions-row`, `#select-all-btn`/`#select-none-btn`,
+- **"Valitse/poista kaikki" on kolmitilainen VALINTARUUTU, ei nappi**
+  (2026-09-27, käyttäjän toive - "en halua sen ympärille soikiota, vaan
+  sen pitäisi olla erilainen kuin itse valinnat, esim checkbox"). Iteroitu
+  useaan kertaan: aluksi napit per-rivi → sitten pelkkä yhteinen pari
+  meta-linella → sitten napit sekä per-rivi että yhteisenä → lopulta
+  checkbox, KAKSITASOISENA:
+  - **Pieni checkbox joka kategoriassa erikseen** (LAJI/SUKUPUOLI/
+    KILPAILUTASO/KAUPUNKI-rivillä, **labelin jälkeen mutta itse
+    chippien/`.chip-grid`:n VASEMMALLA puolella** - käyttäjän toive
+    "kaikki ei mitään valinnat pitäisi olla valintojen vasemmalle
+    puolelle"). `.select-all-toggle` [index.html](index.html):ssä,
+    `buildSelectAllCheckbox(id, ariaLabel, onToggle)`-apufunktio rakentaa
+    sen, kutsutaan jokaisesta neljästä rivistä `renderFilters()`:ssä.
+    Rastitettu = kaikki valittu, tyhjä = ei mitään, `indeterminate`
+    (natiivi `input.indeterminate`-propertyn kautta, ei HTML-attribuutti)
+    = osa valittu.
+  - **Yksi kaiken kattava checkbox omalla rivillään** heti suodatinrivien
+    perässä (`#global-actions-row`, `#global-select-all`,
     `selectAllFilters()`/`selectNoFilters()`) - täyttää/tyhjentää
     kerralla LAJI+SUKUPUOLI+KILPAILUTASO+KAUPUNKI+tarkennetun haun
-    sarjavalinnat. Sijaitsee **suodatinrivien vieressä**, ei enää meta-
-    linella Tarkennetun haun alapuolella (käyttäjän palaute 2026-09-27:
-    "pitäisi olla valintojen vieressä").
+    sarjavalinnat. Rakennetaan vain kerran (`if
+    (!globalActionsEl.querySelector('.select-all-toggle'))`-suoja
+    `renderFilters()`:ssä), koska tämä rivi ei sisällä dynaamista
+    chippilistaa jota pitäisi purkaa/rakentaa uudelleen.
   - AJANKOHTA on yksivalintainen (chip-toggle, ei Set) eikä siksi
-    kuulu kumpaankaan - ei mini-actionsia eikä vaikuta globaaliin pariin.
+    kuulu kumpaankaan - ei checkboxia eikä vaikuta globaaliin.
+  - **TÄRKEÄ YKSITYISKOHTA:** yksittäisen chipin klikkaus (esim. yhden
+    lajin pois/päälle) EI kutsu `renderFilters()`:ää suorituskykysyistä
+    (vain `renderResults()`/`renderHierarchy()`) - siksi jokaisen
+    yksittäisen chipin klikkauskäsittelijä (LAJI/KILPAILUTASO/KAUPUNKI
+    suoraan, SUKUPUOLI `setGenderActive()`:n kautta koska sama funktio
+    palvelee sekä ylätason chippejä että tarkennetun haun chippejä)
+    kutsuu erikseen `syncSelectAllCheckboxes()`:ää päivittääkseen KAIKKIEN
+    viiden valintaruudun rastitus/indeterminate-tilan kevyesti ilman koko
+    rivin uudelleenrakennusta. Jos lisäät uuden yksittäis-chip-
+    klikkauskäsittelijän, MUISTA lisätä tämä kutsu - muuten valintaruudut
+    jäävät vanhentuneiksi sen jälkeen.
 - **LAJI-rivi käyttää CSS Gridiä (`.chip-grid`), ei pelkkää flex-wrapia**
   (2026-09-27, käyttäjän palaute - Jääpallo jäi ainoaksi chipiksi
   viimeiselle riville ja näytti "unohdetulta"). `repeat(auto-fill,
