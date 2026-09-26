@@ -54,8 +54,15 @@ function findPKVenue(venueName) {
   return PK_VENUES.find(v => venueName.startsWith(v.prefix)) || null;
 }
 
+// 2026-09-27: laajennettu myös \/-pakojen purkuun (nimi ei enää täysin
+// osuva mutta säilytetty ettei koodi liikaa muutu) - upotettu JSON
+// sisältää mm. logo-URL:eja joissa polun kauttaviivat ovat JSON-
+// escapattuina ("https:\/\/fliiga.com\/..."), eivätkä ne kelpaa
+// <img src>:ksi sellaisenaan.
 function decodeUnicodeEscapes(str) {
-  return str.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+  return str
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/\\\//g, '/');
 }
 
 // fliiga.com:n ottelusivujen (Ottelukeskus-linkki jokaisella ottelukortilla)
@@ -94,6 +101,11 @@ function extractMatches(html) {
       awayClub: field(chunk, 'away_club'),
       venue: field(chunk, 'venue'),
       status: field(chunk, 'status'),
+      // Upotettu data sisältää myös joukkuelogot (2026-09-27, käyttäjän
+      // löytämä puute - "kaikkia logoja ei löydy") - ei tarvitse erillistä
+      // hakua, samasta JSON-lohkosta kuin muutkin kentät.
+      homeClubImage: field(chunk, 'home_club_image'),
+      awayClubImage: field(chunk, 'away_club_image'),
     };
   });
 }
@@ -136,8 +148,8 @@ function extractMatches(html) {
           lat: pkVenue.lat,
           lon: pkVenue.lon,
           matchUrl: `https://fliiga.com/ottelut/${genderGroup === 'Naiset' ? 'naiset' : 'miehet'}/${slugify(m.homeClub)}-${slugify(m.awayClub)}-${Number(dateStr.slice(8,10))}-${Number(dateStr.slice(5,7))}-${dateStr.slice(0,4)}/`,
-          crestA: null,
-          crestB: null,
+          crestA: m.homeClubImage || null,
+          crestB: m.awayClubImage || null,
         });
         matched++;
       }

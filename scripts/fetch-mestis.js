@@ -27,6 +27,30 @@ const SCHEDULE_URL = 'https://mestis.fi/fi/ottelut/2026-2027/runkosarja/';
 const PK_TEAM = 'K-Vantaa';
 const PK_VENUE = { city: 'Vantaa', lat: 60.2710, lon: 24.8360 };
 
+// Joukkuelogot (2026-09-27, käyttäjän löytämä puute - "kaikkia logoja ei
+// löydy... ainakin Mestis"). Otteluohjelman <tr>-rivit sisältävät VAIN
+// tekstin (ei <img>-tageja lainkaan, vahvistettu tarkistamalla oikea HTML),
+// joten logoja ei voi purkaa ottelukohtaisesti samasta kohdasta kuin muut
+// kentät - sen sijaan sivun ylälaidan "team-logos"-lohko listaa kaikkien
+// 9 Mestis-joukkueen logot kertaalleen. Mestiksen joukkuejoukko on pieni ja
+// vaihtuu harvoin, joten käsin kirjoitettu nimi->URL-taulukko on
+// yksinkertaisempi ja luotettavampi kuin yritys purkaa se ottelutaulukosta.
+// Tiedostonimien hash-pätkät (esim. .v3d7af107) ovat sivuston oman
+// build-prosessin cache-busting-versioita - voivat teoriassa muuttua jos
+// mestis.fi julkaisee uuden version, jolloin kuva vain katoaa hiljaa
+// (crestImg()'s onerror poistaa rikkoutuneen <img>:n, ei riko mitään).
+const TEAM_CRESTS = {
+  'Hermes': 'https://mestis.fi/static/liiga/common/img/team-logos/hermes.vc0382e5a.png',
+  'IPK': 'https://mestis.fi/static/liiga/common/img/team-logos/ipk.va9ad0be6.png',
+  'JoKP': 'https://mestis.fi/static/liiga/common/img/team-logos/kiekko-pojat.v2e6af7bf.png',
+  'K-Vantaa': 'https://mestis.fi/static/liiga/common/img/team-logos/kiekko-vantaa.v3d7af107.png',
+  'Ketterä': 'https://mestis.fi/static/liiga/common/img/team-logos/kettera.v7d3a6faa.png',
+  'KeuPa HT': 'https://mestis.fi/static/liiga/common/img/team-logos/keupa.vfa36865d.png',
+  'Pyry': 'https://mestis.fi/static/liiga/common/img/team-logos/pyry.v43fa5859.png',
+  'RoKi': 'https://mestis.fi/static/liiga/common/img/team-logos/roki_new.v364bd5ec.png',
+  'TUTO Hockey': 'https://mestis.fi/static/liiga/common/img/team-logos/tuto.v00912d18.png',
+};
+
 function todayISO(offsetDays = 0) {
   const d = new Date();
   d.setDate(d.getDate() + offsetDays);
@@ -91,8 +115,8 @@ function extractMatches(html) {
         lat: PK_VENUE.lat,
         lon: PK_VENUE.lon,
         matchUrl: `${SCHEDULE_URL}${m.id}/`,
-        crestA: null,
-        crestB: null,
+        crestA: TEAM_CRESTS[m.home] || null,
+        crestB: TEAM_CRESTS[m.away] || null,
       });
       matched++;
     }

@@ -204,6 +204,48 @@ datalähde ehti latautua - `renderFilters()` kutsutaan uudelleen jokaisen
 lähteen valmistuttua). Chipin `active`-luokka lasketaan nyt aina
 `state.X.has(...)`:sta, ei kovakoodattuna.
 
+## Joukkuelogot (crestA/crestB)
+
+Jokainen ottelu voi kantaa `crestA`/`crestB`-kentät (joukkueiden logot,
+näytetään `.matchup`-rivillä `crestImg()`:n kautta, [index.html](index.html)).
+Puuttuva logo ei riko mitään - `crestImg()` palauttaa tyhjän merkkijonon
+jos url on `null`, ja jo lisätty `<img onerror="this.remove()">` poistaa
+itsensä hiljaa jos url on väärä/rikkoutunut.
+
+Tilanne lajeittain (2026-09-27, käyttäjä raportoi "kaikkia logoja ei
+löydy, ainakin Mestis ja Naisten F-liiga" - molemmat korjattu, muut jo
+toimivat):
+- **Jalkapallo, koripallo, lentopallo, käsipallo**: `club_A_crest`/
+  `club_B_crest`-kentät suoraan TorneoPal-rajapinnasta (`normalizeTorneoPal()`
+  [index.html](index.html):ssä) - toimi jo.
+- **Jääkiekko (Liiga)**: `homeTeam.logos.darkBg`/`awayTeam.logos.darkBg`
+  Liiga.fi:n omasta rajapinnasta (`normalizeLiiga()`) - toimi jo.
+- **Jääpallo**: `ml_kotilogo`/`ml_vieraslogo`-kentät finbandy.torneopal.fi:n
+  HTML:stä (`scripts/fetch-jaapallo.js`:n `crestSrc()`) - toimi jo.
+- **Salibandy (F-liiga, KORJATTU 2026-09-27):** oli aiemmin kovakoodattu
+  `null` molemmille - **tämä oli virhe, ei rajoitus**. Sivulle upotettu
+  JSON (ks. "Salibandy (F-liiga)" alla) sisältää itse asiassa
+  `home_club_image`/`away_club_image`-kentät valmiina jokaiselle
+  ottelulle, samasta 2500 merkin ikkunasta kuin muutkin kentät - niitä ei
+  vain oltu koskaan purettu. **HUOM:** näiden kenttien arvot sisältävät
+  JSON-escapattuja kauttaviivoja (`https:\/\/fliiga.com\/...`), joten
+  `decodeUnicodeEscapes()`-apufunktio (nimi ei enää täysin osuva)
+  laajennettiin purkamaan myös `\/` → `/` - ilman tätä `<img src>` olisi
+  saanut virheellisen arvon.
+- **Jääkiekko (Mestis, KORJATTU 2026-09-27):** oli myös kovakoodattu
+  `null`. mestis.fi:n otteluohjelman `<tr>`-rivit eivät sisällä yhtään
+  `<img>`-tagia (vahvistettu), joten logoa ei voi purkaa ottelukohtaisesti
+  - sen sijaan sivun ylälaidan "team-logos"-lohko listaa kaikkien 9
+  Mestis-joukkueen logot kertaalleen. Koska joukkuejoukko on pieni ja
+  vaihtuu harvoin, ratkaisu on käsin kirjoitettu nimi->URL-taulukko
+  (`TEAM_CRESTS` [scripts/fetch-mestis.js](scripts/fetch-mestis.js):ssä).
+  Tiedostonimien hash-pätkät (esim. `.v3d7af107`) ovat sivuston oman
+  cache-busting-versioinnin jäljiltä - voivat teoriassa muuttua jos
+  mestis.fi julkaisee uuden version, jolloin logo vain katoaa hiljaa
+  (ei kaada mitään) - jos näin käy, hae uudet URL:t sivun
+  `<div class="team-logos">`-lohkosta uudelleen.
+- **Amerikkalainen jalkapallo**: ei sovelleta, lajilla ei ole dataa lainkaan.
+
 ## Ottelusivujen linkit
 
 Jokainen ottelu voi kantaa valinnaisen `matchUrl`-kentän joka linkittää
