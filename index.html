@@ -225,8 +225,18 @@
   .distance-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--amber); }
   .distance-row.disabled { opacity: 0.5; }
 
-  .meta-line { display: flex; justify-content: space-between; align-items: baseline; padding: 1rem 0 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 0.5rem; }
+  .meta-line { display: flex; justify-content: flex-start; align-items: baseline; padding: 1rem 0 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; gap: 0.5rem; }
   .meta-line .count { color: var(--text); font-weight: 600; }
+  /* "Jaa valinta"/"Hae uudelleen" pysyvät oikeassa laidassa myös silloin
+     kun latauksen aikaisempi teksti (tulosrivi + spinneri + edistymisteksti)
+     on niin pitkä että se työntää nappiryhmän omalle rivilleen
+     flex-wrap:in takia (käyttäjän löytämä bugi 2026-09-27: napit näkyivät
+     hetken vasemmassa laidassa sivun latautuessa). `justify-content:
+     space-between` sijoittaa YKSINÄISEN rivin ainoan alkion rivin ALKUUN
+     eikä loppuun, koska sillä ei ole toista alkiota johon nähden jättää
+     väliä - siksi `margin-left: auto` tämän ryhmän omaan luokkaan sen
+     sijaan, se pysyy oikeassa laidassa riippumatta rivityksestä. */
+  .meta-actions { margin-left: auto; }
 
   .day-group { margin-top: 1.75rem; }
   .day-group:first-of-type { margin-top: 0.5rem; }
@@ -242,9 +252,17 @@
      opacity-siirtymä board-updating-luokan kautta (ks. renderResults()). */
   #board { transition: opacity 0.18s ease; }
   #board.board-updating { opacity: 0.45; }
+  /* Isompi, paksumpi ja kaksivärinen kuin alkuperäinen ohut yksisävyinen
+     rengas - käyttäjän palaute 2026-09-27: "Lataussymboli voisi olla
+     vähän visuaalisempi kuin pelkkä pieni pallura" (pieni 0.8em/2px-
+     rengas näytti pienessä koossa lähinnä staattiselta pisteeltä, ei
+     selvästi pyöriskeleviltä). Kaksi eriväristä reunaa (amber + amber-soft
+     vastakkaisilla sivuilla) tekee pyörimisliikkeestä helpommin
+     havaittavan kuin pelkkä yksi ohut korostusreuna. */
   .loading-spinner {
-    display: inline-block; width: 0.8em; height: 0.8em; margin-left: 0.5rem; vertical-align: -0.1em;
-    border: 2px solid var(--divider); border-top-color: var(--amber); border-radius: 50%;
+    display: inline-block; width: 1.1em; height: 1.1em; margin-left: 0.5rem; vertical-align: -0.2em;
+    border: 3px solid var(--divider); border-top-color: var(--amber); border-right-color: var(--amber-soft);
+    border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
   /* Author-tyylin display: inline-block voittaisi muuten aina selaimen oman
@@ -495,7 +513,7 @@
 
     <div class="meta-line">
       <span id="result-count">Ladataan datalähteitä…</span><span id="loading-spinner" class="loading-spinner" hidden></span><span id="loading-progress" class="loading-progress" hidden></span>
-      <span>
+      <span class="meta-actions">
         <span id="updated-time"></span>
         <button class="refresh-btn" id="share-btn" type="button" disabled>🔗 Jaa valinta</button>
         <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>

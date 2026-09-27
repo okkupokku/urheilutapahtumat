@@ -81,6 +81,14 @@ oranssin sijaan. Suunnittelupäätökset:
   tyhjentää `state.categories`:n ENSIN ja luottaa `renderHierarchy()`:n
   lazy-addiin täyttämään sen takaisin - näin myös yksitellen pois
   togglatut yksittäiset sarjat palautuvat mukaan.
+- **Latausspinneri (`.loading-spinner`, meta-line) isompi ja
+  kaksivärinen** (2026-09-27, käyttäjän palaute: "Lataussymboli voisi
+  olla vähän visuaalisempi kuin pelkkä pieni pallura") - alkuperäinen
+  0.8em/2px yksisävyinen (vain `border-top-color`) rengas näytti pienessä
+  koossa lähinnä staattiselta pisteeltä. Kasvatettu 1.1em/3px:ksi ja
+  lisätty toinen väri (`border-right-color: var(--amber-soft)`) amberin
+  rinnalle - kaksi eriväristä reunaa tekee pyörimisliikkeen selvästi
+  helpommin havaittavaksi kuin yksi ohut korostus.
 - Kokeiltiin ensin näyttää suunnitelma erillisenä Artifact-esikatseluna
   (sekä "Design"-kanvas-tyyppinä että kevyenä staattisena HTML-sivuna)
   ennen oikeaan koodiin koskemista, mutta linkit eivät ladanneet
@@ -1007,6 +1015,28 @@ infrarajoitukset".
    ennen kuin annat sille luokalle oman `display`-säännön: lisää saman
    tien `.<luokka>[hidden] { display: none; }` -ylikirjoitus, älä odota
    että käyttäjä löytää bugin testaamalla.
+10. **`justify-content: space-between` sijoittaa flex-rivin AINOAN
+    alkion rivin ALKUUN, ei loppuun, kun rivi rivittyy omakseen**
+    (2026-09-27, käyttäjä raportoi: "Jaa valinta ja hae uudelleen ovat
+    vasemmassa laidassa kun sivu latautuu. Haluan, että ne ovat oikeassa
+    laidassa myös latautuessa"). `.meta-line`:ssä on useampi
+    flex-lapsi (tulosrivi, spinneri, edistymisteksti, sitten
+    "Jaa valinta"/"Hae uudelleen" -nappien kääre) - kun latauksen aikana
+    pidempi teksti (spinneri + "Haetaan lisää otteluita...") työnsi
+    nappikääreen `flex-wrap`:n takia omalle rivilleen, `space-between`
+    sijoitti sen YKSINÄISENÄ alkiona rivinsä alkuun eikä loppuun, koska
+    sillä ei ollut toista alkiota samalla rivillä johon nähden jättää
+    tilaa - `space-between` ei tiedä "tämän pitäisi olla oikeassa
+    laidassa", se vain jakaa tilaa saman rivin alkioiden VÄLIIN. Korjaus:
+    `margin-left: auto` nappikääreen omaan luokkaan (`.meta-actions`)
+    `justify-content`:n sijaan/lisäksi - auto-marginaali imee kaiken
+    ylimääräisen tilan puoleensa riippumatta siitä onko sillä muita
+    alkioita samalla rivillä, joten se pysyy oikeassa laidassa sekä
+    ladatessa (omalla rivillään) että valmiina (samalla rivillä muun
+    sisällön kanssa). **Tarkista tämä aina kun `flex-wrap: wrap` +
+    `justify-content: space-between` -yhdistelmällä on rivi jonka
+    viimeinen alkio saattaa joskus jäädä yksin omalle rivilleen** - se ei
+    heitä virhettä, näyttää vain hetkittäin väärältä.
 
 ## Ylläpito
 
