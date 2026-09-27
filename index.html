@@ -1217,22 +1217,19 @@ let FAVORITE_TEAMS = loadFavorites();
 
 // Lisää/poistaa joukkueen suosikeista (kutsutaan sekä Joukkueet- että
 // Ottelut-välilehden tähti-napeista, ks. renderTeamsView()/renderBoard()).
-// Kun käyttäjä lisää AIVAN ENSIMMÄISEN suosikkinsa, "Näytä vain
-// suosikkijoukkueeni" -suodatin kytketään automaattisesti päälle
-// oletuksena (käyttäjän toive: "filttereissä olisi default-valintana
-// 'näytä omat suosikkijoukkueet'") - tämän jälkeen käyttäjän oma
-// päälle/pois-valinta muistetaan sellaisenaan eikä tätä automatiikkaa
-// enää sovelleta.
+// "Näytä vain suosikkijoukkueeni" -suodatin EI kytkeydy automaattisesti
+// päälle suosikkia lisättäessä (käyttäjän korjaus 2026-09-27: "lisää
+// default-valintana, että 'Näytä vain suosikkijoukkueeni' EI ole
+// valittu" - kokeiltiin aluksi automaattista päällekytkentää mutta
+// käyttäjä ei halunnut sitä) - käyttäjä kytkee suodattimen itse päälle
+// valintaruudusta kun haluaa. Poikkeus: jos suodatin sattuu olemaan
+// päällä ja käyttäjä poistaa VIIMEISEN suosikkinsa, se kytketään pois
+// päältä (ks. alla) - muuten tulokset näyttäisivät hiljaa tyhjää.
 function toggleFavorite(sport, team) {
   const key = favoriteKey(sport, team);
-  const wasEmpty = FAVORITE_TEAMS.size === 0;
   if (FAVORITE_TEAMS.has(key)) FAVORITE_TEAMS.delete(key); else FAVORITE_TEAMS.add(key);
   saveFavorites(FAVORITE_TEAMS);
-  if (wasEmpty && FAVORITE_TEAMS.size > 0) {
-    // Ensimmäinen suosikki - kytke suodatin päälle oletuksena (ks. funktion commentti).
-    state.favoritesOnly = true;
-    saveFavoritesFilterPref(true);
-  } else if (FAVORITE_TEAMS.size === 0 && state.favoritesOnly) {
+  if (FAVORITE_TEAMS.size === 0 && state.favoritesOnly) {
     // VIIMEINEN suosikki poistettu suodattimen ollessa päällä - suodatin
     // on pakko sammuttaa, muuten tulokset näyttäisivät tyhjää eikä
     // käyttäjä edes näkisi valintaruutua jolla korjata tilanne (rivi

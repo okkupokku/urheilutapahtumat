@@ -466,7 +466,10 @@ alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
 aiemmilta kerroilta? Mietin, onnistuuko lempijoukkueiden valitseminen, ja
 filttereissä olisi default-valintana 'näytä omat suosikkijoukkueet'.
 Suosikkijoukkueeksi voisi lisätä joko Joukkueet tai Ottelut välilehdeltä,
-pieni diskreetti checkbox tms joukkueen nimen vieressä")
+pieni diskreetti checkbox tms joukkueen nimen vieressä" - **ja pian
+perään korjaus samana päivänä: "Itse asiassa lisää default-valinnaksi,
+että 'Näytä vain suosikkijoukkueeni' EI ole valittu"**, ks. alla oleva
+kohta suodattimen oletusarvosta.)
 
 - **Puhtaasti selainkohtainen muisti - EI osa jaettavaa URL:ia** (ks.
   "Jaettava URL" yllä). Tämä on tarkoituksellinen ero: suosikit ovat
@@ -500,17 +503,26 @@ pieni diskreetti checkbox tms joukkueen nimen vieressä")
   proaktiivisesti `.control-row[hidden] { display: none; }` -ylikirjoitus
   (sama toistuva `[hidden]`+`display`-virhe kuin "Sudenkuoppia" #1/#6/#9,
   vältetty tällä kertaa etukäteen tarkistamalla ennen toteutusta).
-- **"Default-valinta" toteutettu automaattisena päälle-kytkeytymisenä**
-  (`toggleFavorite()`): kun käyttäjä lisää AIVAN ENSIMMÄISEN suosikkinsa
-  (`FAVORITE_TEAMS.size` siirtyy 0:sta ylöspäin), `state.favoritesOnly`
-  asetetaan automaattisesti todeksi ja muistetaan - tämän jälkeen
-  käyttäjän oma päälle/pois-valinta muistetaan sellaisenaan eikä
-  automatiikkaa enää sovelleta. **Käänteinen reunatapaus, korjattu ennen
-  julkaisua:** jos suodatin on päällä ja käyttäjä poistaa VIIMEISEN
+- **Suodatin EI kytkeydy päälle automaattisesti** kun suosikki lisätään
+  (`toggleFavorite()` [index.html](index.html):ssä) - `state.favoritesOnly`
+  oletusarvo on aina `false` (`loadFavoritesFilterPref()` palauttaa
+  `false` jos mitään ei ole vielä tallessa). **HUOM: tätä kokeiltiin
+  ensin toisin päin** (automaattinen päällekytkentä ensimmäisellä
+  suosikilla, käyttäjän alkuperäisen sanamuodon "filttereissä olisi
+  default-valintana 'näytä omat suosikkijoukkueet'" perusteella), mutta
+  käyttäjä korjasi tämän saman päivän aikana eksplisiittisesti: "lisää
+  default-valintana, että 'Näytä vain suosikkijoukkueeni' EI ole
+  valittu". Käyttäjä siis kytkee suodattimen itse päälle valintaruudusta
+  kun haluaa - rivi (`#favorites-row`) tulee silti näkyviin heti kun
+  ensimmäinen suosikki on lisätty, jotta valintaruutu on löydettävissä.
+  **Poikkeus, säilytetty edelleen:** jos suodatin sattuu olemaan päällä
+  (käyttäjä on itse kytkenyt sen) ja käyttäjä poistaa VIIMEISEN
   suosikkinsa, `state.favoritesOnly` kytketään automaattisesti pois
   päältä - muuten tulokset näyttäisivät hiljaa "0 ottelua näkyvissä" eikä
   käyttäjä edes näkisi valintaruutua jolla korjata tilanne (rivi
-  piilotetaan heti kun suosikkeja ei ole yhtään).
+  piilotetaan heti kun suosikkeja ei ole yhtään). Tämä reunatapaus EI
+  liity kumpaankaan default-keskusteluun - se on aina ollut tarpeen
+  riippumatta oletusarvosta.
 - Tähden klikkaus (`#board`/`#teams-list`:n delegoiduissa
   klikkauskuuntelijoissa, ks. `.fav-star`-haara ENNEN `.team-link`/
   `.team-toggle`-haaraa) kutsuu aina sekä `renderResults()`:ää että
