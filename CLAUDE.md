@@ -1050,6 +1050,28 @@ infrarajoitukset".
     `justify-content: space-between` -yhdistelmällä on rivi jonka
     viimeinen alkio saattaa joskus jäädä yksin omalle rivilleen** - se ei
     heitä virhettä, näyttää vain hetkittäin väärältä.
+11. **Label + rivittyvät flex-lapset samalla rivillä = rivittyneet lapset
+    eivät asetu labelin kohdalle, vaan kääntyvät kokonaan säiliön
+    vasempaan reunaan** (2026-09-27, käyttäjä löysi mobiilissa: "Kilpailutasossa
+    'Eurooppalaiset seurasarjat' ja 'Maajoukkueiden ottelut' ovat
+    vasemmalla Kilpailutason alla eikä samalla tasolla kuin laji[t].
+    Vastaavasti kaupunki[,] ja myös ajankohta"). `.control-row` on
+    `display: flex; flex-wrap: wrap` jossa ensimmäinen lapsi on kiinteän
+    levyinen `.label` (esim. "KILPAILUTASO") ja loput lapset ovat
+    chippejä - kapealla näytöllä vain ENSIMMÄINEN rivi chipeistä mahtuu
+    labelin viereen, ja kun loput rivittyvät, ne alkavat normaalin
+    flex-wrapin mukaisesti säiliön vasemmasta reunasta (x=0) EIVÄTKÄ
+    labelin kohdalta - flexbox ei tee "hanging indent" -tyyppistä
+    sisennystä rivittyneille lapsille. Korjaus (`@media (max-width:
+    600px)`): `.control-row .label { flex-basis: 100%; }` pakottaa
+    labelin aina omalle rivilleen, jolloin KAIKKI chipit (myös LAJI-rivin
+    `.chip-grid`-kääre) ovat omana ryhmänään labelin alla ja jokainen
+    niiden rivittynyt rivi alkaa yhtenäisesti samasta vasemmasta
+    reunasta - ei enää mitään "väärässä kohdassa" näyttävää sisältöä.
+    **Tarkista tämä aina kun label+rivittyvät-lapset-sama-flex-rivi
+    -kuvio esiintyy kapealla näytöllä** - toimii virheettä desktopilla
+    jossa harvemmin rivittyy, joten bugi löytyy usein vasta mobiililla
+    testatessa.
 
 ## Ylläpito
 

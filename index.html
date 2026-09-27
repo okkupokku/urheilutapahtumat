@@ -437,6 +437,24 @@
 
   @media (max-width: 600px) {
     .controls-sticky { margin: 0 -1rem; padding-left: 1rem; padding-right: 1rem; }
+    /* Kapealla näytöllä LABEL (esim. "KILPAILUTASO") vie liian ison osan
+       rivin leveydestä (kiinteä 5.5rem), joten vain ENSIMMÄINEN rivi
+       chipeistä mahtuu sen viereen - kun chipit rivittyvät (esim.
+       "Eurooppalaiset seurasarjat"/"Maajoukkueiden ottelut"), ne
+       aloittavat normaalisti rivin VASEMMASTA REUNASTA (x=0), mikä ei
+       ole sama kohta kuin ensimmäisen rivin chipit (jotka alkavat
+       labelin jälkeen) - näyttää siis siltä että osa chipeistä on
+       "labelin alla" eri tasossa kuin muut (käyttäjän löytämä bugi
+       2026-09-27: "Kilpailutasossa 'Eurooppalaiset seurasarjat' ja
+       'Maajoukkueiden ottelut' ovat vasemmalla Kilpailutason alla eikä
+       samalla tasolla kuin laji[t]. Vastaavasti kaupunki[,] ja myös
+       ajankohta"). Korjaus: `flex-basis: 100%` labelille pakottaa sen
+       aina omalle rivilleen - KAIKKI chipit (myös LAJI-rivin
+       `.chip-grid`-kääre) jäävät tällöin omaksi ryhmäkseen labelin ALLE,
+       jolloin jokainen rivittynyt chippirivi alkaa yhtenäisesti samasta
+       vasemmasta reunasta eikä mikään enää näytä väärässä kohdassa
+       olevalta. */
+    .control-row .label { flex-basis: 100%; width: auto; }
     /* 2 saraketta (4 riviä) kapealla näytöllä - 4 kiinteää saraketta
        puristaisi lajichipit liian kapeiksi puhelinnäytöllä. */
     .chip-grid { grid-template-columns: repeat(2, 1fr); }
