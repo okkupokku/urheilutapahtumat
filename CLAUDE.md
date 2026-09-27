@@ -438,19 +438,20 @@ alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
   joukkueeseen ja säilytä selaimen takaisin-nappi; Joukkueet: selaa
   joukkuehakemistoa paikallaan).
 
-## Lista-välilehden nimi kuvaa AJANKOHTA-valintaa
+## Lista-välilehden nimi
 
-(2026-09-27, käyttäjän toive: "Vaihda 'Lista' nimi johonkin
-kuvaavampaan, esim päivämäärän mukaan") `#tab-list`-painikkeen teksti ei
-ole enää kiinteä "📋 Lista" vaan `listTabLabel()` [index.html](index.html):n
-palauttama, nykyistä `state.day`/`state.teamFilter`-arvoa vastaava teksti
-(esim. "📋 Seuraavat 7 pv", "📋 Kaikki ottelut", tai joukkuesuodattimen
-ollessa päällä "📋 <joukkueen nimi>"). Päivitetään joka
-`renderResults()`-kutsulla - kaikki `state.day`-muutokset (AJANKOHTA-
-chipin klikkaus, joukkuesuodatin, selaimen takaisin/eteenpäin, jaettu
-URL) päättyvät aina `renderResults()`-kutsuun (ks. `selectDayPreset()`:n
-kutsupaikat), joten yksi päivityskohta riittää eikä tarvitse erillistä
-kutsua joka paikkaan missä `state.day` voi muuttua.
+(2026-09-27, käyttäjän toive, kaksi kierrosta) Ensin kokeiltiin
+`#tab-list`-painikkeen tekstiksi nykyistä AJANKOHTA-valintaa kuvaavaa
+dynaamista tekstiä ("Vaihda 'Lista' nimi johonkin kuvaavampaan, esim
+päivämäärän mukaan" -> "📋 Seuraavat 7 pv" tms), mutta käyttäjä totesi
+sen olevan huono otsikko VAIKKA se vaihtuukin ajan mukaan - liian pitkä/
+epävakaa välilehden nimeksi. **Lopullinen ratkaisu: kiinteä "📋 Ottelut"**
+(`listTabLabel()` [index.html](index.html):ssä), paitsi joukkuesuodattimen
+ollessa päällä (`state.teamFilter`) jolloin näytetään joukkueen nimi
+("📋 <joukkueen nimi>") - se säilytettiin koska on yhä hyödyllistä
+kontekstia eikä sama "epävakaa otsikko" -ongelma koskenut sitä.
+Päivitetään joka `renderResults()`-kutsulla (kaikki `state.teamFilter`-
+muutokset päättyvät aina siihen).
 
 ## Pääsylippujen hinta-arvio
 

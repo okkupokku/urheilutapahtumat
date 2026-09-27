@@ -411,7 +411,7 @@
 <main>
   <div class="controls-sticky">
     <div class="view-tabs" id="view-tabs">
-      <button class="view-tab active" data-view="list" type="button" id="tab-list">📋 Seuraavat 7 pv</button>
+      <button class="view-tab active" data-view="list" type="button" id="tab-list">📋 Ottelut</button>
       <button class="view-tab" data-view="map" type="button">🗺️ Kartta</button>
       <button class="view-tab" data-view="teams" type="button">👥 Joukkueet</button>
     </div>
@@ -1321,20 +1321,16 @@ function currentDayRangeLabel() {
   return '';
 }
 
-// "Lista"-välilehden nimi kuvaa nykyistä AJANKOHTA-valintaa sen sijaan
-// että olisi kiinteä "Lista" (käyttäjän toive 2026-09-27: "vaihda 'Lista'
-// nimi johonkin kuvaavampaan, esim päivämäärän mukaan") - päivitetään
-// joka renderResults()-kutsulla, koska KAIKKI state.day-muutokset (chipin
-// klikkaus, joukkuesuodatin, popstate, jaettu URL) päättyvät aina
-// renderResults()-kutsuun (ks. selectDayPreset()-kutsupaikat).
+// "Lista"-välilehden nimi (käyttäjän toive 2026-09-27, kaksi kierrosta):
+// ensin kokeiltiin AJANKOHTA-valintaa kuvaavaa dynaamista nimeä (esim.
+// "Seuraavat 7 pv"), mutta käyttäjä totesi sen olevan huono otsikko
+// vaikka se vaihtuukin ajan mukaan - "Parempi nimi olisi ehkä 'Ottelut'".
+// Kiinteä "📋 Ottelut" nyt, PAITSI joukkuesuodattimen ollessa päällä
+// (state.teamFilter) - silloin näytetään joukkueen nimi, koska se on yhä
+// hyödyllistä kontekstia eikä sama AJANKOHTA-otsikko-ongelma koske sitä.
 function listTabLabel() {
   if (state.teamFilter) return `📋 ${state.teamFilter.team}`;
-  if (state.day === 'today') return '📋 Tänään';
-  if (state.day === 'week') return `📋 Seuraavat ${WEEK_PRESET_DAYS + 1} pv`;
-  if (state.day === 'month') return `📋 Seuraavat ${MONTH_PRESET_DAYS + 1} pv`;
-  if (state.day === 'all') return '📋 Kaikki ottelut';
-  if (state.day === 'custom') return '📋 Valittu ajanjakso';
-  return '📋 Lista';
+  return '📋 Ottelut';
 }
 
 function formatDayLabel(dateStr) {
