@@ -364,6 +364,58 @@ data-sport=>` (ei enää pelkkä `<span>`) - klikkaus kutsuu
   (ei per-nappi), koska ottelurivit poistetaan/luodaan uudelleen joka
   `renderResults()`-kutsulla mutta `#board`-elementti itse on pysyvä.
 
+## Joukkueet-välilehti (kolmas välilehti Lista/Kartan lisäksi)
+
+(2026-09-27, käyttäjän toive: "Lisää sivulle välilehti... jossa
+listataan lajeittain ja sukupuolten mukaan kaikki joukkueet, jotka
+löytyvät PK-seudulta... Kun klikkaa jotain joukkuetta, sivu avaa siihen
+alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
+`#teams-view`) [index.html](index.html):ssä, oma `renderTeamsView()`.
+
+- **Täysin riippumaton LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA-
+  suodattimista** - `buildTeamsIndex()` rakentaa `laji -> sukupuoli ->
+  Set(joukkuenimi)`-rakenteen suoraan `ALL_MATCHES`:sta, ei
+  `getFilteredMatches()`:sta, koska käyttäjä halusi nimenomaan "kaikki
+  saatavilla olevat" joukkueet riippumatta valituista suodattimista.
+  **Siksi `switchView('teams')` piilottaa kokonaan `.controls`-,
+  `#advanced-panel`- ja `.meta-line`-elementit** (näytetään taas kun
+  vaihdetaan pois) - ilman tätä käyttäjä voisi luulla LAJI/SUKUPUOLI-
+  valintojen vaikuttavan Joukkueet-listaan, vaikka ne eivät vaikuta.
+- **"Harmonikka": vain yksi joukkue kerrallaan auki.** `expandedTeam`
+  (moduulitason muuttuja, EI osa `state`-oliota - ei vaikuta
+  suodattimiin eikä selaimen historiaan, täysin erillinen mekanismi kuin
+  Lista-näkymän `state.teamFilter`/`applyTeamFilter()`). Joukkueen nimen
+  klikkaus avaa/sulkee sen ottelulistan (`teamMatchesHtml()`) suoraan
+  omaan `<div class="team-entry">`:iinsä listassa, koti/vieras-tunniste
+  näytetään koska joukkue on aina kiinnitetty puoli (`home = m.teamA ===
+  team`).
+- **Vastustajan nimen klikkaus auki olevan joukkueen ottelulistassa
+  VAIHTAA auki olevan joukkueen kyseiseksi vastustajaksi** (sama
+  delegoitu `#teams-list`-klikkauskuuntelija tunnistaa sekä
+  `.team-toggle`- että `.team-link`-luokat) - näin voi selata
+  joukkueesta toiseen (esim. HJK miehet -> vastustaja HPS naiset, jos
+  sama nimi esiintyy molemmissa sukupuolissa) ilman että pitää sulkea ja
+  etsiä uudelleen. `scrollIntoView()` uudelle auki olevalle riville.
+- Ei mitään yhteyttä Lista-näkymän `state.teamFilter`/`history.pushState`-
+  mekanismiin - nämä kaksi ovat tarkoituksella täysin erilliset
+  toteutukset eri käyttötarkoituksiin (Lista: suodata koko sivu yhteen
+  joukkueeseen ja säilytä selaimen takaisin-nappi; Joukkueet: selaa
+  joukkuehakemistoa paikallaan).
+
+## Lista-välilehden nimi kuvaa AJANKOHTA-valintaa
+
+(2026-09-27, käyttäjän toive: "Vaihda 'Lista' nimi johonkin
+kuvaavampaan, esim päivämäärän mukaan") `#tab-list`-painikkeen teksti ei
+ole enää kiinteä "📋 Lista" vaan `listTabLabel()` [index.html](index.html):n
+palauttama, nykyistä `state.day`/`state.teamFilter`-arvoa vastaava teksti
+(esim. "📋 Seuraavat 7 pv", "📋 Kaikki ottelut", tai joukkuesuodattimen
+ollessa päällä "📋 <joukkueen nimi>"). Päivitetään joka
+`renderResults()`-kutsulla - kaikki `state.day`-muutokset (AJANKOHTA-
+chipin klikkaus, joukkuesuodatin, selaimen takaisin/eteenpäin, jaettu
+URL) päättyvät aina `renderResults()`-kutsuun (ks. `selectDayPreset()`:n
+kutsupaikat), joten yksi päivityskohta riittää eikä tarvitse erillistä
+kutsua joka paikkaan missä `state.day` voi muuttua.
+
 ## Pääsylippujen hinta-arvio
 
 (2026-09-26, käyttäjän toive: "Onko mahdollista saada otteluiden
