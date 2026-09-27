@@ -118,9 +118,19 @@
      tällöin disabled (ei mieltä "näytä vain suosikit" -suodattimelle
      jolla ei olisi mitään näytettävää), ja title-attribuutti (asetettu
      JS:stä, ks. updateFavoritesToggleState()) opastaa hoverilla miten
-     suosikkeja lisätään (käyttäjän toive 2026-09-27). */
-  .favorites-toggle.disabled { opacity: 0.55; cursor: not-allowed; }
-  .favorites-toggle.disabled input[type=checkbox] { cursor: not-allowed; }
+     suosikkeja lisätään (käyttäjän toive 2026-09-27). `cursor: help` eikä
+     `not-allowed` (käyttäjän löytämä bugi samana päivänä: "kun hiiri
+     hover sen päällä, näen harmaan ympyrän ja kielto-emojin, vasta
+     myöhemmin latautuu 'Lisää suosikkijoukkueita...'") - `not-allowed`
+     näytti heti selaimen oman "et voi tehdä tätä" -kieltokursorin ENNEN
+     natiivin title-tooltipin ilmestymistä (selaimen oma viive, ei
+     muutettavissa CSS:llä), mikä näytti hetken ajan siltä että jokin on
+     rikki. `help`-kursori (kysymysmerkki) viestii oikean asian heti:
+     "hoveraa saadaksesi lisätietoa", ei "et voi klikata tätä" - sama
+     kursori jota jo käytetään muualla vastaavissa selityksissä (ks.
+     `.price-hint`, `.team-category-price`). */
+  .favorites-toggle.disabled { opacity: 0.55; cursor: help; }
+  .favorites-toggle.disabled input[type=checkbox] { cursor: help; }
   /* CSS Grid auto-fill+1fr sen sijaan että chipit vain flex-wrappaisivat -
      jos rivi jakautuu kahdelle riville, viimeiselle riville jäävä
      yksinäinen chippi (esim. Jääpallo LAJI-rivin viimeisenä) venyy

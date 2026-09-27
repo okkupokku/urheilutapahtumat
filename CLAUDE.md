@@ -568,6 +568,16 @@ kohta suodattimen oletusarvosta.)
   control-row ei sitä enää käytä - ks. CLAUDE.md:n "Sudenkuoppia"
   #1/#6/#9 samasta `[hidden]`+`display`-virheestä jos joskus tarvitset
   vastaavaa piilotusta uudelleen.)
+  **`cursor: help`, ei `not-allowed`** (`.favorites-toggle.disabled`
+  [index.html](index.html):ssä) - käyttäjä löysi samana päivänä bugin:
+  "kun hiiri hover sen päällä, näen harmaan ympyrän ja kielto-emojin,
+  vasta myöhemmin latautuu 'Lisää suosikkijoukkueita...'". `not-allowed`
+  näytti heti selaimen oman kieltokursorin ENNEN natiivin
+  title-tooltipin ilmestymistä (selaimen oma hover-viive, ei
+  muutettavissa CSS:llä), mikä näytti hetken siltä että jokin on rikki.
+  `help` (kysymysmerkki) viestii heti oikean asian ("hoveraa
+  lisätietoa varten") - sama kursori jota jo käytetään `.price-hint`- ja
+  `.team-category-price`-selityksissä.
 - **Suodatin EI kytkeydy päälle automaattisesti** kun suosikki lisätään
   (`toggleFavorite()` [index.html](index.html):ssä) - `state.favoritesOnly`
   oletusarvo on aina `false` (`loadFavoritesFilterPref()` palauttaa
