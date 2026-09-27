@@ -295,33 +295,67 @@ otteluohjelman sarjan nimeen (näkyy listassa "Sarja ↗" -linkkinä,
 (2026-09-27, käyttäjän toive: "kun klikkaa hakutuloksissa joukkueen
 nimeä, esitetään kaikki sen joukkueen ottelut... kaikki saatavilla
 olevat ottelut, jossa kyseinen joukkue pelaa PK-seudulla") Joukkueen nimi
-`.matchup`-rivillä on nyt `<button class="team team-link" data-team=
-data-sport=>` (aiemmin pelkkä `<span>`) - klikkaus asettaa
-`state.teamFilter = { team, sport }`.
+`.matchup`-rivillä on `<button class="team team-link" data-team=
+data-sport=>` (ei enää pelkkä `<span>`) - klikkaus kutsuu
+`applyTeamFilter(team, sport)`:ää.
 
 - **`getFilteredMatches()` ohittaa TÄYSIN kaikki muut suodattimet**
-  (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA/etäisyys) kun
-  `state.teamFilter` on asetettu - palauttaa suoraan kaikki `ALL_MATCHES`-
-  joukon ottelut joissa `sport` täsmää JA joukkue on joko `teamA` tai
-  `teamB`. Tämä on tarkoituksellista: käyttäjä halusi nimenomaan "kaikki
-  saatavilla olevat" riippumatta mitä muuta oli valittuna.
-- **`sport` on mukana suodattimessa** pelkän joukkuenimen lisäksi siltä
-  varalta että sama nimi esiintyisi useammassa lajissa (ei tunnettu tapaus
-  tässä datassa, mutta ei syytä ottaa riskiä väärän lajin otteluista).
-- Banneri (`#team-filter-banner`, näkyy `#board`:n yläpuolella) kertoo
-  mitä suodatinta sovelletaan ja tarjoaa "✕ Näytä kaikki ottelut"
-  -napin (`state.teamFilter = null`) paluuseen. `currentDayRangeLabel()`
-  (kartan päiväväli-kuvateksti) huomioi tämän myös erikseen, ettei se
-  näytä harhaanjohtavasti AJANKOHTA-valinnan mukaista (nyt ohitettua)
-  tekstiä.
-- **Ei erillistä "peru"-tilaa AJANKOHTA/LAJI ym. -valinnoille** - niitä ei
-  muuteta eikä palauteta, vain OHITETAAN kun teamFilter on aktiivinen, ja
-  ne palautuvat automaattisesti käyttöön heti kun teamFilter tyhjennetään
-  (koska niitä ei koskaan kosketeltu). Jos käyttäjä klikkaa jotain muuta
-  suodatinta teamFilterin ollessa aktiivinen, se EI tee mitään näkyvää
-  (koska getFilteredMatches() ohittaa sen silti) - ei ole vielä
-  raportoitu ongelmaksi, mutta jos tulee, harkitse teamFilterin
-  automaattista tyhjennystä minkä tahansa muun suodattimen kosketuksesta.
+  (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/etäisyys) kun `state.teamFilter`
+  on asetettu - palauttaa suoraan kaikki `ALL_MATCHES`-joukon ottelut
+  joissa `sport` täsmää JA joukkue on joko `teamA` tai `teamB`.
+  `sport` on mukana pelkän nimen lisäksi siltä varalta että sama nimi
+  esiintyisi useammassa lajissa (ei tunnettu tapaus tässä datassa, mutta
+  ei syytä ottaa riskiä).
+- **AJANKOHTA asetetaan OIKEASTI "Kaikki saatavilla olevat" -tilaan**
+  (`selectDayPreset('all')`, ei vain hiljainen ohitus) kun joukkuesuodatin
+  aktivoituu - käyttäjän korjaus 2026-09-27 alkuperäiseen toteutukseen,
+  joka vain ohitti AJANKOHTA:n `getFilteredMatches()`:ssä mutta jätti
+  esim. "Seuraavat 7 päivää" -chipin harhaanjohtavasti aktiiviseksi.
+  `selectDayPreset(key)` on eriytetty apufunktio (käytetään myös
+  AJANKOHTA-rivin omassa klikkauskäsittelijässä) joka päivittää sekä
+  `state.day`:n että chippien aktiivisen luokan ja päivämäärävälin
+  näkyvyyden.
+- **Selaimen historia (`history.pushState`/`popstate`) hoitaa sekä
+  "takaisin"-napin että "✕ Näytä kaikki ottelut" -napin** (käyttäjän
+  korjaus 2026-09-27 - kaksi ongelmaa alkuperäisessä versiossa):
+  1. Ilman pushStatea selaimen "takaisin" olisi ladannut koko sivun
+     uudelleen (koska ei ollut mitään in-page-historiaa mihin palata),
+     mikä olisi hakenut kaiken datan uudestaan APIsta turhaan - data on
+     jo kokonaan muistissa (`ALL_MATCHES`, koko kausi haettu kerralla).
+  2. "✕ Näytä kaikki ottelut" -napin piti palauttaa TÄSMÄLLEEN sama
+     näkymä kuin ennen kyseisen joukkueen klikkausta, ei vain tyhjentää
+     suodatin jättäen AJANKOHTA:n väärään tilaan.
+
+  Molemmat ratkeavat samalla mekanismilla: `applyTeamFilter()` kutsuu
+  `history.pushState({teamFilter:{team,sport}}, ...)` (EI koskaan
+  tavallista navigointia), "✕"-nappi kutsuu vain `history.back()`:ia
+  (ei suoraa state-mutaatiota), ja yksi `popstate`-kuuntelija lukee
+  `event.state`:n ja päivittää `state.teamFilter`+`state.day`:n sen
+  mukaan - EI KOSKAAN hae dataa uudelleen, vain kutsuu `renderResults()`:ää
+  jo-muistissa-olevalle datalle. `teamFilterRestoreDay` (moduulitason
+  muuttuja, ei osa `state`-oliota) muistaa mihin AJANKOHTA-arvoon
+  palataan kun suodatin lopulta puretaan kokonaan - talletetaan vain
+  ketjun ENSIMMÄISELLÄ klikkauksella (`!state.teamFilter` vielä tosi),
+  jotta esim. "Jokerit" -> (klikataan vastustaja) "Ilves" -ketju
+  palauttaa aina alkuperäiseen näkymään asti purettaessa, ei vain yhtä
+  askelta ketjussa taaksepäin.
+  **HUOM:** sivun suora lataus `?team=`/`?teamSport=`-parametrein EI ole
+  tuettu (toisin kuin `buildShareUrl()`:n parametrit) - nämä kaksi
+  parametria ovat vain historianhallintaa varten, ei jaettavaa tilaa.
+  Sivun päivitys (F5) selaimessa tyhjentää joukkuesuodattimen normaaliin
+  tapaan (hakee datan uudestaan, kuten mikä tahansa sivun lataus).
+- **Banneri** (`#team-filter-banner`, `#board`:n yläpuolella) kertoo mitä
+  suodatinta sovelletaan. **HUOM (sama sudenkuoppa kuin "Sudenkuoppia"
+  #6/#1):** `.team-filter-banner`-luokalla oli oma `display: flex`
+  -sääntö, joka voitti aina selaimen `[hidden] { display: none }`:n -
+  banneri ei siis KOSKAAN oikeasti piiloutunut vaikka `hidden`-attribuutti
+  togglautui oikein DOM:issa (käyttäjän löytämä bugi 2026-09-27,
+  näkyi juuri tältä: "Näytetään: Jokerit..." jäi näkyviin vaikka tulokset
+  jo päivittyivät oikein). Korjaus: `.team-filter-banner[hidden] {
+  display: none; }`. **Jos lisäät uuden piilotettavan/näytettävän
+  elementin jolla on oma `display`-sääntö, muista aina tämä sama
+  ylikirjoitus** - tämä on nyt kolmas kerta samasta virheestä tässä
+  projektissa.
 - **`escapeAttr()`-apufunktio** ([index.html](index.html)) escapee
   joukkuenimen HTML-attribuuttiin (`data-team`) - ilman tätä nimi jossa
   on lainausmerkki tms. rikkoisi attribuutin jäsennyksen. Käytetään myös
@@ -693,6 +727,19 @@ infrarajoitukset".
    suora lapsi** - jos ei, sääntö ei riko mitään näkyvästi virheenä, se
    vain hiljaa ei tee mitään, mikä tekee tästä erityisen vaikean
    huomata koodikatselmoinnissa.
+9. **KOLMAS kerta samaa `[hidden]`+`display`-virhettä** (ks. sudenkuoppa
+   #1 ja #6) - `.team-filter-banner`-luokalla oli oma `display: flex`
+   -sääntö, joka voitti aina selaimen `[hidden] { display: none }`:n.
+   Löytyi 2026-09-27 kun käyttäjä raportoi "'Näytetään: Jokerit...'-
+   banneri näkyy edelleen vaikka otteluista näkyvät jo kaikki muutkin" -
+   `hidden`-attribuutin JS-togglaus toimi (oikea arvo DOM:issa), banneri
+   ei silti koskaan piiloutunut. **Tämä virhe on nyt tehty kolme kertaa
+   samassa projektissa** (MapLibre-merkit, latausikoni, joukkuesuodatin-
+   banneri) - jos lisäät MINKÄ TAHANSA elementin jota piilotetaan/
+   näytetään JS:n `el.hidden = true/false`:lla, tarkista AINA ETUKÄTEEN
+   ennen kuin annat sille luokalle oman `display`-säännön: lisää saman
+   tien `.<luokka>[hidden] { display: none; }` -ylikirjoitus, älä odota
+   että käyttäjä löytää bugin testaamalla.
 
 ## Ylläpito
 

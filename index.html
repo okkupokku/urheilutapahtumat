@@ -260,6 +260,12 @@
   /* Joukkuesuodattimen banneri - näytetään #board:n yläpuolella kun
      joukkueen nimeä on klikattu (state.teamFilter). */
   .team-filter-banner { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; background: var(--panel-alt); border: 1px solid var(--divider); border-radius: var(--radius); padding: 0.7rem 1rem; margin-bottom: 1rem; font-size: 0.88rem; }
+  /* SAMA sudenkuoppa kuin .loading-spinner:ssa aiemmin (ks. CLAUDE.md
+     "Sudenkuoppia" #6) - oma display-sääntö samalla luokalla voittaa aina
+     selaimen [hidden] { display: none }:n samalla spesifisyydellä, joten
+     banner ei koskaan oikeasti piiloutunut vaikka hidden-attribuutti
+     togglautui oikein DOM:issa (2026-09-27, käyttäjän löytämä bugi). */
+  .team-filter-banner[hidden] { display: none; }
   .team-filter-banner strong { color: var(--text); }
   .row .details { color: var(--muted); font-size: 0.82rem; margin-top: 0.2rem; }
   .row .details .category { color: var(--amber-dim); }
@@ -1110,7 +1116,13 @@ const state = {
   // "kun klikkaa joukkueen nimeä, esitetään kaikki sen joukkueen
   // ottelut"). `sport` on mukana koska sama joukkuenimi voisi teoriassa
   // esiintyä eri lajeissa (ei tunnettu tapaus tässä datassa, mutta ei
-  // syytä ottaa riskiä) - ks. getFilteredMatches().
+  // syytä ottaa riskiä) - ks. getFilteredMatches(). AJANKOHTA-chippi
+  // asetetaan LISÄKSI oikeasti "Kaikki saatavilla olevat" -tilaan
+  // (`selectDayPreset('all')`) eikä vain ohiteta hiljaa, jotta se ei näytä
+  // harhaanjohtavasti esim. "Seuraavat 7 päivää" -aktiivisena. Asetetaan
+  // ja puretaan AINA `applyTeamFilter()`/`history.back()`:n kautta (ks.
+  // alempana skriptissä), ei koskaan suoraan täältä - selaimen
+  // takaisin/eteenpäin-napit toimivat sen varassa.
   teamFilter: null, // { team: string, sport: string } | null
 };
 
@@ -1225,6 +1237,21 @@ function passesDayFilter(dateStr) {
     return dateStr >= from && dateStr <= to;
   }
   return true;
+}
+
+// Asettaa AJANKOHTA-tilan ja päivittää sekä chippien aktiivisen luokan
+// että päivämäärävälin näkyvyyden - erotettu omaksi funktioksi
+// (aiemmin vain päivä-chipin omassa klikkauskäsittelijässä) jotta myös
+// joukkuesuodatin voi asettaa sen ohjelmallisesti (ks. applyTeamFilter(),
+// käyttäjän toive 2026-09-27: AJANKOHTA:n pitää näyttää "Kaikki
+// saatavilla olevat" aktiivisena kun joukkueen ottelut näytetään, ei
+// jäädä näyttämään esim. "Seuraavat 7 päivää" harhaanjohtavasti).
+function selectDayPreset(key) {
+  state.day = key;
+  const dayEl = document.getElementById('day-filters');
+  [...dayEl.querySelectorAll('.chip')].forEach(c => c.classList.toggle('active', c.dataset.dayKey === key));
+  const dateRange = document.getElementById('date-range');
+  if (dateRange) dateRange.classList.toggle('active', key === 'custom');
 }
 
 function currentDayRangeLabel() {
@@ -1512,11 +1539,9 @@ function renderFilters() {
       const btn = document.createElement('button');
       btn.className = 'chip' + (key === state.day ? ' active' : '');
       btn.textContent = label;
+      btn.dataset.dayKey = key;
       btn.addEventListener('click', () => {
-        state.day = key;
-        [...dayEl.querySelectorAll('.chip')].forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('date-range').classList.toggle('active', key === 'custom');
+        selectDayPreset(key);
         renderResults();
         // Avaa alkupäivämäärän valitsin heti kun "Valitse päivämäärät"
         // klikataan - käyttäjän ei tarvitse itse huomata pientä date-kenttää
@@ -2031,20 +2056,68 @@ function showShareUrlFallback(url) {
   box.select();
 }
 
-// Joukkueen nimen klikkaus (käyttäjän toive 2026-09-27): tapahtuman
-// delegointi #board:iin, koska rivit poistetaan/luodaan uudelleen joka
-// renderResults()-kutsulla eikä listenereitä siksi voi liittää per-nappi
-// kertaalleen - #board itse on kuitenkin pysyvä DOM-elementti.
+// Joukkuesuodatin käyttää selaimen omaa historiaa (history.pushState/
+// popstate) sen sijaan että vain muutettaisiin state:a suoraan - käyttäjän
+// toive 2026-09-27: (1) selaimen "takaisin"-nappi ei saa ladata sivua
+// uudelleen (mikä hakisi kaiken datan uudestaan APIsta) ja (2) "✕ Näytä
+// kaikki ottelut" -napin pitää palauttaa TÄSMÄLLEEN sama näkymä kuin
+// ennen kyseisen joukkueen klikkausta. Molemmat ratkeavat samalla
+// mekanismilla: klikkaus ei ikinä hae dataa uudelleen (ALL_MATCHES on jo
+// muistissa koko kauden ajalta), vain piirtää sen uudelleen eri
+// suodattimella - joten "takaisin" on turvallista tehdä oikeasti
+// selaimen historiassa ilman että se laukaisisi koko sivun uudelleenlatausta,
+// KUNHAN emme koskaan tee tavallista navigointia (vain pushState/back).
+//
+// teamFilterRestoreDay muistaa MIHIN AJANKOHTA-valintaan palataan kun
+// joukkuesuodatin lopulta puretaan - talletetaan vain ketjun ENSIMMÄISELLä
+// klikkauksella (state.teamFilter on silloin vielä null), jotta esim.
+// "Jokerit" -> "Ilves" (klikattu vastustajan nimi Jokerien ottelurivillä)
+// -ketju palauttaa aina alkuperäiseen näkymään asti purettaessa, ei vain
+// yhtä askelta taaksepäin ketjussa.
+let teamFilterRestoreDay = 'week';
+
+function applyTeamFilter(team, sport) {
+  if (!state.teamFilter) teamFilterRestoreDay = state.day;
+  const params = new URLSearchParams(window.location.search);
+  params.set('team', team);
+  params.set('teamSport', sport);
+  history.pushState({ teamFilter: { team, sport } }, '', '?' + params.toString());
+  state.teamFilter = { team, sport };
+  selectDayPreset('all');
+  renderResults();
+  document.getElementById('team-filter-banner').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// popstate-tapahtuma (selaimen edes/takaisin-napit TAI ohjelmallinen
+// history.back()) päivittää tilan historiamerkinnän mukaan - EI koskaan
+// hae dataa uudelleen, vain piirtää ALL_MATCHES:in nykyisen suodattimen
+// mukaan.
+window.addEventListener('popstate', (e) => {
+  const tf = e.state && e.state.teamFilter;
+  if (tf && tf.team && tf.sport) {
+    state.teamFilter = { team: tf.team, sport: tf.sport };
+    selectDayPreset('all');
+  } else if (state.teamFilter) {
+    state.teamFilter = null;
+    selectDayPreset(teamFilterRestoreDay);
+  }
+  renderResults();
+});
+
+// Joukkueen nimen klikkaus: tapahtuman delegointi #board:iin, koska rivit
+// poistetaan/luodaan uudelleen joka renderResults()-kutsulla eikä
+// listenereitä siksi voi liittää per-nappi kertaalleen - #board itse on
+// kuitenkin pysyvä DOM-elementti.
 document.getElementById('board').addEventListener('click', (e) => {
   const btn = e.target.closest('.team-link');
   if (!btn) return;
-  state.teamFilter = { team: btn.dataset.team, sport: btn.dataset.sport };
-  renderResults();
-  document.getElementById('team-filter-banner').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  applyTeamFilter(btn.dataset.team, btn.dataset.sport);
 });
 document.getElementById('team-filter-clear').addEventListener('click', () => {
-  state.teamFilter = null;
-  renderResults();
+  // Oikea selainhistoria-askel taaksepäin (ei suora state-mutaatio) -
+  // popstate-käsittelijä hoitaa lopun. Tämä on juuri sitä mitä käyttäjä
+  // pyysi: "sama näkymä kuin ennen kun klikattiin kyseistä joukkuetta".
+  history.back();
 });
 
 document.getElementById('refresh-btn').addEventListener('click', loadAll);
