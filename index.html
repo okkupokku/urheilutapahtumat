@@ -1061,8 +1061,8 @@ function updateLocationUI() {
   if (REFERENCE_LOCATION) {
     note.style.display = '';
     note.textContent = REFERENCE_LOCATION.source === 'gps'
-      ? '📍 Käytetään sijaintiasi - etäisyydet ja kulkuajat näytetään otteluille.'
-      : '📍 Käytetään kartalta valittua sijaintia - etäisyydet ja kulkuajat näytetään otteluille.';
+      ? '📍 Käytetään sijaintiasi - etäisyydet näytetään otteluille.'
+      : '📍 Käytetään kartalta valittua sijaintia - etäisyydet näytetään otteluille.';
   } else {
     note.style.display = 'none';
   }
