@@ -522,7 +522,7 @@
   </div>
 
   <div id="teams-view" class="teams-view" style="display:none;">
-    <p class="teams-intro">PK-seudulta löytyvät joukkueet lajeittain, sukupuolittain ja sarjoittain - valitut suodattimet (LAJI, SUKUPUOLI, AJANKOHTA jne.) rajaavat myös tätä listaa. Klikkaa joukkuetta nähdäksesi sen kaikki saatavilla olevat ottelut.</p>
+    <p class="teams-intro">PK-seudulta löytyvät joukkueet lajeittain, sukupuolittain ja sarjoittain - valitut suodattimet (LAJI, SUKUPUOLI jne.) rajaavat myös tätä listaa, PAITSI AJANKOHTA, joka koskee vain Ottelut- ja Kartta-välilehtiä. Klikkaa joukkuetta nähdäksesi sen kaikki saatavilla olevat ottelut.</p>
     <div id="teams-list"></div>
   </div>
 
@@ -1510,7 +1510,17 @@ function cityOf(m) {
 
 function categoryKey(m) { return `${m.sport}||${m.categoryId}`; }
 
-function getFilteredMatches() {
+// `ignoreDay` (käyttäjän toive 2026-09-27: "Joukkueet-välilehdellä näkee
+// kaikki joukkueet filtteröinnin mukaan, paitsi 'Ajankohta'... riippumatta
+// AJANKOHTA-valinnasta kaikki saatavilla olevat joukkueet muun
+// filtteröinnin mukaan näkyvät") jättää AJANKOHTA-suodattimen (
+// `passesDayFilter()`) kokonaan pois - kaikki muut suodattimet (LAJI/
+// SUKUPUOLI/KILPAILUTASO/KAUPUNKI/SUOSIKIT/ETÄISYYS/tarkennetun haun
+// SARJAT) toimivat silti normaalisti. Käytetään VAIN `buildTeamsIndex()`
+// :ssä (Joukkueet-välilehti) - Ottelut/Kartta-välilehdet kutsuvat tätä
+// ilman parametria (`ignoreDay` oletuksena `false`) koska niissä
+// AJANKOHTA:n PITÄÄ rajata näkyviä otteluita normaalisti.
+function getFilteredMatches({ ignoreDay = false } = {}) {
   // Joukkuesuodatin (klikattu joukkueen nimi) ohittaa kaikki muut
   // suodattimet tarkoituksella - käyttäjän toive 2026-09-27: "esitetään
   // kaikki sen joukkueen ottelut" riippumatta mitä LAJI/SUKUPUOLI/
@@ -1529,7 +1539,7 @@ function getFilteredMatches() {
     const compType = competitionTypeOf(m);
     if (compType && !state.competitionTypes.has(compType)) return false;
     if (!state.categories.has(categoryKey(m))) return false;
-    if (!passesDayFilter(m.date)) return false;
+    if (!ignoreDay && !passesDayFilter(m.date)) return false;
     if (state.favoritesOnly && !isFavoriteTeam(m.sport, m.teamA) && !isFavoriteTeam(m.sport, m.teamB)) return false;
     if (state.maxDistanceKm != null) {
       const d = distanceToRef(m);
@@ -2198,12 +2208,18 @@ let expandedTeam = null; // { team: string, sport: string } | null
 // välilehdillä, mutta vain välilehti muuttuu... jos vain lentopallo on
 // valittu, Joukkueet-listassa näkyy vain lentopallojoukkueet" - alun
 // perin Joukkueet-välilehti näytti tarkoituksella AINA kaikki joukkueet
-// LAJI/SUKUPUOLI/AJANKOHTA-suodattimista riippumatta, mutta tämä
-// käännettiin täysin päinvastaiseksi: KAIKKI samat suodattimet (LAJI,
-// SUKUPUOLI, KILPAILUTASO, KAUPUNKI, AJANKOHTA, SUOSIKIT, ETÄISYYS,
-// Tarkennetun haun SARJAT) koskevat nyt Joukkueet-välilehteä täsmälleen
-// samalla tavalla kuin Ottelut/Kartta-välilehtiä, koska ne käyttävät nyt
-// samaa `getFilteredMatches()`-funktiota datalähteenään.
+// kaikista suodattimista riippumatta, mutta tämä käännettiin täysin
+// päinvastaiseksi: LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/SUOSIKIT/
+// ETÄISYYS/Tarkennetun haun SARJAT koskevat nyt Joukkueet-välilehteä
+// täsmälleen samalla tavalla kuin Ottelut/Kartta-välilehtiä.
+// **POIKKEUS: AJANKOHTA EI koske Joukkueet-välilehteä** (käyttäjän
+// TARKENNUS samana päivänä: "Joukkueet-välilehdellä näkee kaikki
+// joukkueet filtteröinnin mukaan, PAITSI 'Ajankohta'... riippumatta
+// AJANKOHTA-valinnasta kaikki saatavilla olevat joukkueet muun
+// filtteröinnin mukaan näkyvät") - siksi kutsutaan
+// `getFilteredMatches({ ignoreDay: true })`, joka jättää
+// `passesDayFilter()`-tarkistuksen kokonaan pois mutta soveltaa kaikki
+// muut ehdot normaalisti.
 // **HUOM:** `state.teamFilter` (yksittäisen joukkueen "kaikki ottelut"
 // -pikavalinta) EI koskaan ole aktiivinen kun tätä kutsutaan, koska se
 // puretaan aina heti kun poistutaan Ottelut-välilehdeltä (ks.
@@ -2239,7 +2255,7 @@ function isFinlandNationalTeamName(name) {
 
 function buildTeamsIndex() {
   const bySport = new Map();
-  getFilteredMatches().forEach(m => {
+  getFilteredMatches({ ignoreDay: true }).forEach(m => {
     let team = m.teamA, crest = m.crestA;
     if (competitionTypeOf(m) === 'maajoukkue') {
       if (isFinlandNationalTeamName(m.teamB) && !isFinlandNationalTeamName(m.teamA)) {

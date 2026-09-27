@@ -390,24 +390,37 @@ löytyvät PK-seudulta... Kun klikkaa jotain joukkuetta, sivu avaa siihen
 alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
 `#teams-view`) [index.html](index.html):ssä, oma `renderTeamsView()`.
 
-- **KAIKKI suodattimet (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA/
-  SUOSIKIT/ETÄISYYS/Tarkennetun haun SARJAT) koskevat Joukkueet-välilehteä
-  TÄSMÄLLEEN SAMALLA TAVALLA kuin Ottelut/Kartta-välilehtiä** - käyttäjän
-  eksplisiittinen käänteinen korjaus 2026-09-27 alkuperäiseen
-  toteutukseen: "Siirretään... Ottelut, Kartta ja Joukkueet välilehtien
-  valinnat filtteröinnin alapuolelle. Eli filtterit ja niiden valinnat
-  pysyvät kaikilla välilehdillä... jos vain lentopallo on valittu,
-  Joukkueet-listassa näkyy vain lentopallojoukkueet". `buildTeamsIndex()`
-  rakentaa `laji -> sukupuoli -> sarja(categoryId) -> Map(joukkue ->
-  logo)`-rakenteen `getFilteredMatches()`:sta (EI enää suoraan
-  `ALL_MATCHES`:sta - alun perin, ensimmäisessä versiossa, se oli
-  tarkoituksella täysin riippumaton kaikista suodattimista, mutta tämä
-  käännettiin päinvastaiseksi). **HUOM:** `state.teamFilter`
-  (Ottelut-välilehden yksittäisen joukkueen "kaikki ottelut"
-  -pikasuodatin) ei koskaan vaikuta tähän, koska se puretaan aina heti
-  kun poistutaan Ottelut-välilehdeltä (ks. `clearTeamFilterForTabSwitch()`
-  alempana) - `getFilteredMatches()`:n `state.teamFilter`-ohitushaara ei
-  siis ole koskaan aktiivinen kun `buildTeamsIndex()` kutsuu sitä.
+- **Kaikki suodattimet PAITSI AJANKOHTA koskevat Joukkueet-välilehteä
+  TÄSMÄLLEEN SAMALLA TAVALLA kuin Ottelut/Kartta-välilehtiä** (LAJI/
+  SUKUPUOLI/KILPAILUTASO/KAUPUNKI/SUOSIKIT/ETÄISYYS/Tarkennetun haun
+  SARJAT) - käyttäjän eksplisiittinen käänteinen korjaus 2026-09-27
+  alkuperäiseen toteutukseen: "Siirretään... Ottelut, Kartta ja Joukkueet
+  välilehtien valinnat filtteröinnin alapuolelle. Eli filtterit ja niiden
+  valinnat pysyvät kaikilla välilehdillä... jos vain lentopallo on
+  valittu, Joukkueet-listassa näkyy vain lentopallojoukkueet". Samana
+  päivänä käyttäjä TARKENSI tätä vielä: "Joukkueet-välilehdellä näkee
+  kaikki joukkueet filtteröinnin mukaan, paitsi 'Ajankohta'... riippumatta
+  AJANKOHTA-valinnasta kaikki saatavilla olevat joukkueet muun
+  filtteröinnin mukaan näkyvät" - looginen ero: AJANKOHTA rajaa MILLOIN
+  ottelu näytetään, kun taas muut suodattimet rajaavat MITÄ ottelu on
+  (laji, sukupuoli, sarja) - joukkue itsessään on olemassa riippumatta
+  ajankohdasta, joten sen näkyminen hakemistossa ei ole mielekästä sitoa
+  siihen onko sillä ottelua juuri valitulla aikavälillä.
+  `buildTeamsIndex()` rakentaa `laji -> sukupuoli -> sarja(categoryId)
+  -> Map(joukkue -> logo)`-rakenteen `getFilteredMatches({ ignoreDay:
+  true })`:sta (EI enää suoraan `ALL_MATCHES`:sta - alun perin,
+  ensimmäisessä versiossa, se oli tarkoituksella täysin riippumaton
+  kaikista suodattimista, mutta tämä käännettiin päinvastaiseksi).
+  **`getFilteredMatches()` hyväksyy nyt valinnaisen `{ ignoreDay }`
+  -parametrin** (oletus `false`) joka jättää `passesDayFilter()`-
+  tarkistuksen kokonaan pois soveltaen silti kaikki muut ehdot - Ottelut/
+  Kartta-välilehdet kutsuvat sitä yhä ilman parametria (`getFilteredMatches()`).
+  **HUOM:** `state.teamFilter` (Ottelut-välilehden yksittäisen joukkueen
+  "kaikki ottelut" -pikasuodatin) ei koskaan vaikuta tähän, koska se
+  puretaan aina heti kun poistutaan Ottelut-välilehdeltä (ks.
+  `clearTeamFilterForTabSwitch()` alempana) - `getFilteredMatches()`:n
+  `state.teamFilter`-ohitushaara ei siis ole koskaan aktiivinen kun
+  `buildTeamsIndex()` kutsuu sitä.
   `renderResults()` päivittää nyt AINA myös `#teams-list`:n (kutsuu
   `renderTeamsView()`:ää lopussaan riippumatta siitä mikä välilehti on
   näkyvissä) - Joukkueet-lista pysyy siis ajan tasalla heti kun mitä
