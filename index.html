@@ -330,11 +330,17 @@
   .team-gender-block { margin-bottom: 0.9rem; }
   .team-gender-block:last-child { margin-bottom: 0; }
   .team-gender-heading { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 0.5rem; }
+  /* "Sarja"-taso (käyttäjän toive 2026-09-27: Laji -> Sukupuoli -> Sarja ->
+     Joukkue) - sama reunaviiva-kuvio kuin Tarkennetun haun .group-block. */
+  .team-category-block { margin: 0 0 0.9rem 0.1rem; padding-left: 0.6rem; border-left: 2px solid var(--divider); }
+  .team-category-block:last-child { margin-bottom: 0; }
+  .team-category-heading { font-size: 0.78rem; font-weight: 700; color: var(--amber-dim); margin-bottom: 0.45rem; }
   .team-entry-list { display: flex; flex-direction: column; gap: 0.4rem; }
   .team-entry { border: 1px solid var(--divider); border-radius: 8px; overflow: hidden; }
   .team-entry.open { border-color: var(--amber-dim); }
   .team-list-btn { display: flex; align-items: center; gap: 0.55rem; width: 100%; text-align: left; background: var(--panel); border: none; padding: 0.55rem 0.8rem; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--text); cursor: pointer; transition: background .15s; }
   .team-list-btn:hover { background: var(--panel-alt); }
+  .team-list-btn .crest { width: 20px; height: 20px; object-fit: contain; vertical-align: middle; border-radius: 3px; background: rgba(0,0,0,0.04); flex-shrink: 0; }
   .team-toggle-chev { color: var(--amber-dim); font-size: 0.7rem; width: 0.8rem; flex-shrink: 0; }
   .team-matches-panel { border-top: 1px solid var(--divider); padding: 0.65rem 0.8rem 0.8rem; background: var(--panel-alt); display: flex; flex-direction: column; gap: 0.1rem; }
   .team-matches-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; margin: 0; }
@@ -2020,20 +2026,63 @@ function renderMap(filtered) {
 // selaimen historiaan (toisin kuin state.teamFilter Lista-näkymässä).
 let expandedTeam = null; // { team: string, sport: string } | null
 
-// sport -> gender -> Set(joukkueen nimi), rakennettu SUORAAN
-// ALL_MATCHES:sta (ei getFilteredMatches()) - Joukkueet-näkymä näyttää
-// tarkoituksella aina KAIKKI ladatut joukkueet riippumatta LAJI/
-// SUKUPUOLI/AJANKOHTA-suodattimista (käyttäjän toive 2026-09-27:
-// "kaikki joukkueet, jotka löytyvät PK-seudulta - kaikki saatavilla olevat").
+// sport -> gender -> categoryId -> { name, teams: Map(joukkue -> crest) },
+// rakennettu SUORAAN ALL_MATCHES:sta (ei getFilteredMatches()) -
+// Joukkueet-näkymä näyttää tarkoituksella aina KAIKKI ladatut joukkueet
+// riippumatta LAJI/SUKUPUOLI/AJANKOHTA-suodattimista (käyttäjän toive
+// 2026-09-27: "kaikki joukkueet, jotka löytyvät PK-seudulta - kaikki
+// saatavilla olevat").
+//
+// **VAIN kotijoukkue lisätään listaan** - vierasjoukkue EI ole PK-seudun
+// joukkue (käyttäjän korjaus 2026-09-27: "vain PK-seudun joukkueet, ei
+// vierasjoukkueet"). Perusoletus: m.teamA on kotijoukkue, koska JOKAINEN
+// datalähde (TorneoPal club_A/team_A, Liiga.fi homeTeam, jääpallon koti,
+// salibandyn homeClub, Mestiksen home) merkitsee sen niin, JA koko
+// ALL_MATCHES on jo suodatettu PK-alueen mukaan OTTELUN PELIPAIKAN
+// perusteella - pelipaikka on aina kotijoukkueen oma areena/halli.
+//
+// **POIKKEUS: maajoukkue-ryhmän ottelut** (ks. competitionTypeOf()).
+// Nämä eivät ole tavallisia koti-/vierasotteluita vaan usein PK-alueella
+// järjestettyjä KANSAINVÄLISIÄ TURNAUKSIA, joissa Suomen lisäksi pelaa
+// useampi muukin maajoukkue KESKENÄÄN samalla areenalla - havaittu
+// 2026-09-27: koripallon naisten "Kansainväliset"-kategoriassa oli sekä
+// Suomi-Liettua/Suomi-Tsekki (Suomi mukana, oikein listattavissa) että
+// Ruotsi-Tsekki/Ruotsi-Liettua (Suomi EI mukana lainkaan - vain PK-alueella
+// vierailevia ulkomaisia joukkueita, ei yhtäkään PK-seudun joukkuetta).
+// Näissä ei riitä pelkkä team_A/team_B-järjestyksen korjaus (kumpikaan ei
+// ole "kotijoukkue" PK-seudun mielessä silloin kun Suomi ei edes pelaa) -
+// sen sijaan tunnistetaan Suomen maajoukkue NIMESTÄ
+// (isFinlandNationalTeamName()) ja OHITETAAN ottelu kokonaan jos
+// kumpikaan osapuoli ei ole Suomi.
+function isFinlandNationalTeamName(name) {
+  if (!name) return false;
+  const n = name.trim();
+  return /^suomi\b/i.test(n) || /^fin(\s|$)/i.test(n); // "Suomi"/"Suomi W" tai "FIN M"/"FIN N" (käsipallo)
+}
+
 function buildTeamsIndex() {
   const bySport = new Map();
   ALL_MATCHES.forEach(m => {
+    let team = m.teamA, crest = m.crestA;
+    if (competitionTypeOf(m) === 'maajoukkue') {
+      if (isFinlandNationalTeamName(m.teamB) && !isFinlandNationalTeamName(m.teamA)) {
+        team = m.teamB; crest = m.crestB;
+      } else if (!isFinlandNationalTeamName(m.teamA)) {
+        return; // Suomi ei pelaa tässä ottelussa - ei PK-seudun joukkuetta mukana
+      }
+    }
+
     if (!bySport.has(m.sport)) bySport.set(m.sport, new Map());
     const byGender = bySport.get(m.sport);
     const gender = m.genderGroup || 'Miehet';
-    if (!byGender.has(gender)) byGender.set(gender, new Set());
-    byGender.get(gender).add(m.teamA);
-    byGender.get(gender).add(m.teamB);
+    if (!byGender.has(gender)) byGender.set(gender, new Map());
+    const byCategory = byGender.get(gender);
+    if (!byCategory.has(m.categoryId)) byCategory.set(m.categoryId, { name: m.category, teams: new Map() });
+    const teams = byCategory.get(m.categoryId).teams;
+    // Jos sama joukkue on jo mukana ilman logoa, täydennetään logo heti
+    // kun jokin ottelu sen tarjoaa - ei ylikirjoiteta olemassa olevaa
+    // toimivaa logoa tyhjällä.
+    if (!teams.has(team) || (!teams.get(team) && crest)) teams.set(team, crest || null);
   });
   return bySport;
 }
@@ -2077,6 +2126,10 @@ function teamMatchesHtml(team, sport) {
   }).join('');
 }
 
+// Hierarkia Laji -> Sukupuoli -> Sarja -> Joukkue (käyttäjän toive
+// 2026-09-27) - "Sarja"-taso ryhmittelee categoryId:n mukaan (sama vakaa
+// avain kuin Tarkennetun haun hierarkiassa, ks. renderHierarchy()), näyttää
+// nimen ajantasaisena live-datasta (m.category, esim. sponsorinimi).
 function renderTeamsView() {
   const container = document.getElementById('teams-list');
   const bySport = buildTeamsIndex();
@@ -2089,22 +2142,34 @@ function renderTeamsView() {
     const meta = sportMeta(sport);
     const byGender = bySport.get(sport);
     const genderHtml = sortGenders([...byGender.keys()]).map(gender => {
-      const teams = [...byGender.get(gender)].sort((a, b) => a.localeCompare(b, 'fi'));
-      const teamsHtml = teams.map(team => {
-        const isOpen = !!(expandedTeam && expandedTeam.sport === sport && expandedTeam.team === team);
+      const byCategory = byGender.get(gender);
+      const categoryIds = [...byCategory.keys()].sort((a, b) => byCategory.get(a).name.localeCompare(byCategory.get(b).name, 'fi'));
+      const categoryHtml = categoryIds.map(catId => {
+        const cat = byCategory.get(catId);
+        const teams = [...cat.teams.keys()].sort((a, b) => a.localeCompare(b, 'fi'));
+        const teamsHtml = teams.map(team => {
+          const crest = cat.teams.get(team);
+          const isOpen = !!(expandedTeam && expandedTeam.sport === sport && expandedTeam.team === team);
+          return `
+            <div class="team-entry${isOpen ? ' open' : ''}">
+              <button type="button" class="team-list-btn team-toggle" data-team="${escapeAttr(team)}" data-sport="${escapeAttr(sport)}">
+                <span class="team-toggle-chev">${isOpen ? '▾' : '▸'}</span>${crestImg(crest)}${team}
+              </button>
+              ${isOpen ? `<div class="team-matches-panel">${teamMatchesHtml(team, sport)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
         return `
-          <div class="team-entry${isOpen ? ' open' : ''}">
-            <button type="button" class="team-list-btn team-toggle" data-team="${escapeAttr(team)}" data-sport="${escapeAttr(sport)}">
-              <span class="team-toggle-chev">${isOpen ? '▾' : '▸'}</span>${team}
-            </button>
-            ${isOpen ? `<div class="team-matches-panel">${teamMatchesHtml(team, sport)}</div>` : ''}
+          <div class="team-category-block">
+            <div class="team-category-heading">${cat.name}</div>
+            <div class="team-entry-list">${teamsHtml}</div>
           </div>
         `;
       }).join('');
       return `
         <div class="team-gender-block">
           <div class="team-gender-heading">${gender}</div>
-          <div class="team-entry-list">${teamsHtml}</div>
+          ${categoryHtml}
         </div>
       `;
     }).join('');

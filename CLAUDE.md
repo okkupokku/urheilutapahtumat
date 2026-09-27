@@ -374,13 +374,48 @@ alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
 
 - **Täysin riippumaton LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA-
   suodattimista** - `buildTeamsIndex()` rakentaa `laji -> sukupuoli ->
-  Set(joukkuenimi)`-rakenteen suoraan `ALL_MATCHES`:sta, ei
-  `getFilteredMatches()`:sta, koska käyttäjä halusi nimenomaan "kaikki
-  saatavilla olevat" joukkueet riippumatta valituista suodattimista.
-  **Siksi `switchView('teams')` piilottaa kokonaan `.controls`-,
-  `#advanced-panel`- ja `.meta-line`-elementit** (näytetään taas kun
-  vaihdetaan pois) - ilman tätä käyttäjä voisi luulla LAJI/SUKUPUOLI-
-  valintojen vaikuttavan Joukkueet-listaan, vaikka ne eivät vaikuta.
+  sarja(categoryId) -> Map(joukkue -> logo)`-rakenteen suoraan
+  `ALL_MATCHES`:sta, ei `getFilteredMatches()`:sta, koska käyttäjä halusi
+  nimenomaan "kaikki saatavilla olevat" joukkueet riippumatta valituista
+  suodattimista. **Siksi `switchView('teams')` piilottaa kokonaan
+  `.controls`-, `#advanced-panel`- ja `.meta-line`-elementit** (näytetään
+  taas kun vaihdetaan pois) - ilman tätä käyttäjä voisi luulla LAJI/
+  SUKUPUOLI-valintojen vaikuttavan Joukkueet-listaan, vaikka ne eivät
+  vaikuta.
+- **Hierarkia Laji -> Sukupuoli -> Sarja -> Joukkue** (käyttäjän toive
+  2026-09-27, alun perin oli vain Laji -> Sukupuoli -> Joukkue). "Sarja"
+  ryhmitellään `categoryId`:n mukaan (sama vakaa avain kuin Tarkennetun
+  haun hierarkiassa, ks. `renderHierarchy()`), otsikkona näytetään
+  ajantasainen `m.category`-nimi (esim. sponsorinimi).
+- **VAIN PK-seudun (koti)joukkueet, ei vierasjoukkueet** (käyttäjän
+  korjaus 2026-09-27: "haluan että tässä näkyy vain PK-seudun joukkueet,
+  ei vierasjoukkueet"). Perussääntö: `m.teamA` on aina kotijoukkue (kaikki
+  datalähteet merkitsevät sen niin) ja koko `ALL_MATCHES` on jo suodatettu
+  PK-alueen mukaan OTTELUN PELIPAIKAN perusteella - pelipaikka on
+  kotijoukkueen oma areena, joten vain `teamA` lisätään indeksiin.
+  **Poikkeus: `maajoukkue`-ryhmän ottelut** (`competitionTypeOf(m) ===
+  'maajoukkue'`) EIVÄT ole tavallisia koti-/vierasotteluita - osa niistä
+  on PK-alueella järjestettyjä KANSAINVÄLISIÄ TURNAUKSIA, joissa Suomen
+  lisäksi pelaa useampikin muu maajoukkue KESKENÄÄN samalla areenalla
+  (havaittu 2026-09-27: koripallon naisten "Kansainväliset"-kategoriassa
+  oli sekä Suomi-Liettua/Suomi-Tsekki että Ruotsi-Tsekki/Ruotsi-Liettua -
+  jälkimmäisissä Suomi ei pelaa lainkaan). Näissä `team_A`/`team_B`-
+  järjestys EI kerro mikä on "kotijoukkue" PK-seudun mielessä, joten
+  Suomen maajoukkue tunnistetaan NIMESTÄ (`isFinlandNationalTeamName()`,
+  tunnistaa "Suomi"/"Suomi W"- ja "FIN M"/"FIN N"-nimikäytännöt) eikä
+  team_A/team_B-asemasta - jos kumpikaan osapuoli ei ole Suomi, ottelu
+  ohitetaan Joukkueet-indeksissä kokonaan (ei lisätä ketään).
+  **HUOM:** tämä on eri logiikka kuin Lista-näkymän joukkuesuodatin
+  (`getFilteredMatches()`), joka näyttää AINA molemmat joukkueet (koti +
+  vieras) klikatun joukkueen otteluissa - se ei koskaan yritä päätellä
+  "kumpi on PK-joukkue", koska käyttäjä on jo valinnut kumman tahansa
+  joukkueen eksplisiittisesti klikkaamalla sen nimeä.
+- **Joukkuelogot näkyvät sekä listassa että laajennetussa ottelulistassa**
+  (käyttäjän toive 2026-09-27: "tässä pitäisi myös näkyä joukkueiden
+  logot") - `crestImg(crest)` samasta apufunktiosta kuin Lista-näkymässä,
+  logo talteen `buildTeamsIndex()`:ssä ensimmäisestä ottelusta jolla on
+  ei-tyhjä `crestA`/`crestB` (ei ylikirjoiteta toimivaa logoa myöhemmällä
+  tyhjällä arvolla).
 - **"Harmonikka": vain yksi joukkue kerrallaan auki.** `expandedTeam`
   (moduulitason muuttuja, EI osa `state`-oliota - ei vaikuta
   suodattimiin eikä selaimen historiaan, täysin erillinen mekanismi kuin
@@ -388,7 +423,8 @@ alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
   klikkaus avaa/sulkee sen ottelulistan (`teamMatchesHtml()`) suoraan
   omaan `<div class="team-entry">`:iinsä listassa, koti/vieras-tunniste
   näytetään koska joukkue on aina kiinnitetty puoli (`home = m.teamA ===
-  team`).
+  team`) - tämä koskee vain laajennetun paneelin ottelulistaa, ei
+  itse joukkueiden valintaa (ks. edellinen kohta maajoukkue-poikkeuksesta).
 - **Vastustajan nimen klikkaus auki olevan joukkueen ottelulistassa
   VAIHTAA auki olevan joukkueen kyseiseksi vastustajaksi** (sama
   delegoitu `#teams-list`-klikkauskuuntelija tunnistaa sekä
