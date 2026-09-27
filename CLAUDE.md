@@ -344,6 +344,24 @@ data-sport=>` (ei enää pelkkä `<span>`) - klikkaus kutsuu
   parametria ovat vain historianhallintaa varten, ei jaettavaa tilaa.
   Sivun päivitys (F5) selaimessa tyhjentää joukkuesuodattimen normaaliin
   tapaan (hakee datan uudestaan, kuten mikä tahansa sivun lataus).
+- **Välilehden (Kartta/Joukkueet) vaihto puretaan joukkuesuodattimen heti**
+  (`clearTeamFilterForTabSwitch()`, kutsutaan `switchView()`:stä - käyttäjän
+  korjaus 2026-09-27: "Jos välilehteä vaihtaa, haluan, että yksittäisen
+  joukkueen valinta poistuu, ja kun palaa Ottelut välilehdelle näkyy taas
+  kaikkien joukkueiden ottelut sillä ajankohtavalinnalla ja rajauksella
+  joka oli ennen joukkeen klikkaamista"). Sama `teamFilterRestoreDay`-
+  mekanismi kuin "✕ Näytä kaikki ottelut" -napissa, mutta EI
+  `history.back()`:ia (tabin vaihto ei ole selaimen navigointia) - sen
+  sijaan `history.replaceState()` korvaa nykyisen (joukkuesuodatettuun
+  tilaan pushatun) historiamerkinnän suodattimettomalla tilalla, jotta
+  selaimen "takaisin"-nappi ei myöhemmin yllättäen palauta juuri
+  hylättyä joukkuesuodatinta. `renderResults()` kutsutaan heti perään
+  vaikka `#board` on juuri piilottumassa - päivittää sen (ja bannerin)
+  sisällön ajan tasalle valmiiksi siltä varalta että käyttäjä palaa
+  Ottelut-välilehdelle myöhemmin. **Ottelut-välilehden NIMI (`#tab-list`)
+  ei koskaan muutu joukkueen nimeksi** (kokeiltiin aiemmin, käyttäjä
+  halusi sen pois: "Haluan, että välilehden nimi pysyy 'Ottelut'") - se
+  on nyt kiinteä HTML-teksti, ei JS:n päivittämä.
 - **Banneri** (`#team-filter-banner`, `#board`:n yläpuolella) kertoo mitä
   suodatinta sovelletaan. **HUOM (sama sudenkuoppa kuin "Sudenkuoppia"
   #6/#1):** `.team-filter-banner`-luokalla oli oma `display: flex`
@@ -539,20 +557,30 @@ kohta suodattimen oletusarvosta.)
   ajan tasalla molemmissa näkymissä seuraavan kerran kun käyttäjä vaihtaa
   välilehteä - halvempaa kuin seurata kumpi näkymä on juuri aktiivinen.
 
-## Lista-välilehden nimi
+## Ottelut-välilehden nimi (kiinteä, ei enää dynaaminen)
 
-(2026-09-27, käyttäjän toive, kaksi kierrosta) Ensin kokeiltiin
-`#tab-list`-painikkeen tekstiksi nykyistä AJANKOHTA-valintaa kuvaavaa
-dynaamista tekstiä ("Vaihda 'Lista' nimi johonkin kuvaavampaan, esim
-päivämäärän mukaan" -> "📋 Seuraavat 7 pv" tms), mutta käyttäjä totesi
-sen olevan huono otsikko VAIKKA se vaihtuukin ajan mukaan - liian pitkä/
-epävakaa välilehden nimeksi. **Lopullinen ratkaisu: kiinteä "📋 Ottelut"**
-(`listTabLabel()` [index.html](index.html):ssä), paitsi joukkuesuodattimen
-ollessa päällä (`state.teamFilter`) jolloin näytetään joukkueen nimi
-("📋 <joukkueen nimi>") - se säilytettiin koska on yhä hyödyllistä
-kontekstia eikä sama "epävakaa otsikko" -ongelma koskenut sitä.
-Päivitetään joka `renderResults()`-kutsulla (kaikki `state.teamFilter`-
-muutokset päättyvät aina siihen).
+(2026-09-27, käyttäjän toive, kolme kierrosta - päädytty lopulta täysin
+kiinteään nimeen)
+1. Ensin kokeiltiin `#tab-list`-painikkeen tekstiksi nykyistä AJANKOHTA-
+   valintaa kuvaavaa dynaamista tekstiä ("Vaihda 'Lista' nimi johonkin
+   kuvaavampaan, esim päivämäärän mukaan" -> "📋 Seuraavat 7 pv" tms),
+   mutta käyttäjä totesi sen olevan huono otsikko VAIKKA se vaihtuukin
+   ajan mukaan - liian pitkä/epävakaa välilehden nimeksi. Vaihdettiin
+   kiinteäksi "📋 Ottelut".
+2. Sen jälkeen näytettiin joukkueen nimi tabissa kun joukkuesuodatin oli
+   päällä ("📋 <joukkueen nimi>"), koska ajateltiin sen olevan hyödyllistä
+   kontekstia. **Käyttäjä halusi senkin pois** ("Haluan, että välilehden
+   nimi pysyy 'Ottelut'") - samalla kertaa käyttäjä myös pyysi että
+   joukkuesuodatin puretaan kokonaan kun välilehteä vaihtaa (ks.
+   "Joukkuesuodatin"-osion kohta `clearTeamFilterForTabSwitch()`:sta),
+   mikä teki tab-nimen kontekstuaalisesta hyödystä joka tapauksessa
+   vähemmän tärkeän - banneri (`#team-filter-banner`) näkyy jo itse
+   Ottelut-välilehden sisällä silloin kun suodatin on aktiivinen.
+
+**Lopputulos:** `#tab-list`:n teksti on nyt pelkkä kiinteä staattinen
+HTML-merkkijono "📋 Ottelut" - ei mitään JS-funktiota tai
+`renderResults()`-päivitystä enää tarvita tätä varten
+(`listTabLabel()`-funktio poistettu kokonaan).
 
 ## Pääsylippujen hinta-arvio
 

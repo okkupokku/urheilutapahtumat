@@ -1460,17 +1460,18 @@ function currentDayRangeLabel() {
   return '';
 }
 
-// "Lista"-välilehden nimi (käyttäjän toive 2026-09-27, kaksi kierrosta):
+// "Lista"-välilehden nimi (käyttäjän toive 2026-09-27, kolme kierrosta):
 // ensin kokeiltiin AJANKOHTA-valintaa kuvaavaa dynaamista nimeä (esim.
 // "Seuraavat 7 pv"), mutta käyttäjä totesi sen olevan huono otsikko
 // vaikka se vaihtuukin ajan mukaan - "Parempi nimi olisi ehkä 'Ottelut'".
-// Kiinteä "📋 Ottelut" nyt, PAITSI joukkuesuodattimen ollessa päällä
-// (state.teamFilter) - silloin näytetään joukkueen nimi, koska se on yhä
-// hyödyllistä kontekstia eikä sama AJANKOHTA-otsikko-ongelma koske sitä.
-function listTabLabel() {
-  if (state.teamFilter) return `📋 ${state.teamFilter.team}`;
-  return '📋 Ottelut';
-}
+// Sen jälkeen kokeiltiin näyttää joukkueen nimi kun joukkuesuodatin on
+// päällä, mutta käyttäjä halusi senkin pois: "Haluan, että välilehden
+// nimi pysyy 'Ottelut'" - nimi on siis nyt AINA kiinteä "📋 Ottelut",
+// staattisena HTML:ssä (#tab-list), ei enää mitään JS-päivitystä
+// tarvita. Ks. myös switchView():n kommentti siitä miten joukkuesuodatin
+// puretaan kokonaan tabia vaihdettaessa - se korvasi tarpeen näyttää
+// joukkueen nimi tabissa "kontekstina", koska konteksti (banneri) näkyy
+// vain Ottelut-välilehdellä itsellään.
 
 function formatDayLabel(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -2375,6 +2376,15 @@ document.getElementById('teams-list').addEventListener('click', (e) => {
 
 function switchView(view) {
   const previousView = state.view;
+  // Joukkuesuodatin puretaan heti kun vaihdetaan POIS Ottelut-välilehdeltä
+  // (käyttäjän toive 2026-09-27, ks. clearTeamFilterForTabSwitch()) -
+  // renderResults() heti perään päivittää #board:n/bannerin sisällön
+  // ajan tasalle SIIHEN MENNESSÄ kun käyttäjä joskus palaa Ottelut-
+  // välilehdelle (se on nyt piilossa mutta ei tuhottu).
+  if (view !== 'list' && state.teamFilter) {
+    clearTeamFilterForTabSwitch();
+    renderResults();
+  }
   state.view = view;
   document.querySelectorAll('.view-tab').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   document.getElementById('board').style.display = view === 'list' ? '' : 'none';
@@ -2414,7 +2424,6 @@ function renderResults() {
   const filtered = getFilteredMatches();
   const distancePrefix = (!state.teamFilter && REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin - ' : '';
   document.getElementById('result-count').textContent = `${distancePrefix}${filtered.length} ottelua näkyvissä`;
-  document.getElementById('tab-list').textContent = listTabLabel();
 
   const teamBanner = document.getElementById('team-filter-banner');
   if (state.teamFilter) {
@@ -2519,6 +2528,29 @@ function showShareUrlFallback(url) {
 // -ketju palauttaa aina alkuperäiseen näkymään asti purettaessa, ei vain
 // yhtä askelta taaksepäin ketjussa.
 let teamFilterRestoreDay = 'week';
+
+// Joukkuesuodattimen purku välilehteä vaihdettaessa (käyttäjän toive
+// 2026-09-27: "Jos välilehteä vaihtaa, haluan, että yksittäisen joukkueen
+// valinta poistuu, ja kun palaa Ottelut välilehdelle näkyy taas kaikkien
+// joukkueiden ottelut sillä ajankohtavalinnalla ja rajauksella joka oli
+// ennen joukkeen klikkaamista"). Kutsutaan switchView():stä aina kun
+// vaihdetaan pois Ottelut-välilehdeltä joukkuesuodattimen ollessa päällä
+// - EI `history.back()`:ia (se on selaimen "takaisin"-napille/"✕ Näytä
+// kaikki ottelut" -napille varattu polku, ei tabin vaihto), vaan
+// `history.replaceState()` korvaa nykyisen (joukkuesuodatettuun tilaan
+// pushatun) historiamerkinnän suodattimettomalla tilalla - muuten
+// selaimen "takaisin"-nappi voisi myöhemmin yllättäen palauttaa juuri
+// hylätyn joukkuesuodattimen.
+function clearTeamFilterForTabSwitch() {
+  if (!state.teamFilter) return;
+  const params = new URLSearchParams(window.location.search);
+  params.delete('team');
+  params.delete('teamSport');
+  const qs = params.toString();
+  history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+  state.teamFilter = null;
+  selectDayPreset(teamFilterRestoreDay);
+}
 
 function applyTeamFilter(team, sport) {
   if (!state.teamFilter) teamFilterRestoreDay = state.day;
