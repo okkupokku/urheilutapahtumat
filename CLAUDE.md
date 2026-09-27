@@ -290,6 +290,46 @@ otteluohjelman sarjan nimeen (näkyy listassa "Sarja ↗" -linkkinä,
     [scripts/fetch-salibandy.js](scripts/fetch-salibandy.js):n
     `slugify()`.
 
+## Joukkuesuodatin (klikkaa joukkueen nimeä)
+
+(2026-09-27, käyttäjän toive: "kun klikkaa hakutuloksissa joukkueen
+nimeä, esitetään kaikki sen joukkueen ottelut... kaikki saatavilla
+olevat ottelut, jossa kyseinen joukkue pelaa PK-seudulla") Joukkueen nimi
+`.matchup`-rivillä on nyt `<button class="team team-link" data-team=
+data-sport=>` (aiemmin pelkkä `<span>`) - klikkaus asettaa
+`state.teamFilter = { team, sport }`.
+
+- **`getFilteredMatches()` ohittaa TÄYSIN kaikki muut suodattimet**
+  (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA/etäisyys) kun
+  `state.teamFilter` on asetettu - palauttaa suoraan kaikki `ALL_MATCHES`-
+  joukon ottelut joissa `sport` täsmää JA joukkue on joko `teamA` tai
+  `teamB`. Tämä on tarkoituksellista: käyttäjä halusi nimenomaan "kaikki
+  saatavilla olevat" riippumatta mitä muuta oli valittuna.
+- **`sport` on mukana suodattimessa** pelkän joukkuenimen lisäksi siltä
+  varalta että sama nimi esiintyisi useammassa lajissa (ei tunnettu tapaus
+  tässä datassa, mutta ei syytä ottaa riskiä väärän lajin otteluista).
+- Banneri (`#team-filter-banner`, näkyy `#board`:n yläpuolella) kertoo
+  mitä suodatinta sovelletaan ja tarjoaa "✕ Näytä kaikki ottelut"
+  -napin (`state.teamFilter = null`) paluuseen. `currentDayRangeLabel()`
+  (kartan päiväväli-kuvateksti) huomioi tämän myös erikseen, ettei se
+  näytä harhaanjohtavasti AJANKOHTA-valinnan mukaista (nyt ohitettua)
+  tekstiä.
+- **Ei erillistä "peru"-tilaa AJANKOHTA/LAJI ym. -valinnoille** - niitä ei
+  muuteta eikä palauteta, vain OHITETAAN kun teamFilter on aktiivinen, ja
+  ne palautuvat automaattisesti käyttöön heti kun teamFilter tyhjennetään
+  (koska niitä ei koskaan kosketeltu). Jos käyttäjä klikkaa jotain muuta
+  suodatinta teamFilterin ollessa aktiivinen, se EI tee mitään näkyvää
+  (koska getFilteredMatches() ohittaa sen silti) - ei ole vielä
+  raportoitu ongelmaksi, mutta jos tulee, harkitse teamFilterin
+  automaattista tyhjennystä minkä tahansa muun suodattimen kosketuksesta.
+- **`escapeAttr()`-apufunktio** ([index.html](index.html)) escapee
+  joukkuenimen HTML-attribuuttiin (`data-team`) - ilman tätä nimi jossa
+  on lainausmerkki tms. rikkoisi attribuutin jäsennyksen. Käytetään myös
+  bannerin tekstin koostamiseen.
+- Tapahtumankuuntelija on YKSI delegoitu klikkauskuuntelija `#board`:issa
+  (ei per-nappi), koska ottelurivit poistetaan/luodaan uudelleen joka
+  `renderResults()`-kutsulla mutta `#board`-elementti itse on pysyvä.
+
 ## Pääsylippujen hinta-arvio
 
 (2026-09-26, käyttäjän toive: "Onko mahdollista saada otteluiden

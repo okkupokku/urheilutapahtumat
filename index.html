@@ -248,9 +248,19 @@
   .row .sport-name { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.01em; }
   .row .gender-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding-left: 1.7rem; }
   .row .matchup { font-weight: 600; font-size: 0.98rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem; }
-  .row .matchup .team { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
+  /* .team on nyt <button> (klikattava - näyttää joukkueen kaikki ottelut,
+     käyttäjän toive 2026-09-27), joten nollataan napin oletustyylit ja
+     pidetään ulkoasu identtisenä entiseen <span>-versioon nähden paitsi
+     hover/focus-tilan osoittaessa klikattavuuden. */
+  .row .matchup .team { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; background: none; border: none; padding: 0; margin: 0; font: inherit; color: inherit; cursor: pointer; border-radius: 4px; }
+  .row .matchup .team:hover, .row .matchup .team:focus-visible { color: var(--amber-dim); text-decoration: underline; text-underline-offset: 2px; }
   .row .matchup .dash { color: var(--muted); font-weight: 400; }
   .row .matchup .crest { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; border-radius: 3px; background: rgba(0,0,0,0.04); flex-shrink: 0; }
+
+  /* Joukkuesuodattimen banneri - näytetään #board:n yläpuolella kun
+     joukkueen nimeä on klikattu (state.teamFilter). */
+  .team-filter-banner { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; background: var(--panel-alt); border: 1px solid var(--divider); border-radius: var(--radius); padding: 0.7rem 1rem; margin-bottom: 1rem; font-size: 0.88rem; }
+  .team-filter-banner strong { color: var(--text); }
   .row .details { color: var(--muted); font-size: 0.82rem; margin-top: 0.2rem; }
   .row .details .category { color: var(--amber-dim); }
   .row .details .category-link { color: var(--amber-dim); text-decoration: none; border-bottom: 1px dotted var(--amber-dim); }
@@ -390,6 +400,11 @@
         <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
       </span>
     </div>
+  </div>
+
+  <div class="team-filter-banner" id="team-filter-banner" hidden>
+    <span id="team-filter-label"></span>
+    <button type="button" class="refresh-btn" id="team-filter-clear">✕ Näytä kaikki ottelut</button>
   </div>
 
   <div id="board"></div>
@@ -1089,6 +1104,14 @@ const state = {
   customTo: null,
   maxDistanceKm: null,
   view: 'list',
+  // Kun asetettu, ohittaa KAIKKI muut suodattimet (LAJI/SUKUPUOLI/
+  // KILPAILUTASO/KAUPUNKI/AJANKOHTA) - näyttää vain kyseisen joukkueen
+  // kaikki saatavilla olevat ottelut (käyttäjän toive 2026-09-27:
+  // "kun klikkaa joukkueen nimeä, esitetään kaikki sen joukkueen
+  // ottelut"). `sport` on mukana koska sama joukkuenimi voisi teoriassa
+  // esiintyä eri lajeissa (ei tunnettu tapaus tässä datassa, mutta ei
+  // syytä ottaa riskiä) - ks. getFilteredMatches().
+  teamFilter: null, // { team: string, sport: string } | null
 };
 
 /* ------------------------------------------------------------
@@ -1205,6 +1228,11 @@ function passesDayFilter(dateStr) {
 }
 
 function currentDayRangeLabel() {
+  // Joukkuesuodatin ohittaa AJANKOHTA-valinnan kokonaan (näyttää kaikki
+  // saatavilla olevat kyseisen joukkueen ottelut) - kuvateksti kertoo
+  // tämän selvästi eikä näytä harhaanjohtavasti state.day:n mukaista
+  // (mahdollisesti ristiriitaista) tekstiä.
+  if (state.teamFilter) return `📅 Kaikki saatavilla olevat - ${state.teamFilter.team}`;
   if (state.day === 'today') return `📅 Tänään · ${formatShortDate(todayISO(0))}`;
   if (state.day === 'week') return `📅 Seuraavat ${WEEK_PRESET_DAYS + 1} pv · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(WEEK_PRESET_DAYS))}`;
   if (state.day === 'month') return `📅 Seuraavat ${MONTH_PRESET_DAYS + 1} pv · ${formatShortDate(todayISO(0))}–${formatShortDate(todayISO(MONTH_PRESET_DAYS))}`;
@@ -1233,6 +1261,17 @@ function cityOf(m) {
 function categoryKey(m) { return `${m.sport}||${m.categoryId}`; }
 
 function getFilteredMatches() {
+  // Joukkuesuodatin (klikattu joukkueen nimi) ohittaa kaikki muut
+  // suodattimet tarkoituksella - käyttäjän toive 2026-09-27: "esitetään
+  // kaikki sen joukkueen ottelut" riippumatta mitä LAJI/SUKUPUOLI/
+  // KILPAILUTASO/KAUPUNKI/AJANKOHTA sattuu olemaan asetettuna.
+  if (state.teamFilter) {
+    return ALL_MATCHES
+      .filter(m => m.sport === state.teamFilter.sport
+        && (m.teamA === state.teamFilter.team || m.teamB === state.teamFilter.team))
+      .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  }
+
   const list = ALL_MATCHES.filter(m => {
     if (!state.sports.has(m.sport)) return false;
     if (!state.cities.has(cityOf(m))) return false;
@@ -1670,6 +1709,17 @@ function crestImg(url) {
   return `<img class="crest" src="${url}" alt="" loading="lazy" onerror="this.remove()">`;
 }
 
+// HTML-attribuuttiin upotettavan arvon turvallinen escapointi (esim.
+// joukkuenimi data-team-attribuuttiin) - ilman tätä nimi jossa on
+// lainausmerkki tai "&" rikkoisi attribuutin jäsennyksen.
+function escapeAttr(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 // Linkki ottelupaikkaan Google Mapsissa - koordinaateilla jos ne on
 // saatavilla (tarkin tulos), muuten venue+kaupunki-tekstihaulla.
 function googleMapsUrl(m) {
@@ -1747,7 +1797,7 @@ function renderBoard(filtered) {
           <div class="gender-tag">${m.genderGroup || ''}</div>
         </div>
         <div class="match-info">
-          <div class="matchup"><span class="team">${crestImg(m.crestA)}${m.teamA}</span><span class="dash">–</span><span class="team">${crestImg(m.crestB)}${m.teamB}</span></div>
+          <div class="matchup"><button type="button" class="team team-link" data-team="${escapeAttr(m.teamA)}" data-sport="${escapeAttr(m.sport)}" title="Näytä kaikki ${m.teamA}:n ottelut">${crestImg(m.crestA)}${m.teamA}</button><span class="dash">–</span><button type="button" class="team team-link" data-team="${escapeAttr(m.teamB)}" data-sport="${escapeAttr(m.sport)}" title="Näytä kaikki ${m.teamB}:n ottelut">${crestImg(m.crestB)}${m.teamB}</button></div>
           <div class="details">${categoryHtml}${priceHtml}</div>
         </div>
         <div class="venue-col">${venueHtml}<span class="city">${cityOf(m)}</span>${dist !== null ? `<span class="distance">${formatDistance(dist)}</span>` : ''}</div>
@@ -1894,8 +1944,17 @@ document.querySelectorAll('.view-tab').forEach(btn => {
 function renderResults() {
   updateLocationUI();
   const filtered = getFilteredMatches();
-  const distancePrefix = (REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin - ' : '';
+  const distancePrefix = (!state.teamFilter && REFERENCE_LOCATION && state.day === 'today') ? '📍 Lähimmät ensin - ' : '';
   document.getElementById('result-count').textContent = `${distancePrefix}${filtered.length} ottelua näkyvissä`;
+
+  const teamBanner = document.getElementById('team-filter-banner');
+  if (state.teamFilter) {
+    teamBanner.hidden = false;
+    document.getElementById('team-filter-label').innerHTML =
+      `Näytetään: <strong>${escapeAttr(state.teamFilter.team)}</strong> (${escapeAttr(state.teamFilter.sport)}) - kaikki saatavilla olevat ottelut`;
+  } else {
+    teamBanner.hidden = true;
+  }
   const loadedCount = SOURCES.filter(s => sourceState[s.id] && sourceState[s.id].status !== 'loading').length;
   const stillLoading = loadedCount < SOURCES.length;
   document.getElementById('loading-spinner').hidden = !stillLoading;
@@ -1971,6 +2030,22 @@ function showShareUrlFallback(url) {
   box.focus();
   box.select();
 }
+
+// Joukkueen nimen klikkaus (käyttäjän toive 2026-09-27): tapahtuman
+// delegointi #board:iin, koska rivit poistetaan/luodaan uudelleen joka
+// renderResults()-kutsulla eikä listenereitä siksi voi liittää per-nappi
+// kertaalleen - #board itse on kuitenkin pysyvä DOM-elementti.
+document.getElementById('board').addEventListener('click', (e) => {
+  const btn = e.target.closest('.team-link');
+  if (!btn) return;
+  state.teamFilter = { team: btn.dataset.team, sport: btn.dataset.sport };
+  renderResults();
+  document.getElementById('team-filter-banner').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+document.getElementById('team-filter-clear').addEventListener('click', () => {
+  state.teamFilter = null;
+  renderResults();
+});
 
 document.getElementById('refresh-btn').addEventListener('click', loadAll);
 document.getElementById('share-btn').addEventListener('click', async () => {
