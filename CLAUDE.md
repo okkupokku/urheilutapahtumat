@@ -390,16 +390,42 @@ löytyvät PK-seudulta... Kun klikkaa jotain joukkuetta, sivu avaa siihen
 alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
 `#teams-view`) [index.html](index.html):ssä, oma `renderTeamsView()`.
 
-- **Täysin riippumaton LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA-
-  suodattimista** - `buildTeamsIndex()` rakentaa `laji -> sukupuoli ->
-  sarja(categoryId) -> Map(joukkue -> logo)`-rakenteen suoraan
-  `ALL_MATCHES`:sta, ei `getFilteredMatches()`:sta, koska käyttäjä halusi
-  nimenomaan "kaikki saatavilla olevat" joukkueet riippumatta valituista
-  suodattimista. **Siksi `switchView('teams')` piilottaa kokonaan
-  `.controls`-, `#advanced-panel`- ja `.meta-line`-elementit** (näytetään
-  taas kun vaihdetaan pois) - ilman tätä käyttäjä voisi luulla LAJI/
-  SUKUPUOLI-valintojen vaikuttavan Joukkueet-listaan, vaikka ne eivät
-  vaikuta.
+- **KAIKKI suodattimet (LAJI/SUKUPUOLI/KILPAILUTASO/KAUPUNKI/AJANKOHTA/
+  SUOSIKIT/ETÄISYYS/Tarkennetun haun SARJAT) koskevat Joukkueet-välilehteä
+  TÄSMÄLLEEN SAMALLA TAVALLA kuin Ottelut/Kartta-välilehtiä** - käyttäjän
+  eksplisiittinen käänteinen korjaus 2026-09-27 alkuperäiseen
+  toteutukseen: "Siirretään... Ottelut, Kartta ja Joukkueet välilehtien
+  valinnat filtteröinnin alapuolelle. Eli filtterit ja niiden valinnat
+  pysyvät kaikilla välilehdillä... jos vain lentopallo on valittu,
+  Joukkueet-listassa näkyy vain lentopallojoukkueet". `buildTeamsIndex()`
+  rakentaa `laji -> sukupuoli -> sarja(categoryId) -> Map(joukkue ->
+  logo)`-rakenteen `getFilteredMatches()`:sta (EI enää suoraan
+  `ALL_MATCHES`:sta - alun perin, ensimmäisessä versiossa, se oli
+  tarkoituksella täysin riippumaton kaikista suodattimista, mutta tämä
+  käännettiin päinvastaiseksi). **HUOM:** `state.teamFilter`
+  (Ottelut-välilehden yksittäisen joukkueen "kaikki ottelut"
+  -pikasuodatin) ei koskaan vaikuta tähän, koska se puretaan aina heti
+  kun poistutaan Ottelut-välilehdeltä (ks. `clearTeamFilterForTabSwitch()`
+  alempana) - `getFilteredMatches()`:n `state.teamFilter`-ohitushaara ei
+  siis ole koskaan aktiivinen kun `buildTeamsIndex()` kutsuu sitä.
+  `renderResults()` päivittää nyt AINA myös `#teams-list`:n (kutsuu
+  `renderTeamsView()`:ää lopussaan riippumatta siitä mikä välilehti on
+  näkyvissä) - Joukkueet-lista pysyy siis ajan tasalla heti kun mitä
+  tahansa suodatinta muutetaan, ei vain silloin kun sinne vaihdetaan.
+  **Suodatinelementit (`.controls`/`#advanced-panel`/`.meta-line`) EIVÄT
+  enää piiloudu millään välilehdellä** - `switchView()`:n aiempi
+  `display: none` -piilotuslogiikka Joukkueet-välilehdelle on poistettu
+  kokonaan, koska suodattimet koskevat nyt kaikkia kolmea välilehteä.
+  **Tyhjä tila kahdessa muodossa** (sama kuvio kuin `renderBoard()`:ssä):
+  "Ei vielä yhtään joukkuetta ladattu." kun `ALL_MATCHES` on tyhjä (ei
+  dataa lainkaan) vs. "Ei joukkueita valituilla suodattimilla." kun dataa
+  on mutta suodattimet rajaavat kaiken pois.
+- **Välilehtivalitsin (`#view-tabs`) siirretty filtteröinnin ALAPUOLELLE**
+  HTML:ssä (käyttäjän toive, sama korjaus kuin yllä) - järjestys on nyt
+  `.controls` -> `#advanced-panel` -> `.meta-line` -> `#view-tabs`, aiemmin
+  `#view-tabs` oli aivan `.controls-sticky`:n alussa. `.controls-sticky`
+  on tavallinen pinottu `<div>` (ei flex/grid), joten pelkkä HTML:n
+  järjestys ratkaisee visuaalisen järjestyksen.
 - **Hierarkia Laji -> Sukupuoli -> Sarja -> Joukkue** (käyttäjän toive
   2026-09-27, alun perin oli vain Laji -> Sukupuoli -> Joukkue). "Sarja"
   ryhmitellään `categoryId`:n mukaan (sama vakaa avain kuin Tarkennetun

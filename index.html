@@ -446,12 +446,6 @@
 
 <main>
   <div class="controls-sticky">
-    <div class="view-tabs" id="view-tabs">
-      <button class="view-tab active" data-view="list" type="button" id="tab-list">📋 Ottelut</button>
-      <button class="view-tab" data-view="map" type="button">🗺️ Kartta</button>
-      <button class="view-tab" data-view="teams" type="button">👥 Joukkueet</button>
-    </div>
-
     <div class="controls">
       <div class="control-row" id="sport-filters"><span class="label">LAJI</span></div>
       <div class="control-row" id="gender-filters"><span class="label">SUKUPUOLI</span></div>
@@ -497,6 +491,17 @@
         <button class="refresh-btn" id="refresh-btn">↻ Hae uudelleen</button>
       </span>
     </div>
+
+    <!-- Välilehdet (Ottelut/Kartta/Joukkueet) FILTTERÖINNIN ALAPUOLELLA
+         (käyttäjän toive 2026-09-27: "Siirretään... välilehtien valinnat
+         filtteröinnin alapuolelle") - suodattimet (LAJI/SUKUPUOLI/jne.
+         yllä) koskevat nyt KAIKKIA kolmea välilehteä samalla tavalla, ks.
+         buildTeamsIndex():n kommentti [index.html](index.html):ssä. -->
+    <div class="view-tabs" id="view-tabs">
+      <button class="view-tab active" data-view="list" type="button" id="tab-list">📋 Ottelut</button>
+      <button class="view-tab" data-view="map" type="button">🗺️ Kartta</button>
+      <button class="view-tab" data-view="teams" type="button">👥 Joukkueet</button>
+    </div>
   </div>
 
   <div class="team-filter-banner" id="team-filter-banner" hidden>
@@ -517,7 +522,7 @@
   </div>
 
   <div id="teams-view" class="teams-view" style="display:none;">
-    <p class="teams-intro">Kaikki PK-seudulta löytyvät joukkueet lajeittain ja sukupuolittain - riippumatta yllä olevista suodattimista. Klikkaa joukkuetta nähdäksesi sen kaikki saatavilla olevat ottelut.</p>
+    <p class="teams-intro">PK-seudulta löytyvät joukkueet lajeittain, sukupuolittain ja sarjoittain - valitut suodattimet (LAJI, SUKUPUOLI, AJANKOHTA jne.) rajaavat myös tätä listaa. Klikkaa joukkuetta nähdäksesi sen kaikki saatavilla olevat ottelut.</p>
     <div id="teams-list"></div>
   </div>
 
@@ -1247,8 +1252,9 @@ function toggleFavorite(sport, team) {
   const toggle = document.getElementById('favorites-filter-toggle');
   if (toggle) toggle.checked = state.favoritesOnly;
   updateFavoritesToggleState();
+  // renderResults() päivittää myös Joukkueet-välilehden (#teams-list)
+  // aina, ei siis tarvitse kutsua renderTeamsView():ää erikseen täällä.
   renderResults();
-  renderTeamsView();
 }
 
 // "Näytä vain suosikkijoukkueeni" -rivi on AINA näkyvissä, myös ennen
@@ -2186,11 +2192,23 @@ function renderMap(filtered) {
 let expandedTeam = null; // { team: string, sport: string } | null
 
 // sport -> gender -> categoryId -> { name, teams: Map(joukkue -> crest) },
-// rakennettu SUORAAN ALL_MATCHES:sta (ei getFilteredMatches()) -
-// Joukkueet-näkymä näyttää tarkoituksella aina KAIKKI ladatut joukkueet
-// riippumatta LAJI/SUKUPUOLI/AJANKOHTA-suodattimista (käyttäjän toive
-// 2026-09-27: "kaikki joukkueet, jotka löytyvät PK-seudulta - kaikki
-// saatavilla olevat").
+// rakennettu getFilteredMatches():sta (EI ALL_MATCHES:sta). Käyttäjän
+// korjaus 2026-09-27: "filtterit ja niiden valinnat pysyvät kaikilla
+// välilehdillä. Eli filtterit ja niiden valinnat pysyvät kaikilla
+// välilehdillä, mutta vain välilehti muuttuu... jos vain lentopallo on
+// valittu, Joukkueet-listassa näkyy vain lentopallojoukkueet" - alun
+// perin Joukkueet-välilehti näytti tarkoituksella AINA kaikki joukkueet
+// LAJI/SUKUPUOLI/AJANKOHTA-suodattimista riippumatta, mutta tämä
+// käännettiin täysin päinvastaiseksi: KAIKKI samat suodattimet (LAJI,
+// SUKUPUOLI, KILPAILUTASO, KAUPUNKI, AJANKOHTA, SUOSIKIT, ETÄISYYS,
+// Tarkennetun haun SARJAT) koskevat nyt Joukkueet-välilehteä täsmälleen
+// samalla tavalla kuin Ottelut/Kartta-välilehtiä, koska ne käyttävät nyt
+// samaa `getFilteredMatches()`-funktiota datalähteenään.
+// **HUOM:** `state.teamFilter` (yksittäisen joukkueen "kaikki ottelut"
+// -pikavalinta) EI koskaan ole aktiivinen kun tätä kutsutaan, koska se
+// puretaan aina heti kun poistutaan Ottelut-välilehdeltä (ks.
+// `clearTeamFilterForTabSwitch()`) - `getFilteredMatches()`:n
+// `state.teamFilter`-ohitushaara ei siis koskaan vaikuta tähän.
 //
 // **VAIN kotijoukkue lisätään listaan** - vierasjoukkue EI ole PK-seudun
 // joukkue (käyttäjän korjaus 2026-09-27: "vain PK-seudun joukkueet, ei
@@ -2221,7 +2239,7 @@ function isFinlandNationalTeamName(name) {
 
 function buildTeamsIndex() {
   const bySport = new Map();
-  ALL_MATCHES.forEach(m => {
+  getFilteredMatches().forEach(m => {
     let team = m.teamA, crest = m.crestA;
     if (competitionTypeOf(m) === 'maajoukkue') {
       if (isFinlandNationalTeamName(m.teamB) && !isFinlandNationalTeamName(m.teamA)) {
@@ -2291,9 +2309,17 @@ function teamMatchesHtml(team, sport) {
 // nimen ajantasaisena live-datasta (m.category, esim. sponsorinimi).
 function renderTeamsView() {
   const container = document.getElementById('teams-list');
+  if (ALL_MATCHES.length === 0) {
+    container.innerHTML = '<div class="empty-state">Ei vielä yhtään joukkuetta ladattu.</div>';
+    return;
+  }
   const bySport = buildTeamsIndex();
   if (bySport.size === 0) {
-    container.innerHTML = '<div class="empty-state">Ei vielä yhtään joukkuetta ladattu.</div>';
+    // Dataa on ladattu, mutta valitut suodattimet (LAJI/SUKUPUOLI/
+    // AJANKOHTA/SUOSIKIT/jne.) rajaavat kaikki joukkueet pois - eri tila
+    // kuin "ei mitään ladattu vielä" (ks. yllä), samaan tapaan kuin
+    // renderBoard()'in kahden eri tyhjä-tilan erottelu.
+    container.innerHTML = '<div class="empty-state">Ei joukkueita valituilla suodattimilla.</div>';
     return;
   }
   const sports = sortSports([...bySport.keys()]);
@@ -2375,7 +2401,6 @@ document.getElementById('teams-list').addEventListener('click', (e) => {
 });
 
 function switchView(view) {
-  const previousView = state.view;
   // Joukkuesuodatin puretaan heti kun vaihdetaan POIS Ottelut-välilehdeltä
   // (käyttäjän toive 2026-09-27, ks. clearTeamFilterForTabSwitch()) -
   // renderResults() heti perään päivittää #board:n/bannerin sisällön
@@ -2390,24 +2415,17 @@ function switchView(view) {
   document.getElementById('board').style.display = view === 'list' ? '' : 'none';
   document.getElementById('map-view').style.display = view === 'map' ? '' : 'none';
   document.getElementById('teams-view').style.display = view === 'teams' ? '' : 'none';
-  // LAJI/SUKUPUOLI/jne-suodattimet ja tulosrivi eivät koske Joukkueet-
-  // näkymää (se näyttää tarkoituksella aina kaikki joukkueet riippumatta
-  // suodattimista) - piilotetaan ne siksi kokonaan, jotta ei näytä
-  // harhaanjohtavasti siltä että ne vaikuttaisivat tähän näkymään.
-  document.querySelector('.controls').style.display = view === 'teams' ? 'none' : '';
-  document.getElementById('advanced-panel').style.display = view === 'teams' ? 'none' : '';
-  document.querySelector('.meta-line').style.display = view === 'teams' ? 'none' : '';
+  // Suodattimet (.controls/#advanced-panel/.meta-line) EIVÄT enää
+  // piiloudu Joukkueet-välilehdellä (käyttäjän toive 2026-09-27:
+  // "filtterit ja niiden valinnat pysyvät kaikilla välilehdillä") - ne
+  // koskevat nyt kaikkia kolmea välilehteä samalla tavalla, ks.
+  // buildTeamsIndex(). Ei myöskään enää tarvita erillistä
+  // renderTeamsView()-kutsua täällä - renderResults() päivittää
+  // #teams-list:n aina automaattisesti riippumatta siitä mikä välilehti
+  // on juuri näkyvissä (ks. sen oma kommentti).
   if (view === 'map') {
     const map = ensureMap();
     setTimeout(() => { map.resize(); renderMap(getFilteredMatches()); }, 0);
-  }
-  if (view === 'teams') {
-    renderTeamsView();
-  } else if (previousView === 'teams') {
-    // Palataan pois Joukkueet-näkymästä - piilotetut elementit (banneri,
-    // tulosrivi) pitää päivittää ajan tasalle jos state on ehtinyt
-    // muuttua sillä välin (esim. data valmistui taustalla).
-    renderResults();
   }
 }
 
@@ -2446,6 +2464,13 @@ function renderResults() {
   renderBoard(filtered);
   requestAnimationFrame(() => board.classList.remove('board-updating'));
   if (state.view === 'map' && mapInstance) renderMap(filtered);
+  // Joukkueet-välilehti päivitetään AINA tässä, riippumatta siitä mikä
+  // välilehti on juuri näkyvissä (sama periaate kuin renderBoard()
+  // yllä) - suodattimet koskevat sitä nyt samalla tavalla kuin Ottelut/
+  // Kartta-välilehtiä (ks. buildTeamsIndex()), joten se pitää pysyä ajan
+  // tasalla jokaisen suodatinmuutoksen jälkeen eikä vain silloin kun
+  // sinne vaihdetaan.
+  renderTeamsView();
 }
 
 function renderPlaceholders() {
