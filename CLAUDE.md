@@ -460,6 +460,65 @@ alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
   per sarja (ei per joukkue eikä per ottelu), koska `priceHint` on jo
   lähtökohtaisesti sarjakohtainen karkea arvio.
 
+## Suosikkijoukkueet (localStorage)
+
+(2026-09-27, käyttäjän toive: "pystyisikö selain muistamaan valintoja
+aiemmilta kerroilta? Mietin, onnistuuko lempijoukkueiden valitseminen, ja
+filttereissä olisi default-valintana 'näytä omat suosikkijoukkueet'.
+Suosikkijoukkueeksi voisi lisätä joko Joukkueet tai Ottelut välilehdeltä,
+pieni diskreetti checkbox tms joukkueen nimen vieressä")
+
+- **Puhtaasti selainkohtainen muisti - EI osa jaettavaa URL:ia** (ks.
+  "Jaettava URL" yllä). Tämä on tarkoituksellinen ero: suosikit ovat
+  tämän nimenomaisen selaimen/laitteen omaa muistia, eivät jaettavaa
+  tilaa - `buildShareUrl()` ei koske näitä mitenkään.
+  `localStorage`-avaimet [index.html](index.html):ssä: `pkLiveurheiluSuosikit`
+  (JSON-taulukko `"laji||joukkue"`-avaimista, `FAVORITE_TEAMS`-Set
+  muistissa) ja `pkLiveurheiluSuosikitPaalla` (`"1"`/`"0"`,
+  `state.favoritesOnly`). Kaikki `localStorage`-kutsut `try/catch`:ssä -
+  yksityinen selaus tai estetyt evästeet eivät kaada sivua, suosikit
+  vain eivät säily.
+- **Tähtinappi (`favStarHtml()`, `.fav-star`) joukkueen nimen vieressä
+  KAHDESSA paikassa**: Joukkueet-välilehden joukkuelistassa
+  (`.team-row-head`, oma sisarusnappi `.team-list-btn`:n vieressä - EI
+  sen sisällä, koska HTML ei salli sisäkkäisiä nappeja) ja Ottelut-
+  välilehden ottelurivin `.matchup`:ssa (molempien joukkueiden nimien
+  jäljessä). Tyhjä tähti (☆) = ei suosikki, täytetty (★, `.active`) =
+  suosikki - himmeä/pieni ellei valittu ("pieni, diskreetti" -toive).
+- **"Näytä vain suosikkijoukkueeni" -valintaruutu** (`#favorites-row`,
+  `state.favoritesOnly`) on tavallinen LISÄSUODATIN muiden joukossa
+  `getFilteredMatches()`:ssä (AND-ehto LAJI/SUKUPUOLI/AJANKOHTA:n kanssa)
+  - EI ohita muita suodattimia kuten `state.teamFilter` tekee, koska tämä
+  on tarkoitettu tavalliseksi rajaukseksi eikä erilliseksi "näytä vain
+  tämä" -pikakuvakkeeksi. Ottelu läpäisee jos JOMPI KUMPI joukkue
+  (`teamA`/`teamB`) on suosikki.
+- **Rivi piilossa kokonaan kunnes ensimmäinen suosikki on lisätty**
+  (`updateFavoritesRowVisibility()`, `row.hidden = FAVORITE_TEAMS.size
+  === 0`) - ei näytetä tyhjää/hyödytöntä suodatinta uudelle käyttäjälle.
+  **HUOM sudenkuoppa-varoitus:** `#favorites-row`:lla on luokka
+  `.control-row`, jolla on oma `display: flex` -sääntö - lisätty siis
+  proaktiivisesti `.control-row[hidden] { display: none; }` -ylikirjoitus
+  (sama toistuva `[hidden]`+`display`-virhe kuin "Sudenkuoppia" #1/#6/#9,
+  vältetty tällä kertaa etukäteen tarkistamalla ennen toteutusta).
+- **"Default-valinta" toteutettu automaattisena päälle-kytkeytymisenä**
+  (`toggleFavorite()`): kun käyttäjä lisää AIVAN ENSIMMÄISEN suosikkinsa
+  (`FAVORITE_TEAMS.size` siirtyy 0:sta ylöspäin), `state.favoritesOnly`
+  asetetaan automaattisesti todeksi ja muistetaan - tämän jälkeen
+  käyttäjän oma päälle/pois-valinta muistetaan sellaisenaan eikä
+  automatiikkaa enää sovelleta. **Käänteinen reunatapaus, korjattu ennen
+  julkaisua:** jos suodatin on päällä ja käyttäjä poistaa VIIMEISEN
+  suosikkinsa, `state.favoritesOnly` kytketään automaattisesti pois
+  päältä - muuten tulokset näyttäisivät hiljaa "0 ottelua näkyvissä" eikä
+  käyttäjä edes näkisi valintaruutua jolla korjata tilanne (rivi
+  piilotetaan heti kun suosikkeja ei ole yhtään).
+- Tähden klikkaus (`#board`/`#teams-list`:n delegoiduissa
+  klikkauskuuntelijoissa, ks. `.fav-star`-haara ENNEN `.team-link`/
+  `.team-toggle`-haaraa) kutsuu aina sekä `renderResults()`:ää että
+  `renderTeamsView()`:ää riippumatta kummasta välilehdestä klikkaus
+  tuli, jotta tähden tila ja mahdollisesti suodatetut tulokset pysyvät
+  ajan tasalla molemmissa näkymissä seuraavan kerran kun käyttäjä vaihtaa
+  välilehteä - halvempaa kuin seurata kumpi näkymä on juuri aktiivinen.
+
 ## Lista-välilehden nimi
 
 (2026-09-27, käyttäjän toive, kaksi kierrosta) Ensin kokeiltiin
