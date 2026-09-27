@@ -425,18 +425,40 @@ alle kaikki sen joukkueen ottelut") Kolmas `.view-tab` (`data-view="teams"`,
   näytetään koska joukkue on aina kiinnitetty puoli (`home = m.teamA ===
   team`) - tämä koskee vain laajennetun paneelin ottelulistaa, ei
   itse joukkueiden valintaa (ks. edellinen kohta maajoukkue-poikkeuksesta).
-- **Vastustajan nimen klikkaus auki olevan joukkueen ottelulistassa
-  VAIHTAA auki olevan joukkueen kyseiseksi vastustajaksi** (sama
-  delegoitu `#teams-list`-klikkauskuuntelija tunnistaa sekä
-  `.team-toggle`- että `.team-link`-luokat) - näin voi selata
-  joukkueesta toiseen (esim. HJK miehet -> vastustaja HPS naiset, jos
-  sama nimi esiintyy molemmissa sukupuolissa) ilman että pitää sulkea ja
-  etsiä uudelleen. `scrollIntoView()` uudelle auki olevalle riville.
+- **Vastustaja ottelulistassa on TAVALLISTA TEKSTIÄ, EI klikattava**
+  (`.team-match-opp` [index.html](index.html):ssä, ei enää `<button>`).
+  Kokeiltiin aluksi (2026-09-27) tehdä vastustajan nimestä klikattava
+  linkki joka vaihtaisi auki olevan joukkueen kyseiseksi vastustajaksi -
+  mutta koska Joukkueet-indeksiin poimitaan vain PK-seudun kotijoukkueet
+  (ks. edellinen kohta), useimmat vastustajat (vieraileva ulkopaikkakunnan
+  seura) eivät koskaan itse esiinny listassa - klikkaus näytti siis
+  linkiltä muttei tehnyt mitään useimmille vastustajille. Käyttäjä löysi
+  tämän ("vierasjoukkue näyttää linkiltä, vaikka se ei vie minnekään")
+  ja se korjattiin poistamalla klikattavuus kokonaan sen sijaan että
+  yritettäisiin päätellä milloin vastustaja sattuu olemaan mukana
+  listassa - yksinkertaisempi ja luotettavampi ratkaisu.
 - Ei mitään yhteyttä Lista-näkymän `state.teamFilter`/`history.pushState`-
   mekanismiin - nämä kaksi ovat tarkoituksella täysin erilliset
   toteutukset eri käyttötarkoituksiin (Lista: suodata koko sivu yhteen
   joukkueeseen ja säilytä selaimen takaisin-nappi; Joukkueet: selaa
   joukkuehakemistoa paikallaan).
+- **Ottelun päivämäärässä näkyy viikonpäivä ja vuosi** (käyttäjän toive
+  2026-09-27: "haluan päivämäärän lisäksi myös viikonpäivän. Päivämäärässä
+  pitäisi myös näkyä vuosi") - oma `formatMatchDateFull(dateStr)`
+  [index.html](index.html):ssä (esim. "su 4.10.2026"), EI sama funktio
+  kuin muualla käytetty `formatShortDate()` (karttapopup, AJANKOHTA-
+  kuvateksti), koska niissä lyhyempi "pv.kk" riittää eikä viikonpäivälle/
+  vuodelle ole tilaa. `.team-match-row`:n ensimmäisen sarakkeen leveyttä
+  kasvatettu (5.2rem -> 6.6rem) pidemmän tekstin takia.
+- **Hinta-arvio näkyy SARJAN otsikon perässä** (käyttäjän toive
+  2026-09-27: "Hinta-arvion voisi myös tuoda tähän joukkuenäkymään...
+  jos se on esim. sarjakohtainen, hinta voisi lukea sarjan
+  hierarkiatasolla") - `priceHintForCategory(sport, categoryId)`
+  [index.html](index.html):ssä, sama `KNOWN_SERIES`-haku kuin
+  `priceHintOf(m)` mutta ilman ottelu-oliota (Joukkueet-välilehdellä ei
+  ole yhtä "nykyistä ottelua" jonka perusteella hakea). Näytetään KERRAN
+  per sarja (ei per joukkue eikä per ottelu), koska `priceHint` on jo
+  lähtökohtaisesti sarjakohtainen karkea arvio.
 
 ## Lista-välilehden nimi
 
