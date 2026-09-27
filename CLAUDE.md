@@ -169,16 +169,29 @@ jälkeen kirjoitettu teksti noudattaa tätä.
     klikkauskäsittelijän, MUISTA lisätä tämä kutsu - muuten valintaruudut
     jäävät vanhentuneiksi sen jälkeen.
 - **LAJI-rivi käyttää CSS Gridiä (`.chip-grid`), ei pelkkää flex-wrapia**
-  (2026-09-27, käyttäjän palaute - Jääpallo jäi ainoaksi chipiksi
-  viimeiselle riville ja näytti "unohdetulta"). `repeat(auto-fill,
-  minmax(140px, 1fr))` venyttää viimeisen rivin chipit täyttämään koko
-  leveyden tasaisesti sen sijaan että yksinäinen chippi jäisi pieneksi
-  vasempaan laitaan. **HUOM:** tämä on käytössä VAIN LAJI-rivillä -
-  minmax(140px) on mitoitettu lajichippien pituuteen (ikoni + pisin
-  nimi). SUKUPUOLI/KILPAILUTASO/KAUPUNKI-riveillä on sekä hyvin lyhyitä
-  että hyvin pitkiä ("Eurooppalaiset seurasarjat") tekstejä samalla
-  rivillä - kiinteä sarakeleveys leikkaisi pisimmät, joten ne pysyvät
-  tavallisessa flex-wrapissa eivätkä käytä `.chip-grid`:iä.
+  - iteroitu kahdessa vaiheessa 2026-09-27:
+  1. Ensin `repeat(auto-fill, minmax(140px, 1fr))` (käyttäjän palaute -
+     Jääpallo jäi ainoaksi chipiksi viimeiselle riville ja näytti
+     "unohdetulta") - venytti viimeisen rivin chipit täyttämään koko
+     leveyden tasaisesti sen sijaan että yksinäinen chippi jäisi pieneksi
+     vasempaan laitaan. Tämä kuitenkin sovitti sarakemäärän ikkunan
+     leveyden mukaan (useimmilla leveyksillä 5), jolloin kahdeksan lajin
+     jako näytti epätasapainoiselta (5+3).
+  2. **Lopullinen ratkaisu: kiinteä `repeat(4, 1fr)`** (käyttäjän korjaus:
+     "Näyttäisi paremmalta, jos ne jakautuvat 4 ja 4 eri riveille, eikä 5
+     ja 3 kuten nyt") - takaa AINA täsmälleen 4+4-jaon kahdeksalle lajille
+     riippumatta ikkunan leveydestä. Kapealla näytöllä (`@media
+     (max-width: 600px)`) 2 saraketta (4 riviä) luettavuuden vuoksi -
+     4 kiinteää saraketta puristaisi chipit liian kapeiksi puhelimella.
+  **HUOM:** `.chip-grid` on käytössä VAIN LAJI-rivillä - SUKUPUOLI/
+  KILPAILUTASO/KAUPUNKI-riveillä on sekä hyvin lyhyitä että hyvin pitkiä
+  ("Eurooppalaiset seurasarjat") tekstejä samalla rivillä - kiinteä
+  sarakemäärä leikkaisi pisimmät, joten ne pysyvät tavallisessa
+  flex-wrapissa eivätkä käytä `.chip-grid`:iä. Jos lajien määrä (`SPORT_META`)
+  joskus muuttuu kahdeksasta, tarkista sopiiko `repeat(4, 1fr)` yhä hyvin
+  (esim. 9 lajia jakautuisi 4+4+1, mikä palauttaisi alkuperäisen
+  ongelman - tällöin `auto-fill` tai eri kiinteä sarakemäärä voisi olla
+  parempi).
 
 ## Jaettava URL (suodatinvalinnan jakaminen)
 

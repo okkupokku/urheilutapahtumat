@@ -131,20 +131,24 @@
      `.price-hint`, `.team-category-price`). */
   .favorites-toggle.disabled { opacity: 0.55; cursor: help; }
   .favorites-toggle.disabled input[type=checkbox] { cursor: help; }
-  /* CSS Grid auto-fill+1fr sen sijaan että chipit vain flex-wrappaisivat -
-     jos rivi jakautuu kahdelle riville, viimeiselle riville jäävä
-     yksinäinen chippi (esim. Jääpallo LAJI-rivin viimeisenä) venyy
-     täyttämään koko leveyden sen sijaan että jäisi näyttämään "unohdetulta"
-     vasempaan laitaan (käyttäjän palaute 2026-09-27). flex: 1 1 240px
-     antaa koko gridin silti wrapata labelin alle omalle rivilleen
-     kapealla näytöllä, kuten pelkkä chippi-lista teki ennenkin.
-     HUOM: käytössä VAIN LAJI-rivillä (#sport-filters) - minmax(140px) on
-     mitoitettu lajichippien pituuteen (ikoni + pisin nimi, esim.
-     "Lentopallo"). SUKUPUOLI/KILPAILUTASO/KAUPUNKI-riveillä on paljon
-     lyhyempiä JA paljon pidempiä ("Eurooppalaiset seurasarjat") tekstejä
-     samalla rivillä - kiinteä sarakeleveys leikkaisi pisimmät, joten ne
-     pysyvät tavallisessa flex-wrapissa. */
-  .chip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; flex: 1 1 240px; }
+  /* CSS Grid (kiinteä 4 saraketta) sen sijaan että chipit vain
+     flex-wrappaisivat tai auto-fill laskisi sarakemäärän leveyden mukaan -
+     lajeja on tasan 8 (SPORT_META), ja `auto-fill` sovitti niistä 5
+     ensimmäiselle riville ja 3 jälkimmäiselle useimmilla näyttöleveyksillä,
+     mikä näytti epätasapainoiselta (käyttäjän palaute 2026-09-27: "Näyttäisi
+     paremmalta, jos ne jakautuvat 4 ja 4 eri riveille, eikä 5 ja 3 kuten
+     nyt"). Kiinteä `repeat(4, 1fr)` takaa AINA täsmälleen 4+4-jaon
+     riippumatta ikkunan leveydestä (aiempi auto-fill+flex: 1 1 240px
+     -yhdistelmä venytti viimeisen rivin yksinäisen chipin koko leveyden
+     täyttäväksi, mutta jako itsessään vaihteli leveyden mukaan - ei enää
+     tarpeen kun sarakemäärä on kiinteä). Kapealla näytöllä 2 saraketta
+     (4 riviä) luettavuuden vuoksi, ks. `@media (max-width: 600px)`.
+     HUOM: käytössä VAIN LAJI-rivillä (#sport-filters) - SUKUPUOLI/
+     KILPAILUTASO/KAUPUNKI-riveillä on paljon lyhyempiä JA paljon
+     pidempiä ("Eurooppalaiset seurasarjat") tekstejä samalla rivillä -
+     kiinteä sarakemäärä leikkaisi pisimmät, joten ne pysyvät tavallisessa
+     flex-wrapissa. */
+  .chip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; flex: 1 1 240px; }
   .chip { background: var(--panel); border: 1px solid var(--divider); color: var(--muted); padding: 0.4rem 0.8rem; border-radius: 999px; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s, transform .1s, opacity .15s; white-space: nowrap; flex-shrink: 0; opacity: 0.6; }
   .chip:hover { border-color: var(--amber-dim); opacity: 1; color: var(--text); }
   .chip:active { transform: scale(0.96); }
@@ -433,6 +437,9 @@
 
   @media (max-width: 600px) {
     .controls-sticky { margin: 0 -1rem; padding-left: 1rem; padding-right: 1rem; }
+    /* 2 saraketta (4 riviä) kapealla näytöllä - 4 kiinteää saraketta
+       puristaisi lajichipit liian kapeiksi puhelinnäytöllä. */
+    .chip-grid { grid-template-columns: repeat(2, 1fr); }
     header.board-header, main, footer { padding-left: 1rem; padding-right: 1rem; }
     .row { grid-template-columns: 3rem 1fr; grid-template-rows: auto auto; }
     .row .sport-col { grid-row: 1; grid-column: 2; justify-self: start; }
