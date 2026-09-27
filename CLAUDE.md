@@ -495,14 +495,22 @@ kohta suodattimen oletusarvosta.)
   on tarkoitettu tavalliseksi rajaukseksi eikä erilliseksi "näytä vain
   tämä" -pikakuvakkeeksi. Ottelu läpäisee jos JOMPI KUMPI joukkue
   (`teamA`/`teamB`) on suosikki.
-- **Rivi piilossa kokonaan kunnes ensimmäinen suosikki on lisätty**
-  (`updateFavoritesRowVisibility()`, `row.hidden = FAVORITE_TEAMS.size
-  === 0`) - ei näytetä tyhjää/hyödytöntä suodatinta uudelle käyttäjälle.
-  **HUOM sudenkuoppa-varoitus:** `#favorites-row`:lla on luokka
-  `.control-row`, jolla on oma `display: flex` -sääntö - lisätty siis
-  proaktiivisesti `.control-row[hidden] { display: none; }` -ylikirjoitus
-  (sama toistuva `[hidden]`+`display`-virhe kuin "Sudenkuoppia" #1/#6/#9,
-  vältetty tällä kertaa etukäteen tarkistamalla ennen toteutusta).
+- **Rivi (`#favorites-row`) on AINA näkyvissä**, myös ennen kuin yhtään
+  suosikkia on valittu (käyttäjän korjaus 2026-09-27: "pitäisi näkyä
+  aina, vaikka suosikkijoukkueita ei olisi vielä valittu" - kokeiltiin
+  ensin piilottaa rivi kokonaan kun suosikkeja ei ollut, mutta käyttäjä
+  halusi sen näkyvän jatkuvasti). Sen sijaan checkbox
+  (`#favorites-filter-toggle`) DISABLOIDAAN kun `FAVORITE_TEAMS.size ===
+  0` (`updateFavoritesToggleState()`), koska "näytä vain suosikit"
+  -suodattimella ei olisi mitään näytettävää ilman yhtäkään suosikkia.
+  **Hover-title opastaa käyttäjää** disabloidussa tilassa: "Lisää
+  suosikkijoukkueita klikkaamalla ☆ joukkueen nimen vieressä..." -
+  tyhjennetään heti kun ensimmäinen suosikki lisätään ja checkbox
+  aktivoituu. (Aiempi versio, `.control-row[hidden]`-CSS-ylikirjoitus
+  mukaan lukien, on säilytetty CSS:ssä varmuuden vuoksi vaikka mikään
+  control-row ei sitä enää käytä - ks. CLAUDE.md:n "Sudenkuoppia"
+  #1/#6/#9 samasta `[hidden]`+`display`-virheestä jos joskus tarvitset
+  vastaavaa piilotusta uudelleen.)
 - **Suodatin EI kytkeydy päälle automaattisesti** kun suosikki lisätään
   (`toggleFavorite()` [index.html](index.html):ssä) - `state.favoritesOnly`
   oletusarvo on aina `false` (`loadFavoritesFilterPref()` palauttaa

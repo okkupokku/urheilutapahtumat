@@ -108,11 +108,19 @@
   /* `.control-row` asettaa oman `display: flex` -sääntönsä, joka voittaisi
      muuten aina selaimen `[hidden] { display: none }`:n samalla
      spesifisyydellä (sama sudenkuoppa kuin CLAUDE.md:n "Sudenkuoppia"
-     #1/#6/#9 - ks. myös #favorites-row alla, joka piilotetaan/näytetään
-     JS:llä `el.hidden`:in kautta). */
+     #1/#6/#9) - säilytetty varmuuden vuoksi vaikka mikään control-row ei
+     tätä kirjoitushetkellä enää piilota (#favorites-row näkyy nykyään
+     aina, ks. sen oma kommentti). */
   .control-row[hidden] { display: none; }
   .favorites-toggle { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; cursor: pointer; color: var(--text); }
   .favorites-toggle input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--amber); cursor: pointer; margin: 0; }
+  /* Harmaannettu tila kun ei yhtään suosikkia vielä valittu - checkbox on
+     tällöin disabled (ei mieltä "näytä vain suosikit" -suodattimelle
+     jolla ei olisi mitään näytettävää), ja title-attribuutti (asetettu
+     JS:stä, ks. updateFavoritesToggleState()) opastaa hoverilla miten
+     suosikkeja lisätään (käyttäjän toive 2026-09-27). */
+  .favorites-toggle.disabled { opacity: 0.55; cursor: not-allowed; }
+  .favorites-toggle.disabled input[type=checkbox] { cursor: not-allowed; }
   /* CSS Grid auto-fill+1fr sen sijaan että chipit vain flex-wrappaisivat -
      jos rivi jakautuu kahdelle riville, viimeiselle riville jäävä
      yksinäinen chippi (esim. Jääpallo LAJI-rivin viimeisenä) venyy
@@ -453,9 +461,9 @@
       <div class="control-row" id="global-actions-row">
         <span class="label">KAIKKI</span>
       </div>
-      <div class="control-row" id="favorites-row" hidden>
+      <div class="control-row" id="favorites-row">
         <span class="label">SUOSIKIT</span>
-        <label class="favorites-toggle">
+        <label class="favorites-toggle" id="favorites-toggle-label">
           <input type="checkbox" id="favorites-filter-toggle">
           <span>⭐ Näytä vain suosikkijoukkueeni</span>
         </label>
@@ -1231,22 +1239,34 @@ function toggleFavorite(sport, team) {
   saveFavorites(FAVORITE_TEAMS);
   if (FAVORITE_TEAMS.size === 0 && state.favoritesOnly) {
     // VIIMEINEN suosikki poistettu suodattimen ollessa päällä - suodatin
-    // on pakko sammuttaa, muuten tulokset näyttäisivät tyhjää eikä
-    // käyttäjä edes näkisi valintaruutua jolla korjata tilanne (rivi
-    // piilotetaan alla kun suosikkeja ei ole yhtään).
+    // on pakko sammuttaa (ja alla disabloidaan), muuten tulokset
+    // näyttäisivät tyhjää eikä käyttäjä ymmärtäisi miksi.
     state.favoritesOnly = false;
     saveFavoritesFilterPref(false);
   }
   const toggle = document.getElementById('favorites-filter-toggle');
   if (toggle) toggle.checked = state.favoritesOnly;
-  updateFavoritesRowVisibility();
+  updateFavoritesToggleState();
   renderResults();
   renderTeamsView();
 }
 
-function updateFavoritesRowVisibility() {
-  const row = document.getElementById('favorites-row');
-  if (row) row.hidden = FAVORITE_TEAMS.size === 0;
+// "Näytä vain suosikkijoukkueeni" -rivi on AINA näkyvissä, myös ennen
+// kuin yhtään suosikkia on valittu (käyttäjän korjaus 2026-09-27: "pitäisi
+// näkyä aina, vaikka suosikkijoukkueita ei olisi vielä valittu") - piilon
+// sijaan checkbox disabloidaan kun suosikkeja ei ole (ei mieltä
+// suodattimelle jolla ei olisi mitään näytettävää), ja hover-title
+// opastaa miten suosikkeja lisätään.
+function updateFavoritesToggleState() {
+  const toggle = document.getElementById('favorites-filter-toggle');
+  const label = document.getElementById('favorites-toggle-label');
+  if (!toggle || !label) return;
+  const hasFavorites = FAVORITE_TEAMS.size > 0;
+  toggle.disabled = !hasFavorites;
+  label.classList.toggle('disabled', !hasFavorites);
+  label.title = hasFavorites
+    ? ''
+    : 'Lisää suosikkijoukkueita klikkaamalla ☆ joukkueen nimen vieressä (Joukkueet- tai Ottelut-välilehdellä)';
 }
 
 // Ei "Muu"-vaihtoehtoa kummassakaan: PK-seudulla ei ole muita kaupunkeja
@@ -2572,10 +2592,10 @@ document.getElementById('favorites-filter-toggle').addEventListener('change', (e
   saveFavoritesFilterPref(state.favoritesOnly);
   renderResults();
 });
-// Alkutila: suosikkirivi näkyy vain jos suosikkeja on jo tallessa
+// Alkutila: checkbox disabloitu jos suosikkeja ei ole vielä tallessa
 // edellisestä käynnistä (ks. FAVORITE_TEAMS = loadFavorites() yllä), ja
-// valintaruutu vastaa muistettua/oletusarvoista state.favoritesOnly:ta.
-updateFavoritesRowVisibility();
+// sen tila vastaa muistettua/oletusarvoista state.favoritesOnly:ta.
+updateFavoritesToggleState();
 document.getElementById('favorites-filter-toggle').checked = state.favoritesOnly;
 requestLocation();
 loadAll();
