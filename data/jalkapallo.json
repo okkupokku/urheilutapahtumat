@@ -1,24 +1,7 @@
 {
-  "updated": "2026-09-29T23:17:50.223Z",
+  "updated": "2026-09-30T03:04:31.122Z",
   "source": "spl.torneopal.net (Playwright)",
   "matches": [
-    {
-      "date": "2026-09-29",
-      "time": "19:00",
-      "sport": "Jalkapallo",
-      "category": "UEFA Nations League Huuhkajat",
-      "categoryId": "UNL",
-      "genderGroup": "Miehet",
-      "teamA": "Suomi",
-      "teamB": "Valko-Venäjä",
-      "venue": "Olympiastadion",
-      "city": "Helsinki",
-      "lat": null,
-      "lon": null,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4151251",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/4040x.png"
-    },
     {
       "date": "2026-10-03",
       "time": "16:00",
