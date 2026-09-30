@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-30T17:17:05.371Z",
+  "updated": "2026-09-30T23:20:45.572Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -136,7 +136,7 @@
       "lon": 24.8025,
       "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-o2-jyvaskyla-20-12-2026/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-o2-jyvaskyla-f-liiga-1.webp"
+      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-o2-jyvaskyla-f-liiga-3.webp"
     },
     {
       "date": "2027-01-09",
@@ -187,7 +187,7 @@
       "lon": 24.8025,
       "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-jymy-6-2-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-jymy-f-liiga-1.webp"
+      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-jymy-f-liiga.webp"
     },
     {
       "date": "2027-02-12",
@@ -510,7 +510,7 @@
       "lon": 24.8296,
       "matchUrl": "https://fliiga.com/ottelut/miehet/indians-jymy-5-2-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-indians-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-jymy-f-liiga-1.webp"
+      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-jymy-f-liiga.webp"
     },
     {
       "date": "2027-03-06",
@@ -612,7 +612,7 @@
       "lon": 25.0788,
       "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-jymy-19-12-2026/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-hawks-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-jymy-f-liiga-1.webp"
+      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-jymy-f-liiga.webp"
     },
     {
       "date": "2026-12-27",
@@ -782,7 +782,7 @@
       "lon": 24.8395,
       "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-jymy-18-12-2026/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-jymy-f-liiga-1.webp"
+      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-jymy-f-liiga.webp"
     },
     {
       "date": "2027-01-09",
