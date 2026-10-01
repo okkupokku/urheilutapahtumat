@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-30T23:20:45.572Z",
+  "updated": "2026-10-01T03:11:12.831Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -715,23 +715,6 @@
       "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-tps-6-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-hawks-f-liiga-1.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-tps-f-liiga-3.webp"
-    },
-    {
-      "date": "2026-09-30",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "EräViikingit",
-      "teamB": "LASB",
-      "venue": "Mosahalli kenttä 1",
-      "city": "Vantaa",
-      "lat": 60.2707,
-      "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-lasb-30-9-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-lasb-f-liiga-1.webp"
     },
     {
       "date": "2026-10-09",
