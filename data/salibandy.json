@@ -1,24 +1,7 @@
 {
-  "updated": "2026-10-02T23:26:33.087Z",
+  "updated": "2026-10-03T02:59:06.894Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
-    {
-      "date": "2026-10-02",
-      "time": "19:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Oilers",
-      "teamB": "Nokian KrP",
-      "venue": "Tapiolan Urheiluhalli",
-      "city": "Espoo",
-      "lat": 60.1756,
-      "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-nokian-krp-2-10-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-nokian-krp-f-liiga-dark-1.webp"
-    },
     {
       "date": "2026-10-10",
       "time": "18:00",
