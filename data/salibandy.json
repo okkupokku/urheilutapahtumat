@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-04T16:11:33.285Z",
+  "updated": "2026-10-04T22:38:21.376Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -119,7 +119,7 @@
       "lon": 24.8025,
       "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-o2-jyvaskyla-20-12-2026/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-o2-jyvaskyla-f-liiga-3.webp"
+      "crestB": "https://fliiga.com/wp-content/uploads/2026/10/logo-o2-jyvaskyla-f-liiga.webp"
     },
     {
       "date": "2027-01-09",
@@ -697,7 +697,7 @@
       "lon": 24.8395,
       "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-o2-jyvaskyla-31-10-2026/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2026/09/logo-o2-jyvaskyla-f-liiga-3.webp"
+      "crestB": "https://fliiga.com/wp-content/uploads/2026/10/logo-o2-jyvaskyla-f-liiga.webp"
     },
     {
       "date": "2026-12-18",
