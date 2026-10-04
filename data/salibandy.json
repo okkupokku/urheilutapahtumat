@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-03T22:34:05.934Z",
+  "updated": "2026-10-04T03:28:40.198Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -292,23 +292,6 @@
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp"
     },
     {
-      "date": "2026-10-03",
-      "time": "17:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Indians",
-      "teamB": "SPV",
-      "venue": "Otahalli Espoo",
-      "city": "Espoo",
-      "lat": 60.1875,
-      "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-spv-3-10-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-indians-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-spv-f-liiga-2.webp"
-    },
-    {
       "date": "2026-10-09",
       "time": "18:30",
       "sport": "Salibandy",
@@ -528,23 +511,6 @@
       "matchUrl": "https://fliiga.com/ottelut/miehet/indians-hawks-12-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-indians-f-liiga-1.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-hawks-f-liiga-1.webp"
-    },
-    {
-      "date": "2026-10-03",
-      "time": "16:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Hawks",
-      "teamB": "LASB",
-      "venue": "Urhea-halli",
-      "city": "Helsinki",
-      "lat": 60.2263,
-      "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-lasb-3-10-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-hawks-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-lasb-f-liiga-1.webp"
     },
     {
       "date": "2026-10-10",
@@ -987,23 +953,6 @@
       "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-classic-13-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-3.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-classic-f-liiga-dark-3.webp"
-    },
-    {
-      "date": "2026-10-03",
-      "time": "15:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLN",
-      "genderGroup": "Naiset",
-      "teamA": "PSS",
-      "teamB": "SSRA",
-      "venue": "Aurora",
-      "city": "Helsinki",
-      "lat": 60.203,
-      "lon": 24.925,
-      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-ssra-3-10-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2026/06/logo-pss-f-liiga.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-ssra-f-liiga-1.webp"
     },
     {
       "date": "2026-10-16",

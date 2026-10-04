@@ -1,24 +1,7 @@
 {
-  "updated": "2026-10-03T22:33:55.137Z",
+  "updated": "2026-10-04T03:28:27.165Z",
   "source": "spl.torneopal.net (Playwright)",
   "matches": [
-    {
-      "date": "2026-10-03",
-      "time": "16:00",
-      "sport": "Jalkapallo",
-      "category": "UEFA Nations League Huuhkajat",
-      "categoryId": "UNL",
-      "genderGroup": "Miehet",
-      "teamA": "Suomi",
-      "teamB": "Albania",
-      "venue": "Olympiastadion",
-      "city": "Helsinki",
-      "lat": null,
-      "lon": null,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4151243",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/4255x.png"
-    },
     {
       "date": "2026-11-15",
       "time": "19:00",
