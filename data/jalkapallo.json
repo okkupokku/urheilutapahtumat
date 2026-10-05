@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-04T22:38:08.676Z",
+  "updated": "2026-10-05T03:06:33.935Z",
   "source": "spl.torneopal.net (Playwright)",
   "matches": [
     {
@@ -528,23 +528,6 @@
       "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353565",
       "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
       "crestB": "https://cdn.torneopal.net/logo/palloliitto/440x.png"
-    },
-    {
-      "date": "2026-10-04",
-      "time": "18:30",
-      "sport": "Jalkapallo",
-      "category": "Briotech Kansallinen Liiga",
-      "categoryId": "NL",
-      "genderGroup": "Naiset",
-      "teamA": "HJK",
-      "teamB": "HPS",
-      "venue": "Töölön pallokenttä",
-      "city": "Helsinki",
-      "lat": 60.185854953551,
-      "lon": 24.923453144872,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4336854",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/1x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/5x.png"
     },
     {
       "date": "2026-10-18",
