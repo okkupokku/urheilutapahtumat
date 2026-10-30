@@ -24,16 +24,28 @@ jobs:
       - name: Asenna Playwrightin Chromium
         run: npx playwright install --with-deps chromium
 
+      # Jokainen haku saa kaatua erikseen (continue-on-error) ilman että muiden
+      # lajien päivitys estyy. Kaatunut skripti ei kirjoita omaa data/*.json-
+      # tiedostoaan, joten edellinen onnistunut data jää voimaan. Viimeinen
+      # vaihe merkitsee ajon silti epäonnistuneeksi, jotta vika huomataan.
       - name: Hae jalkapallon otteludata
+        id: jalkapallo
+        continue-on-error: true
         run: node scripts/fetch-jalkapallo.js
 
       - name: Hae salibandyn otteludata
+        id: salibandy
+        continue-on-error: true
         run: node scripts/fetch-salibandy.js
 
       - name: Hae jääpallon otteludata
+        id: jaapallo
+        continue-on-error: true
         run: node scripts/fetch-jaapallo.js
 
       - name: Hae Mestiksen otteludata
+        id: mestis
+        continue-on-error: true
         run: node scripts/fetch-mestis.js
 
       - name: Commitoi muuttunut data
@@ -43,3 +55,9 @@ jobs:
           git add data/
           git diff --staged --quiet || git commit -m "Päivitä otteludata $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push
+
+      - name: Tarkista epäonnistuneet haut
+        if: steps.jalkapallo.outcome == 'failure' || steps.salibandy.outcome == 'failure' || steps.jaapallo.outcome == 'failure' || steps.mestis.outcome == 'failure'
+        run: |
+          echo "jalkapallo=${{ steps.jalkapallo.outcome }} salibandy=${{ steps.salibandy.outcome }} jaapallo=${{ steps.jaapallo.outcome }} mestis=${{ steps.mestis.outcome }}"
+          exit 1

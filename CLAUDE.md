@@ -716,7 +716,7 @@ verkkoliikennettä tutkimalla (DevTools → Network → etsi `getMatches`).
 Tunnetut toimivat yhdistelmät (näkyvät myös koodissa):
 | Laji | Alidomeeni | Token |
 |---|---|---|
-| Jalkapallo/futsal (Palloliitto) | `spl.torneopal.net` | `4h7dznqdxwtp3hsfdyf5r793uahfxy7x` |
+| Jalkapallo/futsal (Palloliitto) | `spl.torneopal.net` | ~~`4h7dznqdxwtp3hsfdyf5r793uahfxy7x`~~ **EI TOIMI 2026-10 alkaen**, ks. "Tunnetut infrarajoitukset" |
 | Koripallo | `koripallo-api.torneopal.net` | `df8e84j9xtdz269euy3h` |
 | Lentopallo | `lentopallo-api.torneopal.net` | `df8e84j9xtdz269euy3h` (sama kuin koris) |
 | Käsipallo | `hb-api.torneopal.net` | `pfqmz9z6ea43uqy2hzfxpcpxr4svqunn` |
@@ -949,6 +949,26 @@ infrarajoitukset".
   "Jääkiekko - Mestis" yllä) - sama tekniikka ei toistaiseksi ole
   löytänyt vastaavaa Auroraliigalle.
 - **Amerikkalainen jalkapallo**: ei tiedossa olevaa rajapintaa lainkaan.
+- **Jalkapallo/futsal (Palloliitto, `spl.torneopal.net`) - pääsy suljettu
+  2026-10 lopulla.** GitHub Actions -ajo #178 kaatui `fetch-jalkapallo.js`:n
+  `fetchCategories()`:ssa (`page.evaluate: TypeError: Failed to fetch`).
+  Selvitetty 2026-10-30: rajapinta palauttaa Cloudflaren 403:n vanhalla
+  `Accept: json/<token>` -headerilla MYÖS oikeasta selaimesta
+  tulospalvelu.palloliitto.fi-sivulla. Tulospalvelu itse lähettää nykyään
+  jokaisen kutsun mukana pyyntökohtaisen `hash`-parametrin (esim.
+  `getMatches?date=...&hash=bf7327...`) - eli uusi, tarkoituksellinen
+  pääsynhallinta. **Hash-algoritmia EI ole purettu eikä sitä pidä yrittää
+  kiertää** (Palloliitto on selvästi kiristänyt pääsyä tarkoituksella).
+  Muut TorneoPal-federaatiot (koripallo/lentopallo/käsipallo) toimivat yhä
+  vanhoilla tokeneillaan (tarkistettu samana päivänä). Oikea ratkaisu on
+  pyytää Palloliitolta/Torneopalilta virallinen rajapinta-avain. Siihen
+  asti `data/jalkapallo.json` jää viimeisimmän onnistuneen ajon tilaan
+  (skripti kaatuu ennen tiedoston kirjoitusta). Samassa yhteydessä
+  [update-data.yml](.github/workflows/update-data.yml):n hakuvaiheet
+  muutettiin `continue-on-error: true`:ksi, jotta yhden lähteen kaatuminen
+  ei enää estä muiden lajien (salibandy/jääpallo/Mestis) päivitystä -
+  viimeinen "Tarkista epäonnistuneet haut" -vaihe merkitsee ajon silti
+  punaiseksi.
 
 ## Sudenkuoppia (opittu kantapään kautta)
 
