@@ -17,7 +17,14 @@
 // (usein sponsorinimellä, esim. "Bolt Arena TN" = Töölön pallokenttä).
 // PK-alue päätellään siksi käsin ylläpidetystä PK_VENUES-listasta (sama
 // tekniikka kuin salibandyssa). Tuntemattomat kentät tulostetaan lokiin,
-// jotta uudet PK-kentät huomataan. Joukkuelogoja widget ei sisällä.
+// jotta uudet PK-kentät huomataan.
+//
+// Joukkuelogoja widget ei sisällä. Ne haetaan käsin ylläpidetystä
+// jalkapallo-logot.json-taulukosta (joukkueen nimi -> cdn.torneopal.net-
+// logo), joka koottiin alun perin vanhan REST-datan git-historiasta.
+// `byCategory` ("<categoryId>|<nimi>") on niitä nimiä varten, joilla on eri
+// logo eri sarjassa (esim. HJK:n miehet ja naiset). Logottomat joukkueet
+// tulostetaan lokiin.
 //
 // Ei tarvitse Playwrightia - pelkkä HTTP-haku (Node 20:n oma fetch).
 
@@ -76,6 +83,12 @@ const PK_VENUES = [
   { pitch: 'Myyrmäen urheilutalo', city: 'Vantaa', lat: 60.2620, lon: 24.8560 },
   { pitch: 'Jalkapallostadion', homeTeam: /^PK-35/, city: 'Vantaa', lat: 60.2613, lon: 24.8546 }, // Myyrmäen jalkapallostadion
 ];
+
+const CRESTS = JSON.parse(fs.readFileSync(path.join(__dirname, 'jalkapallo-logot.json'), 'utf8'));
+
+function crestOf(categoryId, team) {
+  return CRESTS.byCategory[`${categoryId}|${team}`] || CRESTS.teams[team] || null;
+}
 
 function cleanPitch(p) {
   return p.trim().replace(/\s+(TN|N)$/, '');
@@ -142,6 +155,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const today = new Date().toISOString().slice(0, 10);
   const byId = new Map();
   const unknownPitches = new Set();
+  const missingCrests = new Set();
   let okRequests = 0;
   let failedRequests = 0;
 
@@ -173,9 +187,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
             lat: venue.lat,
             lon: venue.lon,
             matchUrl: `https://tulospalvelu.palloliitto.fi/match/${r.matchId}`,
-            crestA: null,
-            crestB: null,
+            crestA: crestOf(categoryId, r.home),
+            crestB: crestOf(categoryId, r.away),
           });
+          for (const t of [r.home, r.away]) {
+            if (t && !crestOf(categoryId, t)) missingCrests.add(t);
+          }
         }
         if (rows.length) console.log(`${categoryId} (${competition}): ${rows.length} tulevaa ottelua, ${pk} PK-alueella`);
       } catch (e) {
@@ -193,6 +210,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
   if (unknownPitches.size) {
     console.log(`\nTuntemattomat kentät (ei PK_VENUES-listassa, ohitettu): ${[...unknownPitches].sort().join(', ')}`);
+  }
+  if (missingCrests.size) {
+    console.log(`Joukkueet ilman logoa (lisää jalkapallo-logot.json:iin): ${[...missingCrests].sort().join(', ')}`);
   }
 
   const allMatches = [...byId.values()].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));

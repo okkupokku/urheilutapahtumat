@@ -722,7 +722,19 @@ Ei avainta, ei hashia, ei Playwrightia. Vastaus on JS-tiedosto jonka
   riveillä date-solu on tyhjä, päivä periytyy edelliseltä riviltä.
 - **Soluilla voi olla lisäluokkia** (`<td class='date daysfirst'>`), regex
   sallii ne.
-- **Ei kaupunkia, koordinaatteja eikä logoja** - vain kentän nimi, usein
+- **Logot erillisestä taulukosta** (2026-10-30, käyttäjä huomasi logojen
+  puuttuvan): widgetissä ei ole logoja, joten
+  [scripts/jalkapallo-logot.json](scripts/jalkapallo-logot.json) kartoittaa
+  joukkueen nimen `https://cdn.torneopal.net/logo/palloliitto/<seura_id>x.png`
+  -osoitteeseen (CDN on avoin, ei hashia). Taulukko koottiin vanhan
+  REST-datan git-historiasta (83 versiota `data/jalkapallo.json`:sta, 36
+  joukkuetta) + Italia käsin ottelusivulta. `byCategory`
+  (`"<categoryId>|<nimi>"`) on nimille joilla on eri logo eri sarjassa
+  (HJK: miehet `2611x`, naiset `1x`). Actions-loki listaa "Joukkueet ilman
+  logoa" - uuden joukkueen logon id löytyy avaamalla sen ottelusivu
+  tulospalvelu.palloliitto.fi:ssä ja katsomalla `cdn.torneopal.net/logo/
+  palloliitto/NNNx.png`-kuvan osoite.
+- **Ei kaupunkia eikä koordinaatteja** - vain kentän nimi, usein
   sponsorinimellä ja pintapäätteellä ("Bolt Arena TN" = Töölön pallokenttä,
   "Markku.fi Areena" = Oulunkylä, "Briotech Arena" = HPS:n kenttä
   Paloheinässä, "Jalkapallostadion" PK-35 Vantaan kotiotteluissa =
