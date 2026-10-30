@@ -734,10 +734,10 @@ Ei avainta, ei hashia, ei Playwrightia. Vastaus on JS-tiedosto jonka
   seuraavaa kautta, joten kauden vaihde ei vaadi koodimuutosta niin kauan
   kuin nimeämistapa pysyy. Oikeat tunnisteet näkyvät tulospalvelun
   Sarjat-sivun linkeistä (`/category/<id>!<kausi>/tables`).
-- Maajoukkuesarjoille (esim. `WWCQ`) widget palautti 2026-10-30 tyhjää -
-  samoin kuin tulospalvelun oma "Tulevat"-välilehti, eli otteluita ei vain
-  ollut vielä syötetty. Maajoukkueiden kotikenttien widget-nimiä ei siksi
-  ole vielä nähty; Olympiastadion on listassa arvauksena.
+- Maajoukkueet toimivat: ensimmäinen widget-ajo (2026-10-30) löysi
+  Suomi-San Marino (`UNL`, 15.11.) ja Helmarit Suomi-Italia (`WWCQ`, 1.12.),
+  molemmat "Bolt Arena". Olympiastadion on `PK_VENUES`:ssä yhä vahvistamaton
+  arvaus (sen widget-nimeä ei ole vielä nähty).
 
 ### TorneoPal-alusta (jalkapallo, koripallo, lentopallo, käsipallo, futsal)
 Kaikki näillä on sama backend-alusta `*.torneopal.net`, sama REST-muoto:
