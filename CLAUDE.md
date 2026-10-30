@@ -699,12 +699,45 @@ lajia/sukupuolta.
    joka kerta kun sivu ladataan. Toimii koska nämä rajapinnat sallivat CORS:n.
 2. **Taustaprosessi** (jalkapallo+futsal+maajoukkue, salibandy): rajapinta ei
    salli suoraa selainkutsua (CORS) tai rajapintaa ei ole ollenkaan, joten
-   Playwright hakee datan GitHub Actionsissa 4h välein
+   taustaskripti hakee datan GitHub Actionsissa 4h välein
    ([.github/workflows/update-data.yml](.github/workflows/update-data.yml))
    ja tallentaa JSON:n `data/`-kansioon, jonka `index.html` sitten lukee
    (cache-bustattuna `?t=timestamp`, katso "Sudenkuopat" alla miksi).
+   Salibandy/jääpallo/Mestis käyttävät Playwrightia, jalkapallo 2026-10-30
+   alkaen pelkkää Noden `fetch()`:ia (ks. alla).
 
 ## Datalähteet lajeittain
+
+### Jalkapallo: Torneopal-widget (2026-10-30 alkaen)
+Kun REST-rajapinta sulkeutui (ks. "Tunnetut infrarajoitukset"),
+[scripts/fetch-jalkapallo.js](scripts/fetch-jalkapallo.js) kirjoitettiin
+uudelleen käyttämään Torneopalin julkista, upotettavaksi tarkoitettua
+otteluohjelma-widgetiä (löytyi futsalliiga.fi:n sivulta, joka upottaa sen):
+`https://spl.torneopal.net/taso/widget.php?widget=fixture&class=<categoryId>&competition=<kausi>`.
+Ei avainta, ei hashia, ei Playwrightia. Vastaus on JS-tiedosto jonka
+`document.write()`-merkkijonossa on HTML-taulukko, yksi
+`<tr class='... matchid_NNN'>` per ottelu, solut `date`/`time`/`pitch`/
+`home`/`away`. Vain TULEVAT ottelut ovat mukana. Huomioita:
+- **Päivämäärä vain päivän ensimmäisellä rivillä** - saman päivän muilla
+  riveillä date-solu on tyhjä, päivä periytyy edelliseltä riviltä.
+- **Soluilla voi olla lisäluokkia** (`<td class='date daysfirst'>`), regex
+  sallii ne.
+- **Ei kaupunkia, koordinaatteja eikä logoja** - vain kentän nimi, usein
+  sponsorinimellä ja pintapäätteellä ("Bolt Arena TN" = Töölön pallokenttä,
+  "Markku.fi Areena" = Oulunkylä, "Briotech Arena" = HPS:n kenttä
+  Paloheinässä, "Jalkapallostadion" PK-35 Vantaan kotiotteluissa =
+  Myyrmäki). PK-alue päätellään käsin ylläpidetystä `PK_VENUES`-listasta,
+  ja listaan kuulumattomat kentät tulostuvat Actions-lokiin ("Tuntemattomat
+  kentät") - tarkista sieltä jos jokin PK-seudun ottelu puuttuu.
+- **Kausitunnisteet vaihtuvat vuosittain** (`spljp26`, `splfs2627`,
+  `maajp2026`). `competitionCandidates()` kokeilee aina nykyistä ja
+  seuraavaa kautta, joten kauden vaihde ei vaadi koodimuutosta niin kauan
+  kuin nimeämistapa pysyy. Oikeat tunnisteet näkyvät tulospalvelun
+  Sarjat-sivun linkeistä (`/category/<id>!<kausi>/tables`).
+- Maajoukkuesarjoille (esim. `WWCQ`) widget palautti 2026-10-30 tyhjää -
+  samoin kuin tulospalvelun oma "Tulevat"-välilehti, eli otteluita ei vain
+  ollut vielä syötetty. Maajoukkueiden kotikenttien widget-nimiä ei siksi
+  ole vielä nähty; Olympiastadion on listassa arvauksena.
 
 ### TorneoPal-alusta (jalkapallo, koripallo, lentopallo, käsipallo, futsal)
 Kaikki näillä on sama backend-alusta `*.torneopal.net`, sama REST-muoto:
@@ -716,7 +749,7 @@ verkkoliikennettä tutkimalla (DevTools → Network → etsi `getMatches`).
 Tunnetut toimivat yhdistelmät (näkyvät myös koodissa):
 | Laji | Alidomeeni | Token |
 |---|---|---|
-| Jalkapallo/futsal (Palloliitto) | `spl.torneopal.net` | ~~`4h7dznqdxwtp3hsfdyf5r793uahfxy7x`~~ **EI TOIMI 2026-10 alkaen**, ks. "Tunnetut infrarajoitukset" |
+| Jalkapallo/futsal (Palloliitto) | `spl.torneopal.net` | ~~`4h7dznqdxwtp3hsfdyf5r793uahfxy7x`~~ **EI TOIMI 2026-10 alkaen**, korvattu widgetillä, ks. "Jalkapallo: Torneopal-widget" alla |
 | Koripallo | `koripallo-api.torneopal.net` | `df8e84j9xtdz269euy3h` |
 | Lentopallo | `lentopallo-api.torneopal.net` | `df8e84j9xtdz269euy3h` (sama kuin koris) |
 | Käsipallo | `hb-api.torneopal.net` | `pfqmz9z6ea43uqy2hzfxpcpxr4svqunn` |
@@ -960,10 +993,9 @@ infrarajoitukset".
   pääsynhallinta. **Hash-algoritmia EI ole purettu eikä sitä pidä yrittää
   kiertää** (Palloliitto on selvästi kiristänyt pääsyä tarkoituksella).
   Muut TorneoPal-federaatiot (koripallo/lentopallo/käsipallo) toimivat yhä
-  vanhoilla tokeneillaan (tarkistettu samana päivänä). Oikea ratkaisu on
-  pyytää Palloliitolta/Torneopalilta virallinen rajapinta-avain. Siihen
-  asti `data/jalkapallo.json` jää viimeisimmän onnistuneen ajon tilaan
-  (skripti kaatuu ennen tiedoston kirjoitusta). Samassa yhteydessä
+  vanhoilla tokeneillaan (tarkistettu samana päivänä). **RATKAISTU samana
+  päivänä** Torneopalin julkisella upotettavalla widgetillä, ks.
+  "Jalkapallo: Torneopal-widget" alla. Samassa yhteydessä
   [update-data.yml](.github/workflows/update-data.yml):n hakuvaiheet
   muutettiin `continue-on-error: true`:ksi, jotta yhden lähteen kaatuminen
   ei enää estä muiden lajien (salibandy/jääpallo/Mestis) päivitystä -

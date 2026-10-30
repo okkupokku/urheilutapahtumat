@@ -593,7 +593,7 @@
       <h4>Mistä data tulee</h4>
       <ul>
         <li><strong>Jääkiekko (Liiga), koripallo, käsipallo, lentopallo:</strong> haetaan suoraan selaimestasi kunkin lajiliiton omasta julkisesta rajapinnasta joka kerta kun sivu ladataan.</li>
-        <li><strong>Jalkapallo, futsal ja maajoukkueet (Huuhkajat/Helmarit):</strong> Palloliiton rajapinta estää suorat selainkutsut (CORS), joten data haetaan taustaprosessilla (Playwright-selainautomaatio) GitHub Actionsissa 4 tunnin välein ja tallennetaan tähän samaan repoon.</li>
+        <li><strong>Jalkapallo, futsal ja maajoukkueet (Huuhkajat/Helmarit):</strong> data haetaan Torneopalin julkisesta otteluohjelma-widgetistä (sama jota esim. futsalliiga.fi upottaa sivulleen) taustaprosessilla GitHub Actionsissa 4 tunnin välein ja tallennetaan tähän samaan repoon. Widget kertoo vain kentän nimen, joten mukana ovat käsin tunnistetut pääkaupunkiseudun kentät, eikä jalkapallo-otteluissa näy joukkuelogoja.</li>
         <li><strong>Salibandy (F-liiga):</strong> fliiga.com ei tarjoa julkista rajapintaa lainkaan. Mukana ovat vain käsin tunnistetut pääkaupunkiseudun joukkueet (Oilers, Westend Indians, Hawks, EräViikingit, PSS) - niiden koko kauden ottelut on upotettu joukkuesivujen omaan HTML:ään, ja taustaprosessi purkaa ne sieltä samalla 4 tunnin syklillä.</li>
         <li><strong>Jääpallo (Bandyliiga):</strong> myöskään finbandy.torneopal.fi ei tarjoa rajapintaa, mutta pääkaupunkiseudun seurojen (HIFK, Botnia, Vesta) omat ottelusivut ovat palvelinrenderöityä HTML:ää, joka puretaan samalla taustaprosessitekniikalla kuin salibandy.</li>
         <li><strong>Jääkiekko (Mestis):</strong> Leijonien virallinen tulospalvelu estää GitHub Actionsin, mutta mestis.fi on avoin peilipalvelu samalle sarjalle. Mukana on vain K-Vantaa (Kiekko-Vantaa), ainoa PK-seudun Mestis-joukkue.</li>
@@ -997,7 +997,7 @@ const SOURCES = [
   {
     id: 'jalkapallo',
     label: 'Palloliitto (jalkapallo, futsal, maajoukkue)',
-    detail: 'data/jalkapallo.json - VL, M1L, NL, FML, FNL, UNL (taustaprosessi)',
+    detail: 'data/jalkapallo.json - VL, M1L, NL, FML, FNL, maajoukkueet (taustaprosessi, Torneopal-widget)',
     run: async () => {
       // Cache-bust: taustaprosessi ylikirjoittaa tämän tiedoston 4h välein, ja
       // selain/CDN saattaa muuten palauttaa vanhentuneen välimuistikopion.
