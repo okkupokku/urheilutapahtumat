@@ -1,24 +1,7 @@
 {
-  "updated": "2026-10-30T23:23:54.306Z",
+  "updated": "2026-10-31T03:22:21.742Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
-    {
-      "date": "2026-10-30",
-      "time": "19:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Oilers",
-      "teamB": "Hawks",
-      "venue": "Tapiolan Urheiluhalli",
-      "city": "Espoo",
-      "lat": 60.1756,
-      "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-hawks-30-10-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-hawks-f-liiga-1.webp"
-    },
     {
       "date": "2026-11-06",
       "time": "18:30",
@@ -256,23 +239,6 @@
       "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-oilers-12-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp"
-    },
-    {
-      "date": "2026-10-30",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Indians",
-      "teamB": "EräViikingit",
-      "venue": "Otahalli Espoo",
-      "city": "Espoo",
-      "lat": 60.1875,
-      "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-eraviikingit-30-10-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-indians-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp"
     },
     {
       "date": "2026-11-14",
@@ -681,23 +647,6 @@
       "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-nokian-krp-17-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-nokian-krp-f-liiga-dark-1.webp"
-    },
-    {
-      "date": "2026-10-30",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLN",
-      "genderGroup": "Naiset",
-      "teamA": "EräViikingit",
-      "teamB": "SB-Pro",
-      "venue": "Mosahalli kenttä 1",
-      "city": "Vantaa",
-      "lat": 60.2707,
-      "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-sb-pro-30-10-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-3.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2026/01/logo-sb-pro-f-liiga-1.webp"
     },
     {
       "date": "2026-11-18",
