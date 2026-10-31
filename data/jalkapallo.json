@@ -1,24 +1,7 @@
 {
-  "updated": "2026-10-31T16:32:25.389Z",
+  "updated": "2026-10-31T22:57:01.097Z",
   "source": "spl.torneopal.net widget.php (fixture)",
   "matches": [
-    {
-      "date": "2026-10-31",
-      "time": "13:15",
-      "sport": "Futsal",
-      "category": "Naisten Futsal-Liiga",
-      "categoryId": "FNL",
-      "genderGroup": "Naiset",
-      "teamA": "GFT",
-      "teamB": "PaRi",
-      "venue": "Matinkylän liikuntahalli",
-      "city": "Espoo",
-      "lat": 60.1594,
-      "lon": 24.7384,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270269",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/2825x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/3039x.png"
-    },
     {
       "date": "2026-11-07",
       "time": "13:00",
