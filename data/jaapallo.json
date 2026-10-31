@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-31T10:04:37.822Z",
+  "updated": "2026-10-31T16:32:43.285Z",
   "source": "finbandy.torneopal.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
     {
@@ -217,24 +217,6 @@
       "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24912",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/1x.png"
-    },
-    {
-      "date": "2026-12-12",
-      "time": "16:15",
-      "sport": "Jääpallo",
-      "category": "PIC Hki",
-      "categoryId": "PIC",
-      "genderGroup": "Miehet",
-      "level": "alempi",
-      "teamA": "HKV",
-      "teamB": "HIFK/",
-      "venue": "Kallio tj, Hki",
-      "city": "Helsinki",
-      "lat": 60.1877,
-      "lon": 24.9514,
-      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24406",
-      "crestA": "https://cdn.torneopal.net/logo/sjpl/5x.png",
-      "crestB": "https://cdn.torneopal.net/logo/sjpl/2x.png"
     },
     {
       "date": "2026-12-13",
@@ -576,6 +558,24 @@
       "lon": 24.9514,
       "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24399",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/12x.png",
+      "crestB": "https://cdn.torneopal.net/logo/sjpl/2x.png"
+    },
+    {
+      "date": "2027-02-11",
+      "time": "20:50",
+      "sport": "Jääpallo",
+      "category": "PIC Hki",
+      "categoryId": "PIC",
+      "genderGroup": "Miehet",
+      "level": "alempi",
+      "teamA": "HKV",
+      "teamB": "HIFK/",
+      "venue": "Kallio tj, Hki",
+      "city": "Helsinki",
+      "lat": 60.1877,
+      "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24406",
+      "crestA": "https://cdn.torneopal.net/logo/sjpl/5x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/2x.png"
     },
     {
