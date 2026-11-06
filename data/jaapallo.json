@@ -1,25 +1,7 @@
 {
-  "updated": "2026-11-06T18:42:45.451Z",
+  "updated": "2026-11-06T23:53:48.071Z",
   "source": "finbandy.torneopal.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
-    {
-      "date": "2026-11-06",
-      "time": "2–2",
-      "sport": "Jääpallo",
-      "category": "Miesten Suomen Cup",
-      "categoryId": "MSC",
-      "genderGroup": "Miehet",
-      "level": "alempi",
-      "teamA": "HIFK",
-      "teamB": "Narukerä",
-      "venue": "Oulunkylä tj, Hki",
-      "city": "Helsinki",
-      "lat": 60.2185,
-      "lon": 24.9503,
-      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24366",
-      "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
-      "crestB": "https://cdn.torneopal.net/logo/sjpl/6x.png"
-    },
     {
       "date": "2026-11-07",
       "time": "08:00",
@@ -612,24 +594,6 @@
       "lon": 24.9503,
       "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24462",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
-      "crestB": "https://cdn.torneopal.net/logo/sjpl/7x.png"
-    },
-    {
-      "date": "2026-11-06",
-      "time": "19:45",
-      "sport": "Jääpallo",
-      "category": "Miesten Suomen Cup",
-      "categoryId": "MSC",
-      "genderGroup": "Miehet",
-      "level": "alempi",
-      "teamA": "Botnia",
-      "teamB": "OLS",
-      "venue": "Oulunkylä tj, Hki",
-      "city": "Helsinki",
-      "lat": 60.2185,
-      "lon": 24.9503,
-      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24371",
-      "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/7x.png"
     },
     {
