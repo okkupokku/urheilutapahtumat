@@ -1,24 +1,7 @@
 {
-  "updated": "2026-11-06T23:53:44.455Z",
+  "updated": "2026-11-07T03:49:10.035Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
-    {
-      "date": "2026-11-06",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Oilers",
-      "teamB": "Indians",
-      "venue": "Tapiolan Urheiluhalli",
-      "city": "Espoo",
-      "lat": 60.1756,
-      "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-indians-6-11-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-indians-f-liiga-1.webp"
-    },
     {
       "date": "2026-11-14",
       "time": "18:00",
@@ -766,23 +749,6 @@
       "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-classic-13-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-3.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-classic-f-liiga-dark-3.webp"
-    },
-    {
-      "date": "2026-11-06",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLN",
-      "genderGroup": "Naiset",
-      "teamA": "PSS",
-      "teamB": "TPS",
-      "venue": "Aurora",
-      "city": "Helsinki",
-      "lat": 60.203,
-      "lon": 24.925,
-      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-tps-6-11-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2026/06/logo-pss-f-liiga.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-tps-f-liiga-2.webp"
     },
     {
       "date": "2026-11-22",
