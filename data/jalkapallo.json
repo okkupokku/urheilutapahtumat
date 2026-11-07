@@ -1,24 +1,7 @@
 {
-  "updated": "2026-11-07T17:12:06.624Z",
+  "updated": "2026-11-07T23:16:27.016Z",
   "source": "spl.torneopal.net widget.php (fixture)",
   "matches": [
-    {
-      "date": "2026-11-07",
-      "time": "13:00",
-      "sport": "Futsal",
-      "category": "Naisten Futsal-Liiga",
-      "categoryId": "FNL",
-      "genderGroup": "Naiset",
-      "teamA": "HIFK FS",
-      "teamB": "PU-62",
-      "venue": "Pirkkolan palloiluhalli",
-      "city": "Helsinki",
-      "lat": 60.23243,
-      "lon": 24.909818,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4270276",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/82x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/2909x.png"
-    },
     {
       "date": "2026-11-08",
       "time": "15:00",
