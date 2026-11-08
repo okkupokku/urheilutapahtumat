@@ -1,41 +1,7 @@
 {
-  "updated": "2026-11-08T17:25:20.762Z",
+  "updated": "2026-11-08T23:18:37.043Z",
   "source": "spl.torneopal.net widget.php (fixture)",
   "matches": [
-    {
-      "date": "2026-11-08",
-      "time": "15:00",
-      "sport": "Jalkapallo",
-      "category": "Veikkausliiga",
-      "categoryId": "VL",
-      "genderGroup": "Miehet",
-      "teamA": "HJK",
-      "teamB": "AC Oulu",
-      "venue": "Bolt Arena",
-      "city": "Helsinki",
-      "lat": 60.185855,
-      "lon": 24.923453,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353558",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/2611x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/3458x.png"
-    },
-    {
-      "date": "2026-11-08",
-      "time": "15:00",
-      "sport": "Jalkapallo",
-      "category": "Veikkausliiga",
-      "categoryId": "VL",
-      "genderGroup": "Miehet",
-      "teamA": "IF Gnistan",
-      "teamB": "VPS",
-      "venue": "Markku.fi Areena",
-      "city": "Helsinki",
-      "lat": 60.234016,
-      "lon": 24.966134,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4353565",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/14x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/440x.png"
-    },
     {
       "date": "2026-11-14",
       "time": "13:15",
