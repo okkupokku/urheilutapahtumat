@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14T17:29:48.042Z",
+  "updated": "2026-11-14T23:32:03.815Z",
   "source": "finbandy.torneopal.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
     {
@@ -559,24 +559,6 @@
       "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24462",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/7x.png"
-    },
-    {
-      "date": "2026-11-14",
-      "time": "6–3",
-      "sport": "Jääpallo",
-      "category": "Miesten Bandyliiga",
-      "categoryId": "MBL",
-      "genderGroup": "Miehet",
-      "level": "paasarja",
-      "teamA": "Botnia",
-      "teamB": "Kampparit",
-      "venue": "Oulunkylä tj, Hki",
-      "city": "Helsinki",
-      "lat": 60.2185,
-      "lon": 24.9503,
-      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24901",
-      "crestA": "https://cdn.torneopal.net/logo/sjpl/3x.png",
-      "crestB": "https://cdn.torneopal.net/logo/sjpl/5x.png"
     },
     {
       "date": "2026-11-15",
