@@ -1,24 +1,7 @@
 {
-  "updated": "2026-11-15T18:14:55.865Z",
+  "updated": "2026-11-15T23:40:12.817Z",
   "source": "spl.torneopal.net widget.php (fixture)",
   "matches": [
-    {
-      "date": "2026-11-15",
-      "time": "19:00",
-      "sport": "Jalkapallo",
-      "category": "UEFA Nations League",
-      "categoryId": "UNL",
-      "genderGroup": "Miehet",
-      "teamA": "Suomi",
-      "teamB": "San Marino",
-      "venue": "Bolt Arena",
-      "city": "Helsinki",
-      "lat": 60.185855,
-      "lon": 24.923453,
-      "matchUrl": "https://tulospalvelu.palloliitto.fi/match/4151247",
-      "crestA": "https://cdn.torneopal.net/logo/palloliitto/3434x.png",
-      "crestB": "https://cdn.torneopal.net/logo/palloliitto/5304x.png"
-    },
     {
       "date": "2026-11-28",
       "time": "13:00",
