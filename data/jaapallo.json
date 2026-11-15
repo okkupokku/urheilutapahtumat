@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15T11:40:52.254Z",
+  "updated": "2026-11-15T18:15:14.237Z",
   "source": "finbandy.torneopal.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
     {
@@ -562,7 +562,7 @@
     },
     {
       "date": "2026-11-15",
-      "time": "13:00",
+      "time": "2–5",
       "sport": "Jääpallo",
       "category": "Miesten Bandyliiga",
       "categoryId": "MBL",
