@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T05:47:03.177Z",
+  "updated": "2026-11-17T17:15:13.369Z",
   "source": "finbandy.torneopal.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
     {
@@ -73,6 +73,24 @@
       "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24862",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/5x.png"
+    },
+    {
+      "date": "2026-12-03",
+      "time": "",
+      "sport": "Jääpallo",
+      "category": "Nuorten Bandyliiga",
+      "categoryId": "NUBL",
+      "genderGroup": "Miehet",
+      "level": "paasarja",
+      "teamA": "Helsinki",
+      "teamB": "WP 35",
+      "venue": "Kallio tj, Hki",
+      "city": "Helsinki",
+      "lat": 60.1877,
+      "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24430",
+      "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
+      "crestB": "https://cdn.torneopal.net/logo/sjpl/10x.png"
     },
     {
       "date": "2026-12-05",
@@ -400,6 +418,24 @@
     },
     {
       "date": "2027-01-21",
+      "time": "",
+      "sport": "Jääpallo",
+      "category": "Nuorten Bandyliiga",
+      "categoryId": "NUBL",
+      "genderGroup": "Miehet",
+      "level": "paasarja",
+      "teamA": "Helsinki",
+      "teamB": "JPS",
+      "venue": "Kallio tj, Hki",
+      "city": "Helsinki",
+      "lat": 60.1877,
+      "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24427",
+      "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
+      "crestB": "https://cdn.torneopal.net/logo/sjpl/4x.png"
+    },
+    {
+      "date": "2027-01-21",
       "time": "20:50",
       "sport": "Jääpallo",
       "category": "PIC Hki",
@@ -433,6 +469,24 @@
       "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24397",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/5x.png"
+    },
+    {
+      "date": "2027-01-28",
+      "time": "",
+      "sport": "Jääpallo",
+      "category": "Nuorten Bandyliiga",
+      "categoryId": "NUBL",
+      "genderGroup": "Miehet",
+      "level": "paasarja",
+      "teamA": "Helsinki",
+      "teamB": "Akilles/",
+      "venue": "Kallio tj, Hki",
+      "city": "Helsinki",
+      "lat": 60.1877,
+      "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24425",
+      "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
+      "crestB": "https://cdn.torneopal.net/logo/sjpl/1x.png"
     },
     {
       "date": "2027-01-28",
@@ -505,6 +559,24 @@
       "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24399",
       "crestA": "https://cdn.torneopal.net/logo/sjpl/12x.png",
       "crestB": "https://cdn.torneopal.net/logo/sjpl/2x.png"
+    },
+    {
+      "date": "2027-02-11",
+      "time": "",
+      "sport": "Jääpallo",
+      "category": "Nuorten Bandyliiga",
+      "categoryId": "NUBL",
+      "genderGroup": "Miehet",
+      "level": "paasarja",
+      "teamA": "Helsinki",
+      "teamB": "Akilles/",
+      "venue": "Kallio tj, Hki",
+      "city": "Helsinki",
+      "lat": 60.1877,
+      "lon": 24.9514,
+      "matchUrl": "https://finbandy.torneopal.fi/taso/ottelu.php?ottelu=24431",
+      "crestA": "https://cdn.torneopal.net/logo/sjpl/2x.png",
+      "crestB": "https://cdn.torneopal.net/logo/sjpl/1x.png"
     },
     {
       "date": "2027-02-11",
