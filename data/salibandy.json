@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-18T22:47:37.873Z",
+  "updated": "2026-11-19T05:07:04.045Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -562,23 +562,6 @@
       "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-nokian-krp-17-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-nokian-krp-f-liiga-dark-1.webp"
-    },
-    {
-      "date": "2026-11-18",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLN",
-      "genderGroup": "Naiset",
-      "teamA": "EräViikingit",
-      "teamB": "Koovee",
-      "venue": "Mosahalli kenttä 1",
-      "city": "Vantaa",
-      "lat": 60.2707,
-      "lon": 24.8395,
-      "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-koovee-18-11-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-3.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-koovee-f-liiga-1.webp"
     },
     {
       "date": "2026-12-16",
