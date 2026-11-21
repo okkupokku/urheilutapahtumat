@@ -1,24 +1,7 @@
 {
-  "updated": "2026-11-20T22:27:33.859Z",
+  "updated": "2026-11-21T04:51:59.037Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
-    {
-      "date": "2026-11-20",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Oilers",
-      "teamB": "LASB",
-      "venue": "Tapiolan Urheiluhalli",
-      "city": "Espoo",
-      "lat": 60.1756,
-      "lon": 24.8025,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/oilers-lasb-20-11-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-lasb-f-liiga-1.webp"
-    },
     {
       "date": "2026-12-18",
       "time": "18:30",
@@ -205,23 +188,6 @@
       "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-oilers-12-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp"
-    },
-    {
-      "date": "2026-11-20",
-      "time": "18:30",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Indians",
-      "teamB": "Hawks",
-      "venue": "Otahalli Espoo",
-      "city": "Espoo",
-      "lat": 60.1875,
-      "lon": 24.8296,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/indians-hawks-20-11-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-indians-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-hawks-f-liiga-1.webp"
     },
     {
       "date": "2026-11-21",
