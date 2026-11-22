@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-21T21:22:04.075Z",
+  "updated": "2026-11-22T04:08:25.173Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -188,23 +188,6 @@
       "matchUrl": "https://fliiga.com/ottelut/miehet/eraviikingit-oilers-12-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-2.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-oilers-f-liiga-1.webp"
-    },
-    {
-      "date": "2026-11-21",
-      "time": "16:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLM",
-      "genderGroup": "Miehet",
-      "teamA": "Hawks",
-      "teamB": "Indians",
-      "venue": "Urhea-halli",
-      "city": "Helsinki",
-      "lat": 60.2263,
-      "lon": 25.0788,
-      "matchUrl": "https://fliiga.com/ottelut/miehet/hawks-indians-21-11-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-hawks-f-liiga-1.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-indians-f-liiga-1.webp"
     },
     {
       "date": "2027-01-08",
