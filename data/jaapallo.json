@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-23T04:49:54.202Z",
+  "updated": "2026-11-23T19:40:50.680Z",
   "source": "finbandy.torneopal.fi (Playwright, palvelinrenderöity HTML)",
   "matches": [
     {
@@ -40,7 +40,7 @@
     },
     {
       "date": "2026-12-03",
-      "time": "",
+      "time": "18:30",
       "sport": "Jääpallo",
       "category": "Nuorten Bandyliiga",
       "categoryId": "NUBL",
@@ -382,7 +382,7 @@
     },
     {
       "date": "2027-01-21",
-      "time": "",
+      "time": "19:00",
       "sport": "Jääpallo",
       "category": "Nuorten Bandyliiga",
       "categoryId": "NUBL",
@@ -436,7 +436,7 @@
     },
     {
       "date": "2027-01-28",
-      "time": "",
+      "time": "19:00",
       "sport": "Jääpallo",
       "category": "Nuorten Bandyliiga",
       "categoryId": "NUBL",
@@ -526,7 +526,7 @@
     },
     {
       "date": "2027-02-11",
-      "time": "",
+      "time": "19:00",
       "sport": "Jääpallo",
       "category": "Nuorten Bandyliiga",
       "categoryId": "NUBL",
