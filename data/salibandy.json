@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-22T21:25:49.154Z",
+  "updated": "2026-11-23T04:49:49.169Z",
   "source": "fliiga.com (Playwright, sivulle upotettu data)",
   "matches": [
     {
@@ -630,23 +630,6 @@
       "matchUrl": "https://fliiga.com/ottelut/naiset/eraviikingit-classic-13-3-2027/",
       "crestA": "https://fliiga.com/wp-content/uploads/2025/11/logo-eraviikingit-f-liiga-3.webp",
       "crestB": "https://fliiga.com/wp-content/uploads/2025/11/logo-classic-f-liiga-dark-3.webp"
-    },
-    {
-      "date": "2026-11-22",
-      "time": "15:00",
-      "sport": "Salibandy",
-      "category": "F-liiga",
-      "categoryId": "FLN",
-      "genderGroup": "Naiset",
-      "teamA": "PSS",
-      "teamB": "SB-Pro",
-      "venue": "Aurora",
-      "city": "Helsinki",
-      "lat": 60.203,
-      "lon": 24.925,
-      "matchUrl": "https://fliiga.com/ottelut/naiset/pss-sb-pro-22-11-2026/",
-      "crestA": "https://fliiga.com/wp-content/uploads/2026/06/logo-pss-f-liiga.webp",
-      "crestB": "https://fliiga.com/wp-content/uploads/2026/01/logo-sb-pro-f-liiga-1.webp"
     },
     {
       "date": "2026-11-28",
